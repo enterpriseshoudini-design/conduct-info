@@ -1,0 +1,2063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bombay Kids International School — Conduct</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --paper:#f2f0e6; --surface:#ffffff; --surface-alt:#ebe7da;
+    --ink:#1e2a38; --ink-soft:#5b6472; --line:#dedacb;
+    --brand:#c0392b; --brand-dark:#96271c; --brand-soft:#f8e2df;
+    --accent:#a8752c; --accent-soft:#f3e8d6;
+    --good:#3f6b4e; --good-soft:#e4ede6;
+    --bad:#9c4a3d; --bad-soft:#f3e1dc;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans',ui-sans-serif,system-ui,sans-serif;font-size:14px;}
+  h1,h2,h3{font-family:'Newsreader',serif;font-weight:500;margin:0;}
+  a{color:inherit;}
+  button{font-family:inherit;cursor:pointer;}
+  input,select,textarea{font-family:inherit;font-size:14px;color:var(--ink);}
+  ::placeholder{color:var(--ink-soft);}
+
+  /* ---------- lock screen ---------- */
+  #lockScreen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .lock-wrap{width:100%;max-width:360px;}
+  .wordmark{text-align:center;margin-bottom:24px;}
+  .wordmark .school-name{display:block;font-family:'Newsreader',serif;font-weight:600;font-size:22px;color:var(--brand);line-height:1.25;}
+  .wordmark .word{display:block;margin-top:4px;font-family:'Newsreader',serif;font-size:15px;color:var(--ink-soft);}
+  .wordmark p{margin:4px 0 0;font-size:13px;color:var(--ink-soft);}
+  .lock-card{background:var(--surface);border:1px solid var(--line);border-top:3px solid var(--brand);border-radius:12px;padding:32px;}
+
+  /* ---------- shared UI ---------- */
+  .record-tag{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:11px;letter-spacing:.02em;color:var(--ink-soft);background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:3px 8px;display:inline-block;white-space:nowrap;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-size:13px;font-weight:500;margin-bottom:5px;}
+  .field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:6px;padding:8px 10px;background:var(--surface);}
+  input[type="text"],input:not([type]),textarea{text-transform:uppercase;}
+  input[type="text"]::placeholder,textarea::placeholder{text-transform:none;}
+  .field input:focus-visible,.field select:focus-visible,.field textarea:focus-visible{outline:2px solid var(--brand);outline-offset:1px;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px;}
+  .form-grid .span2{grid-column:1/-1;}
+  .section-title{grid-column:1/-1;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;color:var(--brand);border-top:1px solid var(--line);padding-top:14px;margin-top:6px;margin-bottom:4px;}
+  .section-title:first-child{border-top:none;margin-top:0;padding-top:0;}
+  .btn{border-radius:6px;padding:9px 16px;font-size:13px;font-weight:500;border:1px solid transparent;display:inline-flex;align-items:center;gap:6px;}
+  .btn-primary{background:var(--brand);color:#fff;}
+  .btn-primary:hover{background:var(--brand-dark);}
+  .btn-secondary{background:var(--surface);border-color:var(--line);color:var(--ink);}
+  .btn-secondary:hover{background:var(--surface-alt);}
+  .btn-danger{background:transparent;color:var(--bad);border-color:var(--bad-soft);}
+  .btn-danger:hover{background:var(--bad-soft);}
+  .btn-block{width:100%;justify-content:center;}
+  .btn-sm{padding:5px 10px;font-size:12px;}
+  .btn:disabled{opacity:.55;cursor:not-allowed;}
+  .msg{font-size:13px;padding:8px 12px;border-radius:6px;margin-bottom:14px;}
+  .msg-error{background:var(--bad-soft);color:var(--bad);}
+  .pill{display:inline-flex;align-items:center;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:500;}
+  .pill-good{background:var(--good-soft);color:var(--good);}
+  .pill-bad{background:var(--bad-soft);color:var(--bad);}
+  .pill-neutral{background:var(--surface-alt);color:var(--ink-soft);}
+  .pill-accent{background:var(--accent-soft);color:var(--accent);}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;}
+  .avatar{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:var(--brand-soft);color:var(--brand-dark);font-size:12px;font-weight:500;flex-shrink:0;}
+
+  /* ---------- app shell ---------- */
+  #app{display:flex;min-height:100vh;}
+  .sidebar{width:230px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--line);display:flex;flex-direction:column;}
+  .sidebar .brand{padding:22px 20px;border-bottom:1px solid var(--line);}
+  .sidebar .brand .school-name{display:block;font-family:'Newsreader',serif;font-weight:600;font-size:15px;color:var(--brand);line-height:1.3;}
+  .sidebar .brand .word{font-family:'Newsreader',serif;font-size:12px;color:var(--ink-soft);}
+  .sidebar .brand p{margin:2px 0 0;font-size:11px;color:var(--ink-soft);}
+  .sidebar nav{flex:1;padding:14px 12px;display:flex;flex-direction:column;gap:2px;}
+  .nav-link{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:6px;color:var(--ink-soft);font-size:14px;background:none;border:none;text-align:left;width:100%;}
+  .nav-link:hover{background:var(--surface-alt);color:var(--ink);}
+  .nav-link.active{background:var(--brand-soft);color:var(--brand-dark);font-weight:500;}
+  .nav-link .dot{width:16px;text-align:center;}
+  .sidebar .footer{border-top:1px solid var(--line);padding:14px 20px;font-size:12px;color:var(--ink-soft);}
+  .sidebar .footer .name{color:var(--ink);font-weight:500;}
+  .sidebar .footer button{background:none;border:none;color:var(--ink-soft);font-size:12px;padding:0;margin-top:4px;display:block;}
+  .sidebar .footer button:hover{color:var(--brand);}
+  .main{flex:1;min-width:0;}
+  .topbar{position:sticky;top:0;background:rgba(242,240,230,.94);backdrop-filter:blur(2px);border-bottom:1px solid var(--line);padding:20px 32px;display:flex;flex-wrap:wrap;align-items:flex-start;justify-content:space-between;gap:12px 16px;}
+  .topbar h1{font-size:26px;}
+  .topbar p{margin:4px 0 0;font-size:13px;color:var(--ink-soft);}
+  .content{padding:28px 32px;}
+
+  /* ---------- tables ---------- */
+  table{width:100%;border-collapse:collapse;font-size:14px;}
+  thead th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);background:var(--surface-alt);padding:10px 14px;}
+  tbody td{padding:10px 14px;border-bottom:1px solid var(--line);}
+  tbody tr:hover{background:rgba(235,231,218,.5);}
+  .table-wrap{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow:hidden;}
+  .empty{padding:48px 20px;text-align:center;color:var(--ink-soft);}
+
+  /* ---------- grids ---------- */
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:20px;}
+  .stat-card{background:var(--surface);border:1px solid var(--line);border-top:2px solid var(--brand);border-radius:10px;padding:16px;}
+  .stat-card.accent{border-top-color:var(--accent);}
+  .stat-card.good{border-top-color:var(--good);}
+  .stat-card .label{font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);}
+  .stat-card .value{font-family:'Newsreader',serif;font-size:34px;margin-top:10px;}
+  .stat-card .hint{font-size:12px;color:var(--ink-soft);margin-top:2px;}
+  .staff-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;}
+  .two-col{display:grid;grid-template-columns:2fr 3fr;gap:16px;align-items:start;}
+  .detail-layout{display:grid;grid-template-columns:3fr 2fr;gap:16px;align-items:start;}
+  .detail-layout .stack{display:flex;flex-direction:column;gap:14px;}
+
+  /* ---------- toolbar ---------- */
+  .toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px;}
+  .toolbar input[type=text],.toolbar select{border:1px solid var(--line);border-radius:6px;padding:8px 10px;background:var(--surface);}
+  .toolbar .spacer{flex:1;}
+  .quick-actions{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px;}
+  .quick-action{display:flex;align-items:center;gap:9px;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 16px;font-size:13px;font-weight:500;color:var(--ink);}
+  .quick-action:hover{border-color:var(--brand);color:var(--brand-dark);background:var(--brand-soft);}
+  .qa-icon{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--brand-soft);color:var(--brand-dark);font-size:13px;flex-shrink:0;}
+  .quick-action:hover .qa-icon{background:var(--surface);}
+
+  /* ---------- modal ---------- */
+  .modal-backdrop{position:fixed;inset:0;background:rgba(30,42,56,.42);display:flex;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;z-index:80;}
+  .modal{background:var(--surface);border-radius:12px;max-width:600px;width:100%;padding:26px;margin-bottom:40px;}
+  .modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;}
+  .modal-head button{background:none;border:none;font-size:20px;color:var(--ink-soft);line-height:1;}
+  .modal-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px;}
+
+  /* ---------- responsive ---------- */
+  @media (max-width:820px){
+    #app{flex-direction:column;}
+    .sidebar{width:100%;flex-direction:row;align-items:center;border-right:none;border-bottom:1px solid var(--line);}
+    .sidebar .brand{border-bottom:none;padding:14px 16px;}
+    .sidebar nav{flex-direction:row;padding:10px;overflow-x:auto;}
+    .sidebar .footer{display:none;}
+    .topbar,.content{padding-left:18px;padding-right:18px;}
+    .two-col{grid-template-columns:1fr;}
+    .detail-layout{grid-template-columns:1fr;}
+    .form-grid{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<div id="lockScreen">
+  <div class="lock-wrap">
+    <div class="wordmark"><img id="lockLogo" alt="" style="height:56px;margin-bottom:8px;display:none;" /><span class="school-name">BOMBAY KIDS INTERNATIONAL SCHOOL</span><span class="word">Conduct — Student &amp; Staff Records</span></div>
+    <div class="lock-card">
+      <span class="record-tag" id="ayTag">AY — · Staff Access</span>
+      <h1 style="font-size:20px;margin:14px 0 4px;">Sign in</h1>
+      <p style="font-size:13px;color:var(--ink-soft);margin:0 0 18px;">This device passcode is shared by your front office — ask your admin if you don't have it.</p>
+      <form id="lockForm">
+        <div class="field"><label>Your name</label><input type="text" id="staffName" placeholder="e.g. Priya Nair" required /></div>
+        <div class="field"><label>Passcode</label><input type="password" id="passcode" required /></div>
+        <div class="msg msg-error" id="lockMsg" style="display:none;"></div>
+        <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="app" style="display:none;">
+  <aside class="sidebar">
+    <div class="brand"><img id="sidebarLogo" alt="" style="height:32px;margin-bottom:6px;display:none;" /><span class="school-name">BOMBAY KIDS<br/>INTERNATIONAL SCHOOL</span><span class="word">Conduct</span><p>Arihant Nagar, Indore</p></div>
+    <nav id="sidebarNav"></nav>
+    <div class="footer">
+      Signed in as <span class="name" id="footerName">—</span>
+      <button onclick="exportBackup()">Export backup</button>
+      <button onclick="document.getElementById('importInput').click()">Import backup</button>
+      <button onclick="lockApp()">Sign out</button>
+      <input type="file" id="importInput" accept="application/json" style="display:none" onchange="importBackup(event)" />
+    </div>
+  </aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <main class="content" id="content"></main>
+  </div>
+</div>
+
+<div id="modalRoot"></div>
+
+<script>
+/* ================= configuration — edit these for your school ================= */
+const SCHOOL_NAME = "Bombay Kids International School";
+const SCHOOL_ADDRESS = "Arihant Nagar, Indore (M.P.)";
+const SCHOOL_PHONE = "9981258867";
+const LOGO_DATA_URI = "data:image/jpeg;base64,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";
+const STAFF_PASSCODE = "conduct2026";
+const CLASS_LEVELS = ['Pre Nursery','Nursery','KG-I','KG-II','1','2','3','4','5','6','7','8','9','10'];
+const BOARD_CLASSES = ['5','8','9','10'];
+const TERMS = ['Admission Fee','Term 1 (June-July)','Term 2 (October)','Term 3 (January)','Board Exam Fee','Other'];
+// Per-class tuition installments, from the school's fee structure chart.
+// Admission fee is a flat ₹500 for every class.
+const FEE_STRUCTURE = {
+  'Pre Nursery': {admissionFee:500, term1:5000, term2:4000, term3:2000},
+  'Nursery':     {admissionFee:500, term1:5000, term2:4000, term3:2000},
+  'KG-I':        {admissionFee:500, term1:5000, term2:5000, term3:2000},
+  'KG-II':       {admissionFee:500, term1:5000, term2:5000, term3:3000},
+  '1':           {admissionFee:500, term1:5000, term2:5000, term3:3000},
+  '2':           {admissionFee:500, term1:5000, term2:5000, term3:3000},
+  '3':           {admissionFee:500, term1:6000, term2:5000, term3:3000},
+  '4':           {admissionFee:500, term1:6000, term2:5000, term3:3000},
+  '5':           {admissionFee:500, term1:6000, term2:6000, term3:3000},
+  '6':           {admissionFee:500, term1:6000, term2:5000, term3:3000},
+  '7':           {admissionFee:500, term1:6000, term2:5000, term3:3000},
+  '8':           {admissionFee:500, term1:6000, term2:5000, term3:3000},
+  '9':           {admissionFee:500, term1:6000, term2:6000, term3:3000},
+  '10':          {admissionFee:500, term1:6000, term2:6000, term3:3000},
+};
+// Board exam form charges — Class 5 & 8 vs Class 9 & 10, per the school's policy.
+function getBoardExamFee(cls){
+  if(cls==='5' || cls==='8') return 500;
+  if(cls==='9' || cls==='10') return 2350;
+  return 0;
+}
+// Auto-computes what's due for a given student + fee particulars, from the fee structure above.
+function computeTotalDue(studentId, particulars){
+  const s = students.find(x=>x.id===studentId);
+  if(!s) return 0;
+  const fs = FEE_STRUCTURE[s.cls];
+  if(particulars==='Admission Fee') return fs ? fs.admissionFee : 500;
+  if(particulars==='Term 1 (June-July)') return fs ? fs.term1 : 0;
+  if(particulars==='Term 2 (October)') return fs ? fs.term2 : 0;
+  if(particulars==='Term 3 (January)') return fs ? fs.term3 : 0;
+  if(particulars==='Board Exam Fee') return getBoardExamFee(s.cls);
+  return 0; // 'Other' — admin enters manually via the Negotiated Fee override
+}
+/* ================================================================================ */
+
+const LS = { students:'conduct_students', enquiries:'conduct_enquiries', staff:'conduct_staff', fees:'conduct_fees', salaries:'conduct_salaries', attendance:'conduct_attendance', seeded:'conduct_seeded_v1', feesSeeded:'conduct_fees_seeded_v1', session:'conduct_session' };
+
+var students = [], enquiries = [], staffList = [], fees = [], salaries = [], attendanceRecords = [];
+var view = { name: 'dashboard', studentId: null };
+var studentFilters = { q:'', cls:'', status:'' };
+var feeFilters = { session:'', cls:'', status:'' };
+var salaryFilters = { month:'', status:'' };
+var dashboardTimeframe = 'thisMonth';
+
+/* ---------------- utils ---------------- */
+function uid(prefix){ return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function escapeHtml(str){
+  return String(str==null?'':str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function initials(a,b){ return ((a||' ').charAt(0)+(b||' ').charAt(0)).toUpperCase().trim() || '?'; }
+function formatDate(iso){
+  if(!iso) return '—';
+  const d = new Date(iso);
+  if(isNaN(d)) return '—';
+  return d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'});
+}
+function currentAcademicYear(){
+  const now = new Date();
+  const startYear = now.getMonth() >= 5 ? now.getFullYear() : now.getFullYear()-1;
+  return startYear + '–' + String((startYear+1)%100).padStart(2,'0');
+}
+function currentMonthKey(){ return new Date().toISOString().slice(0,7); }
+function monthLabel(key){
+  if(!key) return '—';
+  const [y,m] = key.split('-');
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  return months[parseInt(m,10)-1] + ' ' + y;
+}
+const TIMEFRAME_LABELS = {today:'Today', thisMonth:'This Month', thisSession:'This Academic Year'};
+function getTimeframeRange(tf){
+  const now = new Date();
+  if(tf === 'today'){
+    const iso = todayIso();
+    return {start: iso, end: iso};
+  }
+  if(tf === 'thisMonth'){
+    const y = now.getFullYear(), m = now.getMonth();
+    const start = new Date(y, m, 1).toISOString().slice(0,10);
+    const end = new Date(y, m+1, 0).toISOString().slice(0,10);
+    return {start, end};
+  }
+  // thisSession — Indian academic year, roughly June through the following May
+  const startYear = now.getMonth() >= 5 ? now.getFullYear() : now.getFullYear()-1;
+  return {start: startYear+'-06-01', end: (startYear+1)+'-05-31'};
+}
+function inRange(dateStr, range){
+  if(!dateStr) return false;
+  const d = dateStr.slice(0,10);
+  return d >= range.start && d <= range.end;
+}
+function monthKeyInRange(monthKey, tf){
+  if(!monthKey) return false;
+  if(tf === 'today' || tf === 'thisMonth') return monthKey === currentMonthKey();
+  const range = getTimeframeRange('thisSession');
+  return monthKey >= range.start.slice(0,7) && monthKey <= range.end.slice(0,7);
+}
+function todayIso(){ return new Date().toISOString().slice(0,10); }
+
+const ONES = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine','Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen','Seventeen','Eighteen','Nineteen'];
+const TENS = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+function numberToWords(n){
+  if(n === 0) return 'Zero';
+  if(n < 20) return ONES[n];
+  if(n < 100) return TENS[Math.floor(n/10)] + (n%10 ? ' ' + ONES[n%10] : '');
+  if(n < 1000) return ONES[Math.floor(n/100)] + ' Hundred' + (n%100 ? ' ' + numberToWords(n%100) : '');
+  if(n < 100000) return numberToWords(Math.floor(n/1000)) + ' Thousand' + (n%1000 ? ' ' + numberToWords(n%1000) : '');
+  return String(n);
+}
+function ordinal(n){
+  const s = ['th','st','nd','rd'], v = n % 100;
+  return n + (s[(v-20)%10] || s[v] || s[0]);
+}
+function dateInWords(iso){
+  if(!iso) return '—';
+  const d = new Date(iso);
+  if(isNaN(d)) return '—';
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  return ordinal(d.getDate()) + ' ' + months[d.getMonth()] + ' ' + numberToWords(d.getFullYear());
+}
+function feeStatus(rec){
+  const due = Number(rec.amountDue)||0, paid = Number(rec.amountPaid)||0;
+  if(paid <= 0) return 'pending';
+  if(paid < due) return 'partial';
+  return 'paid';
+}
+function money(n){ return '₹' + (Number(n)||0).toLocaleString('en-IN'); }
+function fileToBase64(file){
+  return new Promise((resolve, reject) => {
+    if(!file){ resolve(null); return; }
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+function avatarHtml(photo, firstName, lastName, size){
+  if(photo) return `<img src="${photo}" alt="" style="width:${size}px;height:${size}px;border-radius:50%;object-fit:cover;flex-shrink:0;" />`;
+  return `<span class="avatar" style="width:${size}px;height:${size}px;font-size:${Math.round(size*0.36)}px;">${initials(firstName,lastName)}</span>`;
+}
+
+/* ---------------- storage ---------------- */
+function loadData(){
+  students = JSON.parse(localStorage.getItem(LS.students) || '[]');
+  enquiries = JSON.parse(localStorage.getItem(LS.enquiries) || '[]');
+  staffList = JSON.parse(localStorage.getItem(LS.staff) || '[]');
+  fees = JSON.parse(localStorage.getItem(LS.fees) || '[]');
+  salaries = JSON.parse(localStorage.getItem(LS.salaries) || '[]');
+  attendanceRecords = JSON.parse(localStorage.getItem(LS.attendance) || '[]');
+}
+function saveAll(){
+  localStorage.setItem(LS.students, JSON.stringify(students));
+  localStorage.setItem(LS.enquiries, JSON.stringify(enquiries));
+  localStorage.setItem(LS.staff, JSON.stringify(staffList));
+  localStorage.setItem(LS.fees, JSON.stringify(fees));
+  localStorage.setItem(LS.salaries, JSON.stringify(salaries));
+  localStorage.setItem(LS.attendance, JSON.stringify(attendanceRecords));
+}
+function seedIfNeeded(){
+  if(localStorage.getItem(LS.seeded)) return;
+  staffList = [
+    {id:uid('stf'),employeeId:'STF-001',firstName:'Meera',lastName:'Kulkarni',role:'Principal',department:'Administration',phone:'+91 98930 11220',email:'meera.kulkarni@example.edu',dateOfJoining:'2015-06-01',employmentStatus:'active'},
+    {id:uid('stf'),employeeId:'STF-002',firstName:'Rohan',lastName:'Deshpande',role:'Teacher',department:'Mathematics',phone:'+91 98930 11221',email:'rohan.deshpande@example.edu',dateOfJoining:'2019-06-10',employmentStatus:'active'},
+    {id:uid('stf'),employeeId:'STF-003',firstName:'Priya',lastName:'Nair',role:'Admin',department:'Admissions',phone:'+91 98930 11222',email:'priya.nair@example.edu',dateOfJoining:'2021-04-12',employmentStatus:'active'}
+  ];
+  students = [
+    {id:uid('stu'),admissionNumber:'CND/2021/014',firstName:'Ananya',lastName:'Sharma',dob:'2015-08-02',placeOfBirth:'Indore',gender:'Female',bloodGroup:'B+',nationality:'Indian',religion:'Hindu',caste:'Sharma',category:'General',motherTongue:'Hindi',weight:'32',height:'128',
+      cls:'5',section:'B',rollNumber:'14',medium:'English Medium',session:'2026-27',status:'active',admissionDate:'2021-06-01',admissionFeesPaid:'5000',yearlyFeesPaid:'45000',previousSchool:'Little Sprouts Pre-School',previousClassStudied:'UKG',previousSession:'2020-21',previousResult:'Promoted',
+      phone:'+91 98765 43210',whatsapp:'+91 98765 43210',email:'vikram.sharma@example.com',address:'12 Palasia Road, Indore',city:'Indore',pincode:'452001',permanentAddress:'',
+      fatherName:'Vikram Sharma',fatherPhone:'+91 98765 43210',fatherEducation:'B.Com',fatherOccupation:'Business',motherName:'Nisha Sharma',motherPhone:'+91 98765 43211',motherEducation:'M.A.',motherOccupation:'Homemaker',guardianName:'',guardianRelation:'',guardianPhone:'',
+      studentAadhar:'',fatherAadhar:'',motherAadhar:'',studentPEN:'',studentAPAR:'',studentSSSM:'',familySSSM:'',bankAccountNumber:'',bankName:'',ifscCode:'',
+      transportMode:'By the parent',pickupPersonName:'',pickupPersonPhone:'',driverName:'',driverPhone:'',vehicleNumber:'',
+      tc:{issued:false}},
+    {id:uid('stu'),admissionNumber:'CND/2019/031',firstName:'Kabir',lastName:'Rathore',dob:'2013-01-19',placeOfBirth:'Indore',gender:'Male',bloodGroup:'O+',nationality:'Indian',religion:'',caste:'',category:'General',motherTongue:'Hindi',weight:'',height:'',
+      cls:'7',section:'A',rollNumber:'7',medium:'English Medium',session:'2026-27',status:'active',admissionDate:'2019-06-03',admissionFeesPaid:'',yearlyFeesPaid:'',previousSchool:'',previousClassStudied:'',previousSession:'',previousResult:'',
+      phone:'+91 98765 43212',whatsapp:'',email:'',address:'',city:'Indore',pincode:'',permanentAddress:'',
+      fatherName:'Sanjay Rathore',fatherPhone:'+91 98765 43212',fatherEducation:'',fatherOccupation:'',motherName:'Ritu Rathore',motherPhone:'+91 98765 43213',motherEducation:'',motherOccupation:'',guardianName:'',guardianRelation:'',guardianPhone:'',
+      studentAadhar:'',fatherAadhar:'',motherAadhar:'',studentPEN:'',studentAPAR:'',studentSSSM:'',familySSSM:'',bankAccountNumber:'',bankName:'',ifscCode:'',
+      transportMode:'School driver',pickupPersonName:'',pickupPersonPhone:'',driverName:'Ramesh Yadav',driverPhone:'+91 90000 11111',vehicleNumber:'MP09 XY 4521',
+      tc:{issued:false}},
+    {id:uid('stu'),admissionNumber:'CND/2016/002',firstName:'Ishaan',lastName:'Verma',dob:'2010-11-05',placeOfBirth:'Indore',gender:'Male',bloodGroup:'A+',nationality:'Indian',religion:'',caste:'',category:'General',motherTongue:'Hindi',weight:'',height:'',
+      cls:'10',section:'C',rollNumber:'2',medium:'English Medium',session:'2025-26',status:'tc_issued',admissionDate:'2016-06-01',admissionFeesPaid:'',yearlyFeesPaid:'',previousSchool:'',previousClassStudied:'',previousSession:'',previousResult:'',
+      phone:'',whatsapp:'',email:'',address:'',city:'Indore',pincode:'',permanentAddress:'',
+      fatherName:'Anil Verma',fatherPhone:'+91 98765 43214',fatherEducation:'',fatherOccupation:'',motherName:'',motherPhone:'',motherEducation:'',motherOccupation:'',guardianName:'',guardianRelation:'',guardianPhone:'',
+      studentAadhar:'',fatherAadhar:'',motherAadhar:'',studentPEN:'',studentAPAR:'',studentSSSM:'',familySSSM:'',bankAccountNumber:'',bankName:'',ifscCode:'',
+      transportMode:'Student itself',pickupPersonName:'',pickupPersonPhone:'',driverName:'',driverPhone:'',vehicleNumber:'',
+      tc:{issued:true,tcNumber:'TC/2026/001',issueDate:'2026-04-10',reasonForLeaving:'Family relocation',conductRemark:'Good',lastClassStudied:'10',promotionStatus:'Promoted to Class 11',workingDays:'210',daysPresent:'198'}}
+  ];
+  enquiries = [
+    {id:uid('enq'),enquiryNumber:'ENQ-2026-041',childName:'Aarav Mehta',dob:'2019-03-14',classApplyingFor:'Nursery',parentName:'Rohit Mehta',parentPhone:'+91 98765 40001',parentEmail:'',source:'Walk-in',status:'new',nextFollowUpDate:'2026-07-15',followUps:[{date:'2026-06-20',note:'Spoke with father; keen on a Nursery seat for AY 2026-27.'}],convertedStudentId:null,createdAt:'2026-06-18T10:04:00Z'},
+    {id:uid('enq'),enquiryNumber:'ENQ-2026-042',childName:'Diya Kapoor',dob:'2018-09-22',classApplyingFor:'KG-I',parentName:'Sunita Kapoor',parentPhone:'+91 98765 40002',parentEmail:'',source:'Referral',status:'new',nextFollowUpDate:'2026-07-10',followUps:[],convertedStudentId:null,createdAt:'2026-07-02T09:00:00Z'},
+    {id:uid('enq'),enquiryNumber:'ENQ-2026-043',childName:'Vivaan Joshi',dob:'2016-02-11',classApplyingFor:'2',parentName:'Manish Joshi',parentPhone:'+91 98765 40003',parentEmail:'',source:'Website',status:'lost',nextFollowUpDate:'',followUps:[],convertedStudentId:null,createdAt:'2026-07-01T09:00:00Z'},
+    {id:uid('enq'),enquiryNumber:'ENQ-2026-044',childName:'Myra Singh',dob:'2015-07-30',classApplyingFor:'3',parentName:'Karan Singh',parentPhone:'+91 98765 40004',parentEmail:'',source:'Phone',status:'admitted',nextFollowUpDate:'',followUps:[],convertedStudentId:null,createdAt:'2026-06-28T09:00:00Z'}
+  ];
+  saveAll();
+  localStorage.setItem(LS.seeded, '1');
+}
+function seedFeesIfNeeded(){
+  if(localStorage.getItem(LS.feesSeeded)) return;
+  localStorage.setItem(LS.feesSeeded, '1');
+  if(fees.length === 0 && students.length > 0){
+    const s1 = students[0], s2 = students[1];
+    if(s1){
+      const t1 = computeTotalDue(s1.id, 'Term 1 (June-July)');
+      fees.push({id:uid('fee'),studentId:s1.id,session:currentAcademicYear(),particulars:'Term 1 (June-July)',amountDue:String(t1),amountPaid:String(t1),paymentMode:'Cash',negotiated:false,dueDate:'2026-06-15',paidDate:'2026-06-10',notes:''});
+      const t2 = computeTotalDue(s1.id, 'Term 2 (October)');
+      fees.push({id:uid('fee'),studentId:s1.id,session:currentAcademicYear(),particulars:'Term 2 (October)',amountDue:String(t2),amountPaid:'0',paymentMode:'Cash',negotiated:false,dueDate:'2026-10-15',paidDate:'',notes:''});
+      const board1 = getBoardExamFee(s1.cls);
+      if(board1 > 0){
+        fees.push({id:uid('fee'),studentId:s1.id,session:currentAcademicYear(),particulars:'Board Exam Fee',amountDue:String(board1),amountPaid:'0',paymentMode:'Cash',negotiated:false,dueDate:'2026-11-01',paidDate:'',notes:''});
+      }
+    }
+    if(s2){
+      const t1 = computeTotalDue(s2.id, 'Term 1 (June-July)');
+      fees.push({id:uid('fee'),studentId:s2.id,session:currentAcademicYear(),particulars:'Term 1 (June-July)',amountDue:String(t1),amountPaid:String(Math.round(t1*0.5)),paymentMode:'Online',negotiated:false,dueDate:'2026-06-15',paidDate:'2026-06-18',notes:'Partial payment'});
+      const board2 = getBoardExamFee(s2.cls);
+      if(board2 > 0){
+        fees.push({id:uid('fee'),studentId:s2.id,session:currentAcademicYear(),particulars:'Board Exam Fee',amountDue:String(board2),amountPaid:String(board2),paymentMode:'Cash',negotiated:false,dueDate:'2026-11-01',paidDate:'2026-10-20',notes:''});
+      }
+    }
+  }
+  if(salaries.length === 0 && staffList.length > 0){
+    const month = currentMonthKey();
+    staffList.slice(0,2).forEach((m,i) => {
+      salaries.push({id:uid('sal'),staffId:m.id,month,amountDue:'32000',amountPaid: i===0?'32000':'0',paidDate: i===0?todayIso():'',notes:''});
+    });
+  }
+  saveAll();
+}
+
+/* ---------------- lock screen ---------------- */
+document.getElementById('ayTag').textContent = 'AY ' + currentAcademicYear() + ' · Staff Access';
+[document.getElementById('lockLogo'), document.getElementById('sidebarLogo')].forEach(img => {
+  if(!img) return;
+  img.src = LOGO_DATA_URI;
+  img.style.display = 'block';
+});
+
+function checkSession(){
+  const raw = localStorage.getItem(LS.session);
+  if(raw){
+    const session = JSON.parse(raw);
+    document.getElementById('lockScreen').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    document.getElementById('footerName').textContent = session.name;
+    renderSidebar();
+    renderApp();
+  }
+}
+document.getElementById('lockForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const name = document.getElementById('staffName').value.trim();
+  const code = document.getElementById('passcode').value;
+  const msg = document.getElementById('lockMsg');
+  if(code !== STAFF_PASSCODE){
+    msg.textContent = 'Incorrect passcode.';
+    msg.style.display = 'block';
+    return;
+  }
+  localStorage.setItem(LS.session, JSON.stringify({name, at: Date.now()}));
+  msg.style.display = 'none';
+  checkSession();
+});
+function lockApp(){
+  localStorage.removeItem(LS.session);
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('lockScreen').style.display = 'flex';
+  document.getElementById('lockForm').reset();
+}
+
+/* ---------------- sidebar / routing ---------------- */
+const NAV_ITEMS = [
+  {name:'dashboard', label:'Dashboard', icon:'&#9632;'},
+  {name:'enquiries', label:'Enquiries', icon:'&#9993;'},
+  {name:'students', label:'Students', icon:'&#9787;'},
+  {name:'staff', label:'Staff', icon:'&#9878;'},
+  {name:'attendance', label:'Attendance', icon:'&#10003;'},
+  {name:'fees', label:'Fees', icon:'&#8377;'},
+  {name:'salary', label:'Salary', icon:'&#128176;'}
+];
+function renderSidebar(){
+  document.getElementById('sidebarNav').innerHTML = NAV_ITEMS.map(item => {
+    const active = (view.name === item.name) || (item.name==='students' && view.name==='studentDetail');
+    return `<button class="nav-link ${active?'active':''}" onclick="goTo('${item.name}')"><span class="dot">${item.icon}</span>${item.label}</button>`;
+  }).join('');
+}
+function goTo(name){
+  view = { name, studentId: null };
+  renderSidebar();
+  renderApp();
+}
+function goToStudent(id){
+  view = { name:'studentDetail', studentId: id };
+  renderSidebar();
+  renderApp();
+}
+function renderApp(){
+  const topbar = document.getElementById('topbar');
+  const content = document.getElementById('content');
+  if(view.name === 'dashboard'){ renderDashboard(topbar, content); }
+  else if(view.name === 'students'){ renderStudents(topbar, content); }
+  else if(view.name === 'studentDetail'){ renderStudentDetail(topbar, content, view.studentId); }
+  else if(view.name === 'enquiries'){ renderEnquiries(topbar, content); }
+  else if(view.name === 'staff'){ renderStaff(topbar, content); }
+  else if(view.name === 'attendance'){ renderAttendance(topbar, content); }
+  else if(view.name === 'fees'){ renderFees(topbar, content); }
+  else if(view.name === 'salary'){ renderSalary(topbar, content); }
+}
+
+/* ---------------- dashboard ---------------- */
+const PENDING_STATUSES = ['new'];
+const STAGE_LABELS = {new:'New', admitted:'Admitted', lost:'Lost'};
+
+function renderDashboard(topbar, content){
+  topbar.innerHTML = `
+    <div><h1>Dashboard</h1><p>Snapshot across enquiries, students, staff, fees, and salary.</p></div>
+    <div>
+      <label for="timeframeSelect" style="font-size:12px;color:var(--ink-soft);display:block;margin-bottom:3px;">Timeframe</label>
+      <select id="timeframeSelect" style="border:1px solid var(--line);border-radius:6px;padding:8px 10px;background:var(--surface);font-family:inherit;" onchange="dashboardTimeframe=this.value; renderDashboard(document.getElementById('topbar'),document.getElementById('content'));">
+        ${Object.keys(TIMEFRAME_LABELS).map(k=>`<option value="${k}" ${dashboardTimeframe===k?'selected':''}>${TIMEFRAME_LABELS[k]}</option>`).join('')}
+      </select>
+    </div>`;
+
+  const range = getTimeframeRange(dashboardTimeframe);
+  const timeframeLabel = TIMEFRAME_LABELS[dashboardTimeframe];
+
+  // Always the full current total, regardless of timeframe.
+  const activeStudents = students.filter(s => s.status === 'active').length;
+  const activeStaff = staffList.filter(s => s.employmentStatus === 'active').length;
+
+  // Period-filtered metrics.
+  const admissionsInPeriod = students.filter(s => inRange(s.admissionDate, range)).length;
+  const enquiriesInPeriod = enquiries.filter(e => inRange(e.createdAt, range)).length;
+  const feesPendingAmt = fees.filter(f => inRange(f.dueDate, range) && feeStatus(f) !== 'paid')
+    .reduce((sum,f) => sum + Math.max(0,(Number(f.amountDue)||0)-(Number(f.amountPaid)||0)), 0);
+  const salaryPendingAmt = salaries.filter(s => monthKeyInRange(s.month, dashboardTimeframe) && feeStatus(s) !== 'paid')
+    .reduce((sum,s) => sum + Math.max(0,(Number(s.amountDue)||0)-(Number(s.amountPaid)||0)), 0);
+
+  const classCounts = CLASS_LEVELS.map(c => ({label:c, board:BOARD_CLASSES.includes(c), count: students.filter(s=>s.cls===c && s.status==='active').length}));
+  const classMax = Math.max(1, ...classCounts.map(c=>c.count));
+
+  const recent = [...enquiries].sort((a,b)=> new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5);
+
+  content.innerHTML = `
+    <div class="quick-actions">
+      <button class="quick-action" onclick="openStudentModal()"><span class="qa-icon">+</span>New Admission</button>
+      <button class="quick-action" onclick="openEnquiryModal()"><span class="qa-icon">+</span>New Enquiry</button>
+      <button class="quick-action" onclick="openStaffModal()"><span class="qa-icon">+</span>New Staff / Teacher</button>
+      <button class="quick-action" onclick="openFeeModal()"><span class="qa-icon">&#8377;</span>Record Fee Payment</button>
+      <button class="quick-action" onclick="openSalaryModal()"><span class="qa-icon">&#8377;</span>Record Salary Payment</button>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card"><div class="label">Active students</div><div class="value">${activeStudents}</div><div class="hint">Whole-school strength, all time</div></div>
+      <div class="stat-card good"><div class="label">Staff on roll</div><div class="value">${activeStaff}</div><div class="hint">Teaching and non-teaching, all time</div></div>
+      <div class="stat-card"><div class="label">Admissions</div><div class="value">${admissionsInPeriod}</div><div class="hint">${timeframeLabel}</div></div>
+      <div class="stat-card accent"><div class="label">Enquiries</div><div class="value">${enquiriesInPeriod}</div><div class="hint">${timeframeLabel}</div></div>
+      <div class="stat-card accent"><div class="label">Fees pending</div><div class="value" style="font-size:26px;">${money(feesPendingAmt)}</div><div class="hint">Due ${timeframeLabel.toLowerCase()}</div></div>
+      <div class="stat-card accent"><div class="label">Salary pending</div><div class="value" style="font-size:26px;">${money(salaryPendingAmt)}</div><div class="hint">${timeframeLabel}</div></div>
+    </div>
+
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h2 style="font-size:18px;">Recent enquiries</h2>
+        <button class="btn btn-secondary btn-sm" onclick="goTo('enquiries')">View all</button>
+      </div>
+      ${recent.length ? `<div style="margin-top:14px;">${recent.map(e => `
+        <div style="display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid var(--line);">
+          <div style="min-width:0;">
+            <p style="margin:0;font-size:14px;font-weight:500;">${escapeHtml(e.childName)}</p>
+            <p style="margin:2px 0 0;font-size:12px;color:var(--ink-soft);">Applying for ${escapeHtml(e.classApplyingFor)} · ${formatDate(e.createdAt)}</p>
+          </div>
+          <span class="record-tag">${STAGE_LABELS[e.status]||e.status}</span>
+        </div>`).join('')}</div>`
+      : `<p style="margin-top:16px;color:var(--ink-soft);font-size:13px;">No enquiries logged yet. New walk-ins and calls will show up here as soon as your front office adds them.</p>`}
+    </div>
+
+    <div class="card" style="margin-top:16px;">
+      <h2 style="font-size:18px;">Enrollment by class</h2>
+      <p style="font-size:12px;color:var(--ink-soft);margin:2px 0 16px;">Pre Nursery through Class 10 · classes marked <span class="record-tag" style="padding:1px 6px;">Board</span> sit board exams</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;">
+        ${classCounts.map(c => `
+          <button onclick="studentFilters={q:'',cls:'${c.label}',status:''};goTo('students');" style="text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;font-family:inherit;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-size:13px;font-weight:500;">${c.label}</span>
+              ${c.board?'<span class="record-tag" style="padding:1px 6px;">Board</span>':''}
+            </div>
+            <div style="margin-top:8px;height:6px;background:var(--surface-alt);border-radius:99px;overflow:hidden;">
+              <span style="display:block;height:100%;background:${c.board?'var(--accent)':'var(--brand)'};width:${(c.count/classMax)*100}%;"></span>
+            </div>
+            <div style="margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:13px;">${c.count}</div>
+          </button>`).join('')}
+      </div>
+    </div>`;
+}
+
+/* ---------------- students: list ---------------- */
+function renderStudents(topbar, content){
+  topbar.innerHTML = `
+    <div><h1>Student Directory</h1><p>${students.length} student${students.length===1?'':'s'} on record</p></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-secondary" onclick="exportStudentsExcel()">Download Excel</button>
+      <button class="btn btn-secondary" onclick="printStudents()">Print List</button>
+      <button class="btn btn-primary" onclick="openStudentModal()">+ Add student</button>
+    </div>`;
+
+  content.innerHTML = `
+    <div class="toolbar">
+      <input type="text" id="studentSearchInput" placeholder="Search name or scholar no." value="${escapeHtml(studentFilters.q)}" oninput="studentFilters.q=this.value; renderStudentsTable();" style="min-width:220px;" />
+      <select onchange="studentFilters.cls=this.value; renderStudentsTable();">
+        <option value="">All classes</option>
+        ${CLASS_LEVELS.map(c=>`<option value="${c}" ${studentFilters.cls===c?'selected':''}>Class ${c}</option>`).join('')}
+      </select>
+      <select onchange="studentFilters.status=this.value; renderStudentsTable();">
+        <option value="">Any status</option>
+        <option value="active" ${studentFilters.status==='active'?'selected':''}>Active</option>
+        <option value="inactive" ${studentFilters.status==='inactive'?'selected':''}>Inactive</option>
+        <option value="tc_issued" ${studentFilters.status==='tc_issued'?'selected':''}>TC issued</option>
+      </select>
+    </div>
+    <div id="studentsTableWrap"></div>`;
+  renderStudentsTable();
+}
+function getFilteredStudents(){
+  const q = studentFilters.q.toLowerCase();
+  return students.filter(s => {
+    if(studentFilters.cls && s.cls !== studentFilters.cls) return false;
+    if(studentFilters.status && s.status !== studentFilters.status) return false;
+    if(q && !(`${s.firstName} ${s.lastName} ${s.admissionNumber}`.toLowerCase().includes(q))) return false;
+    return true;
+  }).sort((a,b)=> a.lastName.localeCompare(b.lastName));
+}
+function renderStudentsTable(){
+  const filtered = getFilteredStudents();
+
+  document.getElementById('studentsTableWrap').innerHTML = filtered.length===0 ? `<div class="table-wrap"><div class="empty">No students match these filters.</div></div>` : `
+    <div class="table-wrap"><table>
+      <thead><tr><th>Student</th><th>Scholar no.</th><th>Class</th><th>Guardian contact</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        ${filtered.map(s => `
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="goToStudent('${s.id}')">
+                ${avatarHtml(s.photo, s.firstName, s.lastName, 34)}
+                <span style="font-weight:500;">${escapeHtml(s.firstName)} ${escapeHtml(s.lastName)}</span>
+              </div>
+            </td>
+            <td><span class="record-tag">${escapeHtml(s.admissionNumber)}</span></td>
+            <td style="color:var(--ink-soft);">${escapeHtml(s.cls)}${escapeHtml(s.section)} · Roll ${escapeHtml(s.rollNumber||'—')}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);">${escapeHtml(s.fatherPhone||s.motherPhone||'—')}</td>
+            <td>${statusPill(s.status)}</td>
+            <td style="text-align:right;"><button class="btn btn-secondary btn-sm" onclick="goToStudent('${s.id}')">View</button></td>
+          </tr>`).join('')}
+      </tbody>
+    </table></div>`;
+}
+function statusPill(status){
+  if(status==='active') return `<span class="pill pill-good">Active</span>`;
+  if(status==='tc_issued') return `<span class="pill pill-bad">TC issued</span>`;
+  return `<span class="pill pill-neutral">Inactive</span>`;
+}
+
+/* ---------------- students: add/edit modal ---------------- */
+function openStudentModal(existingId){
+  const s = existingId ? students.find(x=>x.id===existingId) : null;
+  const isNew = !s;
+  const v = (name, fallback) => escapeHtml(s ? s[name] : (fallback||''));
+  const photoPreview = s && s.photo ? `<img src="${s.photo}" alt="" style="width:56px;height:56px;border-radius:8px;object-fit:cover;display:block;margin-bottom:6px;" />` : '';
+  const docNote = s && s.documentName ? `<p style="font-size:12px;color:var(--ink-soft);margin:4px 0 0;">Current file: ${escapeHtml(s.documentName)}</p>` : '';
+
+  openModal(`
+    <div class="modal-head"><h2 style="font-size:18px;">${s?'Edit student':'Add student — Admission Form'}</h2><button onclick="closeModal()">&times;</button></div>
+    <form id="studentForm">
+      <div class="form-grid">
+
+        <div class="section-title">Admission Form</div>
+        <div class="field"><label>SSSM ID</label><input name="studentSSSM" value="${v('studentSSSM')}" /></div>
+        <div class="field"><label>Aadhar No.</label><input name="studentAadhar" value="${v('studentAadhar')}" /></div>
+        <div class="field"><label>Medium</label><input name="medium" value="${v('medium','English Medium')}" /></div>
+        <div class="field"><label>First name</label><input name="firstName" value="${v('firstName')}" required /></div>
+        <div class="field"><label>Last name</label><input name="lastName" value="${v('lastName')}" required /></div>
+        <div class="field"><label>Date of birth</label><input type="date" name="dob" value="${v('dob')}" required /></div>
+        <div class="field"><label>Place of birth</label><input name="placeOfBirth" value="${v('placeOfBirth')}" placeholder="Enclose birth certificate" /></div>
+        <div class="field"><label>Father's name</label><input name="fatherName" value="${v('fatherName')}" /></div>
+        <div class="field"><label>Father's education</label><input name="fatherEducation" value="${v('fatherEducation')}" /></div>
+        <div class="field"><label>Father's occupation</label><input name="fatherOccupation" value="${v('fatherOccupation')}" /></div>
+        <div class="field"><label>Mother's name</label><input name="motherName" value="${v('motherName')}" /></div>
+        <div class="field"><label>Mother's education</label><input name="motherEducation" value="${v('motherEducation')}" /></div>
+        <div class="field"><label>Mother's occupation</label><input name="motherOccupation" value="${v('motherOccupation')}" /></div>
+        <div class="field span2"><label>Parent's / Guardian's address</label><input name="address" value="${v('address')}" /></div>
+        <div class="field"><label>WhatsApp mobile</label><input name="whatsapp" value="${v('whatsapp')}" /></div>
+        <div class="field span2"><label>Permanent address</label><input name="permanentAddress" value="${v('permanentAddress')}" /></div>
+        <div class="field"><label>Mobile no.</label><input name="phone" value="${v('phone')}" /></div>
+        <div class="field"><label>Religion</label><input name="religion" value="${v('religion')}" /></div>
+        <div class="field"><label>Caste</label><input name="caste" value="${v('caste')}" /></div>
+        <div class="field"><label>Mother tongue</label><input name="motherTongue" value="${v('motherTongue','Hindi')}" /></div>
+        <div class="field"><label>Nationality</label><input name="nationality" value="${v('nationality','Indian')}" /></div>
+        <div class="field"><label>Category (ST/SC/OBC/GEN)</label><select name="category">${['General','OBC','SC','ST'].map(c=>`<option ${s?.category===c?'selected':''}>${c}</option>`).join('')}</select></div>
+        <div class="field span2"><label>Name of last school attended</label><input name="previousSchool" value="${v('previousSchool')}" /></div>
+        <div class="field"><label>Result of last examination</label><input name="previousResult" value="${v('previousResult')}" /></div>
+        <div class="field"><label>Previous class</label><input name="previousClassStudied" value="${v('previousClassStudied')}" /></div>
+        <div class="field"><label>Previous session</label><input name="previousSession" value="${v('previousSession')}" /></div>
+
+        <div class="section-title">For Office Use</div>
+        <div class="field"><label>Class</label><select name="cls" required>
+          <option value="">Select class</option>
+          ${CLASS_LEVELS.map(c=>`<option value="${c}" ${s?.cls===c?'selected':''}>${c}${BOARD_CLASSES.includes(c)?' (Board class)':''}</option>`).join('')}
+        </select></div>
+        <div class="field"><label>Section</label><input name="section" value="${v('section')}" placeholder="e.g. B" required /></div>
+        <div class="field"><label>Admission date</label><input type="date" name="admissionDate" value="${s?.admissionDate||todayIso()}" required /></div>
+        <div class="field"><label>Admission Fees</label><input name="admissionFeesPaid" value="${v('admissionFeesPaid')}" /></div>
+        <div class="field"><label>1 Year's Fees</label><input name="yearlyFeesPaid" value="${v('yearlyFeesPaid')}" /></div>
+
+        <div class="section-title">Photo &amp; documents</div>
+        <div class="field">
+          <label>Passport size photo</label>
+          ${photoPreview}
+          <input type="file" name="photoFile" accept="image/*" />
+        </div>
+        <div class="field">
+          <label>Upload document</label>
+          <input type="file" name="documentFile" />
+          ${docNote}
+          <p style="font-size:11px;color:var(--ink-soft);margin:4px 0 0;">e.g. birth certificate, transfer certificate</p>
+        </div>
+
+        ${!isNew ? `
+        <div class="section-title">Additional details</div>
+        <div class="field"><label>Gender</label><select name="gender">${['Female','Male','Other'].map(g=>`<option ${s?.gender===g?'selected':''}>${g}</option>`).join('')}</select></div>
+        <div class="field"><label>Blood group</label><input name="bloodGroup" value="${v('bloodGroup')}" /></div>
+        <div class="field"><label>Weight (kg)</label><input name="weight" value="${v('weight')}" /></div>
+        <div class="field"><label>Height (cm)</label><input name="height" value="${v('height')}" /></div>
+        <div class="field"><label>Roll number</label><input name="rollNumber" value="${v('rollNumber')}" /></div>
+        <div class="field"><label>Current session</label><input name="session" value="${v('session', currentAcademicYear())}" placeholder="e.g. 2026-27" /></div>
+        <div class="field"><label>Status</label><select name="status"><option value="active" ${(!s||s.status==='active')?'selected':''}>Active</option><option value="inactive" ${s?.status==='inactive'?'selected':''}>Inactive</option></select></div>
+        <div class="field"><label>Email</label><input type="email" name="email" value="${v('email')}" /></div>
+        <div class="field"><label>City</label><input name="city" value="${v('city')}" /></div>
+        <div class="field"><label>Pin code</label><input name="pincode" value="${v('pincode')}" /></div>
+
+        <div class="section-title">Government IDs</div>
+        <div class="field"><label>Student's SSSM ID (family)</label><input name="familySSSM" value="${v('familySSSM')}" /></div>
+        <div class="field"><label>Student's PEN card</label><input name="studentPEN" value="${v('studentPEN')}" /></div>
+        <div class="field span2"><label>Student's APAR ID</label><input name="studentAPAR" value="${v('studentAPAR')}" /></div>
+        <div class="field"><label>Father's Aadhar no.</label><input name="fatherAadhar" value="${v('fatherAadhar')}" /></div>
+        <div class="field"><label>Mother's Aadhar no.</label><input name="motherAadhar" value="${v('motherAadhar')}" /></div>
+
+        <div class="section-title">Parent / guardian (additional)</div>
+        <div class="field"><label>Father's phone</label><input name="fatherPhone" value="${v('fatherPhone')}" /></div>
+        <div class="field"><label>Mother's phone</label><input name="motherPhone" value="${v('motherPhone')}" /></div>
+        <div class="field"><label>Guardian's name</label><input name="guardianName" value="${v('guardianName')}" /></div>
+        <div class="field"><label>Relationship with student</label><input name="guardianRelation" value="${v('guardianRelation')}" /></div>
+        <div class="field span2"><label>Guardian's phone</label><input name="guardianPhone" value="${v('guardianPhone')}" /></div>
+
+        <div class="section-title">Bank details</div>
+        <div class="field"><label>Student's bank account no.</label><input name="bankAccountNumber" value="${v('bankAccountNumber')}" /></div>
+        <div class="field"><label>Bank name</label><input name="bankName" value="${v('bankName')}" /></div>
+        <div class="field span2"><label>IFSC code</label><input name="ifscCode" value="${v('ifscCode')}" /></div>
+
+        <div class="section-title">Transport</div>
+        <div class="field span2"><label>Mode of transport</label>
+          <select name="transportMode">${['Student itself','By the parent','Picked up by named person','School driver'].map(t=>`<option ${s?.transportMode===t?'selected':''}>${t}</option>`).join('')}</select>
+        </div>
+        <div class="field"><label>Picked up by — name</label><input name="pickupPersonName" value="${v('pickupPersonName')}" placeholder="if not the parent" /></div>
+        <div class="field"><label>Picked up by — phone</label><input name="pickupPersonPhone" value="${v('pickupPersonPhone')}" /></div>
+        <div class="field"><label>Driver's name</label><input name="driverName" value="${v('driverName')}" placeholder="if using school transport" /></div>
+        <div class="field"><label>Driver's phone</label><input name="driverPhone" value="${v('driverPhone')}" /></div>
+        <div class="field span2"><label>Vehicle no.</label><input name="vehicleNumber" value="${v('vehicleNumber')}" /></div>
+        ` : `
+        <div class="section-title">More details</div>
+        <p style="grid-column:1/-1;font-size:12px;color:var(--ink-soft);margin:0;">Roll number, gender, blood group, transport, bank details, and other records become editable once this student is saved — open their profile and click <strong>Edit</strong> afterward.</p>
+        `}
+
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">${s?'Save changes':'Add student'}</button>
+      </div>
+    </form>`);
+  document.getElementById('studentForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const fd = Object.fromEntries(new FormData(e.target).entries());
+    const photoFile = e.target.elements.namedItem('photoFile').files[0];
+    const docFile = e.target.elements.namedItem('documentFile').files[0];
+    delete fd.photoFile;
+    delete fd.documentFile;
+    fd.photo = photoFile ? await fileToBase64(photoFile) : (s ? s.photo : null);
+    if(docFile){
+      fd.documentBase64 = await fileToBase64(docFile);
+      fd.documentName = docFile.name;
+    } else if(s){
+      fd.documentBase64 = s.documentBase64;
+      fd.documentName = s.documentName;
+    }
+
+    let newStudentId = null;
+    if(s){
+      Object.assign(s, fd);
+    } else {
+      const year = fd.admissionDate ? fd.admissionDate.slice(0,4) : new Date().getFullYear();
+      fd.id = uid('stu');
+      fd.admissionNumber = 'CND/' + year + '/' + String(students.length+1).padStart(3,'0');
+      fd.status = 'active';
+      fd.tc = {issued:false};
+      students.push(fd);
+      newStudentId = fd.id;
+    }
+    if(newStudentId && pendingConversion){
+      const enq = enquiries.find(x=>x.id===pendingConversion);
+      if(enq){ enq.status = 'admitted'; enq.convertedStudentId = newStudentId; }
+    }
+    pendingConversion = null;
+    saveAll();
+    closeModal();
+    if(newStudentId) goToStudent(newStudentId);
+    else if(view.name==='studentDetail' && s) renderStudentDetail(document.getElementById('topbar'),document.getElementById('content'), s.id);
+    else renderStudents(document.getElementById('topbar'),document.getElementById('content'));
+  });
+}
+function deleteStudent(id){
+  if(!confirm('Delete this student record? This cannot be undone.')) return;
+  students = students.filter(s=>s.id!==id);
+  saveAll();
+  goTo('students');
+}
+
+/* ---------------- student detail + TC ---------------- */
+function renderStudentDetail(topbar, content, id){
+  const s = students.find(x=>x.id===id);
+  if(!s){ content.innerHTML = `<div class="empty">Student not found.</div>`; return; }
+
+  topbar.innerHTML = `
+    <div>
+      <button class="btn btn-secondary btn-sm" onclick="goTo('students')" style="margin-bottom:8px;">&larr; All students</button>
+      <h1>${escapeHtml(s.firstName)} ${escapeHtml(s.lastName)}</h1>
+      <p>Class ${escapeHtml(s.cls)}${escapeHtml(s.section)} · Roll ${escapeHtml(s.rollNumber||'—')}</p>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-secondary" onclick="openStudentModal('${s.id}')">Edit</button>
+      <button class="btn btn-danger" onclick="deleteStudent('${s.id}')">Delete</button>
+    </div>`;
+
+  const g2 = (...pairs) => `<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:13px;">${pairs.map(([l,v])=>detailField(l,v||'—')).join('')}</div>`;
+
+  content.innerHTML = `
+    <div class="detail-layout">
+      <div class="stack">
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:12px;">
+            ${avatarHtml(s.photo, s.firstName, s.lastName, 48)}
+            <div>
+              <p style="font-family:'Newsreader',serif;font-size:18px;margin:0;">${escapeHtml(s.firstName)} ${escapeHtml(s.lastName)}</p>
+              <span class="record-tag">${escapeHtml(s.admissionNumber)}</span>
+            </div>
+            <div style="margin-left:auto;">${statusPill(s.status)}</div>
+          </div>
+          <div style="margin-top:18px;">
+            ${g2(['Date of birth', formatDate(s.dob)], ['Place of birth', escapeHtml(s.placeOfBirth)],
+                 ['Gender', escapeHtml(s.gender)], ['Blood group', escapeHtml(s.bloodGroup)],
+                 ['Nationality', escapeHtml(s.nationality)], ['Religion', escapeHtml(s.religion)],
+                 ['Caste', escapeHtml(s.caste)], ['Category', escapeHtml(s.category)],
+                 ['Mother tongue', escapeHtml(s.motherTongue)], ['Weight / Height', (s.weight?s.weight+' kg':'—')+' / '+(s.height?s.height+' cm':'—')])}
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <h2 style="font-size:16px;">Fees</h2>
+            <div style="display:flex;gap:8px;">
+              <button class="btn btn-secondary btn-sm" onclick="printStudentFeeRecord('${s.id}')">Print Fee Record</button>
+              <button class="btn btn-secondary btn-sm" onclick="openFeeModal(null,'${s.id}')">+ Add fee record</button>
+            </div>
+          </div>
+          ${(() => {
+            const rows = fees.filter(f=>f.studentId===s.id).sort((a,b)=>(a.dueDate||'').localeCompare(b.dueDate||''));
+            const totalDue = rows.reduce((sum,f)=>sum+(Number(f.amountDue)||0),0);
+            const totalPaid = rows.reduce((sum,f)=>sum+(Number(f.amountPaid)||0),0);
+            const totalRemaining = Math.max(0, totalDue-totalPaid);
+            const summary = `
+              <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0 6px;">
+                <div style="text-align:center;background:var(--surface-alt);border-radius:8px;padding:10px;">
+                  <div style="font-size:10px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);">Total</div>
+                  <div style="font-family:'Newsreader',serif;font-size:20px;">${money(totalDue)}</div>
+                </div>
+                <div style="text-align:center;background:var(--good-soft);border-radius:8px;padding:10px;">
+                  <div style="font-size:10px;text-transform:uppercase;letter-spacing:.03em;color:var(--good);">Paid</div>
+                  <div style="font-family:'Newsreader',serif;font-size:20px;color:var(--good);">${money(totalPaid)}</div>
+                </div>
+                <div style="text-align:center;background:var(--bad-soft);border-radius:8px;padding:10px;">
+                  <div style="font-size:10px;text-transform:uppercase;letter-spacing:.03em;color:var(--bad);">Remaining</div>
+                  <div style="font-family:'Newsreader',serif;font-size:20px;color:var(--bad);">${money(totalRemaining)}</div>
+                </div>
+              </div>`;
+            if(rows.length===0) return summary + `<p style="font-size:13px;color:var(--ink-soft);margin-top:6px;">No fee records yet.</p>`;
+            return summary + `<div style="margin-top:6px;font-size:13px;">${rows.map(f => `
+              <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--line);">
+                <div>
+                  <span style="font-weight:500;">${escapeHtml(f.particulars)}</span>
+                  <span style="color:var(--ink-soft);"> · ${escapeHtml(f.session)}${f.paymentMode?' · '+escapeHtml(f.paymentMode):''}</span>
+                  <div style="color:var(--ink-soft);font-size:12px;">${money(f.amountPaid)} of ${money(f.amountDue)} · due ${formatDate(f.dueDate)}</div>
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;">
+                  ${feeStatusPill(f)}
+                  <button class="btn btn-secondary btn-sm" onclick="openFeeModal('${f.id}')">Edit</button>
+                </div>
+              </div>`).join('')}</div>`;
+          })()}
+        </div>
+
+        <div class="card">
+          <h2 style="font-size:16px;">Academic</h2>
+          <div style="margin-top:12px;">
+            ${g2(['Class / Section', escapeHtml(s.cls)+escapeHtml(s.section)], ['Roll number', escapeHtml(s.rollNumber)],
+                 ['Medium', escapeHtml(s.medium)], ['Session', escapeHtml(s.session)],
+                 ['Admission date', formatDate(s.admissionDate)], ['Fees paid (admission / yearly)', (s.admissionFeesPaid||'—')+' / '+(s.yearlyFeesPaid||'—')],
+                 ['Previous school', escapeHtml(s.previousSchool)], ['Previous class / session', escapeHtml(s.previousClassStudied)+(s.previousSession?' · '+escapeHtml(s.previousSession):'')],
+                 ['Result of last exam', escapeHtml(s.previousResult)], ['', ''])}
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 style="font-size:16px;">Contact &amp; address</h2>
+          <div style="margin-top:12px;">
+            ${g2(['Phone', escapeHtml(s.phone)], ['WhatsApp', escapeHtml(s.whatsapp)],
+                 ['Email', escapeHtml(s.email)], ['City / Pin code', escapeHtml(s.city)+(s.pincode?' · '+escapeHtml(s.pincode):'')])}
+            ${detailField('Address', escapeHtml(s.address)||'—')}
+            ${s.permanentAddress ? detailField('Permanent address', escapeHtml(s.permanentAddress)) : ''}
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 style="font-size:16px;">Parent / guardian</h2>
+          <div style="margin-top:12px;">
+            ${g2(['Father', s.fatherName?escapeHtml(s.fatherName)+(s.fatherPhone?' · '+escapeHtml(s.fatherPhone):''):'—'],
+                 ['Father — education / occupation', escapeHtml(s.fatherEducation)+(s.fatherOccupation?' · '+escapeHtml(s.fatherOccupation):'')],
+                 ['Mother', s.motherName?escapeHtml(s.motherName)+(s.motherPhone?' · '+escapeHtml(s.motherPhone):''):'—'],
+                 ['Mother — education / occupation', escapeHtml(s.motherEducation)+(s.motherOccupation?' · '+escapeHtml(s.motherOccupation):'')],
+                 ['Guardian', s.guardianName?escapeHtml(s.guardianName)+(s.guardianRelation?' ('+escapeHtml(s.guardianRelation)+')':''):'—'],
+                 ['Guardian phone', escapeHtml(s.guardianPhone)])}
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 style="font-size:16px;">Government IDs &amp; bank</h2>
+          <div style="margin-top:12px;">
+            ${g2(["Student's Aadhar", escapeHtml(s.studentAadhar)], ['SSSM ID (student / family)', (s.studentSSSM||'—')+' / '+(s.familySSSM||'—')],
+                 ['PEN card', escapeHtml(s.studentPEN)], ['APAR ID', escapeHtml(s.studentAPAR)],
+                 ["Father's Aadhar", escapeHtml(s.fatherAadhar)], ["Mother's Aadhar", escapeHtml(s.motherAadhar)],
+                 ['Bank account', escapeHtml(s.bankAccountNumber)], ['Bank / IFSC', (s.bankName?escapeHtml(s.bankName):'—')+(s.ifscCode?' · '+escapeHtml(s.ifscCode):'')])}
+          </div>
+        </div>
+
+        <div class="card">
+          <h2 style="font-size:16px;">Transport</h2>
+          <div style="margin-top:12px;">
+            ${g2(['Mode', escapeHtml(s.transportMode)], ['Picked up by', s.pickupPersonName?escapeHtml(s.pickupPersonName)+(s.pickupPersonPhone?' · '+escapeHtml(s.pickupPersonPhone):''):'—'],
+                 ["Driver", s.driverName?escapeHtml(s.driverName)+(s.driverPhone?' · '+escapeHtml(s.driverPhone):''):'—'], ['Vehicle no.', escapeHtml(s.vehicleNumber)])}
+          </div>
+        </div>
+      </div>
+
+      <div class="stack">
+        <div class="card">
+          <h2 style="font-size:16px;">Admission Form</h2>
+          <p style="font-size:13px;color:var(--ink-soft);margin:4px 0 16px;">Prints a filled copy of the school's admission form for this student's file.</p>
+          <button class="btn btn-primary btn-block" onclick="printAdmissionForm('${s.id}')">Print Admission Form</button>
+        </div>
+
+        <div class="card">
+          <h2 style="font-size:16px;">Transfer Certificate</h2>
+          ${s.tc && s.tc.issued ? `
+            <p style="font-size:12px;color:var(--ink-soft);margin:4px 0 14px;">Issued ${formatDate(s.tc.issueDate)} · <span class="record-tag">${escapeHtml(s.tc.tcNumber)}</span></p>
+            <div style="font-size:13px;display:grid;gap:8px;margin-bottom:16px;">
+              ${detailField('Reason for leaving', s.tc.reasonForLeaving||'—')}
+              ${detailField('Last class studied', s.tc.lastClassStudied||'—')}
+              ${detailField('Promotion status', s.tc.promotionStatus||'—')}
+              ${detailField('Conduct', s.tc.conductRemark||'—')}
+              ${detailField('Attendance', (s.tc.daysPresent||'—')+' / '+(s.tc.workingDays||'—')+' working days')}
+            </div>
+            <button class="btn btn-primary btn-block" onclick="printTC('${s.id}')">Print TC</button>
+          ` : `
+            <p style="font-size:13px;color:var(--ink-soft);margin:4px 0 16px;">No TC issued yet. Filling this in marks the student as left and produces a printable certificate.</p>
+            <button class="btn btn-primary btn-block" onclick="openTCModal('${s.id}')">Generate TC</button>
+          `}
+        </div>
+      </div>
+    </div>`;
+}
+function detailField(label, value){
+  return `<div><div style="font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);">${label}</div><div style="margin-top:2px;">${value}</div></div>`;
+}
+
+function openTCModal(studentId){
+  const s = students.find(x=>x.id===studentId);
+  openModal(`
+    <div class="modal-head"><h2 style="font-size:18px;">Generate Transfer Certificate</h2><button onclick="closeModal()">&times;</button></div>
+    <p style="font-size:13px;color:var(--ink-soft);margin:-8px 0 16px;">For ${escapeHtml(s.firstName)} ${escapeHtml(s.lastName)} · ${escapeHtml(s.admissionNumber)}</p>
+    <form id="tcForm">
+      <div class="form-grid">
+        <div class="field"><label>Date of issue</label><input type="date" name="issueDate" value="${todayIso()}" required /></div>
+        <div class="field"><label>Last class studied</label><input name="lastClassStudied" value="${escapeHtml(s.cls)}" required /></div>
+        <div class="field span2"><label>Reason for leaving</label><input name="reasonForLeaving" placeholder="e.g. Family relocation" required /></div>
+        <div class="field"><label>Promotion status</label><input name="promotionStatus" placeholder="e.g. Promoted to Class 6" /></div>
+        <div class="field"><label>General conduct</label>
+          <select name="conductRemark">
+            <option>Good</option><option>Very good</option><option>Satisfactory</option>
+          </select>
+        </div>
+        <div class="field"><label>Working days</label><input type="number" name="workingDays" min="0" /></div>
+        <div class="field"><label>Days present</label><input type="number" name="daysPresent" min="0" /></div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Generate &amp; print</button>
+      </div>
+    </form>`);
+  document.getElementById('tcForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const fd = Object.fromEntries(new FormData(e.target).entries());
+    const year = fd.issueDate.slice(0,4);
+    const seq = students.filter(x=>x.tc && x.tc.issued).length + 1;
+    s.tc = { issued:true, tcNumber:'TC/'+year+'/'+String(seq).padStart(3,'0'), ...fd };
+    s.status = 'tc_issued';
+    saveAll();
+    closeModal();
+    renderStudentDetail(document.getElementById('topbar'),document.getElementById('content'), s.id);
+    printTC(s.id);
+  });
+}
+function printTC(studentId){
+  const s = students.find(x=>x.id===studentId);
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html><head><title>TC — ${escapeHtml(s.firstName)} ${escapeHtml(s.lastName)}</title>
+  <style>
+    body{font-family:Georgia,serif;color:#1e2a38;max-width:720px;margin:40px auto;padding:0 24px;}
+    h1{font-size:22px;text-align:center;margin-bottom:2px;}
+    .addr{text-align:center;font-size:13px;color:#5b6472;margin-bottom:4px;}
+    .title{text-align:center;text-decoration:underline;margin:24px 0;font-size:16px;letter-spacing:.05em;}
+    .meta{display:flex;justify-content:space-between;font-size:13px;margin-bottom:20px;}
+    table{width:100%;border-collapse:collapse;font-size:14px;}
+    td{padding:8px 4px;border-bottom:1px solid #dedacb;}
+    td.k{color:#5b6472;width:55%;}
+    .sign{display:flex;justify-content:space-between;margin-top:70px;font-size:13px;}
+    .sign div{border-top:1px solid #1e2a38;padding-top:6px;width:180px;text-align:center;}
+    @media print{ body{margin:0 auto;} }
+  </style></head><body>
+    <img src="${LOGO_DATA_URI}" alt="" style="height:48px;display:block;margin:0 auto 6px;" />
+    <h1>${escapeHtml(SCHOOL_NAME)}</h1>
+    <p class="addr">${escapeHtml(SCHOOL_ADDRESS)}</p>
+    <p class="title">Transfer Certificate</p>
+    <div class="meta"><span>TC No: ${escapeHtml(s.tc.tcNumber)}</span><span>Date: ${formatDate(s.tc.issueDate)}</span></div>
+    <table>
+      <tr><td class="k">Student's name</td><td>${escapeHtml(s.firstName)} ${escapeHtml(s.lastName)}</td></tr>
+      <tr><td class="k">Father's / Guardian's name</td><td>${escapeHtml(s.fatherName||'—')}</td></tr>
+      <tr><td class="k">Mother's name</td><td>${escapeHtml(s.motherName||'—')}</td></tr>
+      <tr><td class="k">Scholar no.</td><td>${escapeHtml(s.admissionNumber)}</td></tr>
+      <tr><td class="k">Date of birth</td><td>${formatDate(s.dob)}</td></tr>
+      <tr><td class="k">Date of admission</td><td>${formatDate(s.admissionDate)}</td></tr>
+      <tr><td class="k">Last class studied</td><td>${escapeHtml(s.tc.lastClassStudied||'—')}</td></tr>
+      <tr><td class="k">Promotion status</td><td>${escapeHtml(s.tc.promotionStatus||'—')}</td></tr>
+      <tr><td class="k">Working days / days present</td><td>${escapeHtml(s.tc.workingDays||'—')} / ${escapeHtml(s.tc.daysPresent||'—')}</td></tr>
+      <tr><td class="k">General conduct</td><td>${escapeHtml(s.tc.conductRemark||'—')}</td></tr>
+      <tr><td class="k">Reason for leaving</td><td>${escapeHtml(s.tc.reasonForLeaving||'—')}</td></tr>
+      <tr><td class="k">Date of leaving</td><td>${formatDate(s.tc.issueDate)}</td></tr>
+    </table>
+    <div class="sign"><div>Class Teacher</div><div>Principal</div></div>
+    <script>window.onload = () => window.print();<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+function printAdmissionForm(studentId){
+  const s = students.find(x=>x.id===studentId);
+  const win = window.open('', '_blank');
+  const row = (num, label, value) => `<tr><td class="num">${num}.</td><td class="lbl">${label}</td><td class="val">${value}</td></tr>`;
+  win.document.write(`<!DOCTYPE html><html><head><title>Admission Form — ${escapeHtml(s.firstName)} ${escapeHtml(s.lastName)}</title>
+  <style>
+    body{font-family:Georgia,serif;color:#1e2a38;max-width:760px;margin:30px auto;padding:0 24px 40px;}
+    .frame{border:2px solid #1e2a38;padding:22px 26px;}
+    h1{font-size:22px;text-align:center;margin:0;}
+    .addr{text-align:center;font-size:13px;color:#5b6472;margin:4px 0 0;}
+    .topline{display:flex;justify-content:space-between;font-size:13px;margin:16px 0 4px;}
+    .titlebox{text-align:center;background:#1e2a38;color:#fff;display:inline-block;padding:4px 22px;font-size:14px;letter-spacing:.04em;margin:8px 0;}
+    .titlewrap{text-align:center;}
+    table.fields{width:100%;border-collapse:collapse;font-size:13px;margin-top:10px;}
+    table.fields td{padding:7px 4px;border-bottom:1px dotted #b9b3a2;vertical-align:top;}
+    td.num{width:20px;color:#5b6472;}
+    td.lbl{width:230px;color:#5b6472;}
+    td.val{font-weight:500;}
+    .decl{font-size:12px;margin-top:18px;line-height:1.5;}
+    .sign{display:flex;justify-content:space-between;margin-top:36px;font-size:13px;}
+    .office{border:1px solid #1e2a38;margin-top:26px;padding:14px 16px;}
+    .office h3{margin:0 0 10px;font-size:13px;text-transform:uppercase;letter-spacing:.04em;}
+    .checks{display:flex;gap:26px;font-size:13px;margin-bottom:12px;}
+    .box{display:inline-block;width:14px;height:14px;border:1px solid #1e2a38;text-align:center;line-height:14px;margin-right:5px;font-size:11px;}
+    .office table{width:100%;border-collapse:collapse;font-size:13px;}
+    .office td{padding:5px 4px;}
+    @media print{ body{margin:0 auto;} }
+  </style></head><body>
+    <div class="frame">
+      <img src="${LOGO_DATA_URI}" alt="" style="height:48px;display:block;margin:0 auto 6px;" />
+      <h1>${escapeHtml(SCHOOL_NAME.toUpperCase())}</h1>
+      <p class="addr">${escapeHtml(SCHOOL_ADDRESS.toUpperCase())} ${SCHOOL_PHONE ? '· ' + escapeHtml(SCHOOL_PHONE) : ''}</p>
+      <div class="topline"><span>Scholar no. ${escapeHtml(s.admissionNumber)}</span><span>${escapeHtml(s.medium||'English Medium')}</span></div>
+      <div class="topline" style="margin-top:0;"><span>SSSM ID ${escapeHtml(s.studentSSSM||'—')}</span><span>ADHAR NO. ${escapeHtml(s.studentAadhar||'—')}</span></div>
+      <div class="titlewrap"><span class="titlebox">Admission Form</span></div>
+      <table class="fields">
+        ${row(1, 'NAME OF THE STUDENT', escapeHtml(s.firstName)+' '+escapeHtml(s.lastName))}
+        ${row(2, "FATHER'S NAME", 'Mr. '+escapeHtml(s.fatherName||'—'))}
+        ${row(3, "MOTHER'S NAME", 'Mrs. '+escapeHtml(s.motherName||'—'))}
+        ${row(4, 'DATE OF BIRTH (figure / words)', formatDate(s.dob)+' / '+dateInWords(s.dob))}
+        ${row(5, 'PLACE OF BIRTH', escapeHtml(s.placeOfBirth||'—')+' (enclose birth certificate)')}
+        ${row(6, "FATHER'S EDU. / OCCUPATION", (s.fatherEducation||'—')+' / '+(s.fatherOccupation||'—'))}
+        ${row(7, "MOTHER'S EDU. / OCCUPATION", (s.motherEducation||'—')+' / '+(s.motherOccupation||'—'))}
+        ${row(8, "PARENT'S / GUARDIAN'S ADDRESS · WHATSAPP", (s.address||'—')+' · '+(s.whatsapp||'—'))}
+        ${row(9, 'PERMANENT ADDRESS · MOB', (s.permanentAddress||s.address||'—')+' · '+(s.phone||'—'))}
+        ${row(10, 'RELIGION · CASTE · MOTHER TONGUE · NATIONALITY', (s.religion||'—')+' · '+(s.caste||'—')+' · '+(s.motherTongue||'Hindi')+' · '+(s.nationality||'Indian'))}
+        ${row(11, 'BELONGING TO ST/SC/OBC/GEN.', escapeHtml(s.category||'—'))}
+        ${row(12, 'NAME OF LAST SCHOOL ATTENDED', escapeHtml(s.previousSchool||'—'))}
+        ${row(13, 'RESULT OF LAST EXAM · CLASS · SESSION', (s.previousResult||'—')+' · '+(s.previousClassStudied||'—')+' · '+(s.previousSession||'—'))}
+      </table>
+      <p class="decl">I Certify that the above information given by me are true and correct. I'll agree to accept any decision taken by School Authorities.</p>
+      <div class="sign"><span>Date: ${formatDate(todayIso())}</span><span>Signature Parents/Guardians: ___________________</span></div>
+
+      <div class="office">
+        <h3>For Office Use Only</h3>
+        <div class="checks">
+          <span><span class="box">&#10003;</span>Admitted</span>
+          <span><span class="box"></span>Provisionally Admitted</span>
+          <span><span class="box"></span>Not Admitted</span>
+        </div>
+        <table>
+          <tr><td>Name: ${escapeHtml(s.firstName)} ${escapeHtml(s.lastName)}</td><td>Father's Name: ${escapeHtml(s.fatherName||'—')}</td></tr>
+          <tr><td>Class: ${escapeHtml(s.cls)}</td><td>Section: ${escapeHtml(s.section)}</td></tr>
+          <tr><td>Sch. No.: ${escapeHtml(s.admissionNumber)}</td><td>Date: ${formatDate(s.admissionDate)}</td></tr>
+          <tr><td>Admission Fees: ${escapeHtml(s.admissionFeesPaid||'—')}</td><td>1 Year's Fees: ${escapeHtml(s.yearlyFeesPaid||'—')}</td></tr>
+        </table>
+        <div class="sign" style="margin-top:26px;"><span></span><span>Principal Signature: ___________________</span></div>
+      </div>
+    </div>
+    <script>window.onload = () => window.print();<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+/* ---------------- enquiries ---------------- */
+function renderEnquiries(topbar, content){
+  topbar.innerHTML = `
+    <div><h1>Enquiries</h1><p>Every prospective admission from first contact onward.</p></div>
+    <button class="btn btn-primary" onclick="openEnquiryModal()">+ Add enquiry</button>`;
+
+  const sorted = [...enquiries].sort((a,b)=> new Date(b.createdAt)-new Date(a.createdAt));
+
+  content.innerHTML = sorted.length===0 ? `<div class="table-wrap"><div class="empty">No enquiries yet. Log your first walk-in or call above.</div></div>` : `
+    <div class="table-wrap"><table>
+      <thead><tr><th>Child</th><th>Applying for</th><th>Parent</th><th>Next follow-up</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        ${sorted.map(e => `
+          <tr>
+            <td style="font-weight:500;">${escapeHtml(e.childName)}</td>
+            <td style="color:var(--ink-soft);">${escapeHtml(e.classApplyingFor)}</td>
+            <td style="color:var(--ink-soft);">${escapeHtml(e.parentName)}<br/><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;">${escapeHtml(e.parentPhone)}</span></td>
+            <td style="color:var(--ink-soft);">${formatDate(e.nextFollowUpDate)}</td>
+            <td>
+              <select onchange="updateEnquiryStatus('${e.id}', this.value)" style="border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:12px;">
+                ${Object.keys(STAGE_LABELS).map(k=>`<option value="${k}" ${e.status===k?'selected':''}>${STAGE_LABELS[k]}</option>`).join('')}
+              </select>
+            </td>
+            <td style="text-align:right;white-space:nowrap;">
+              <button class="btn btn-secondary btn-sm" onclick="openFollowUpModal('${e.id}')">Follow-up</button>
+              ${e.status!=='admitted' ? `<button class="btn btn-secondary btn-sm" onclick="openStudentModal(null); prefillFromEnquiry('${e.id}')">Convert</button>` : ''}
+              <button class="btn btn-danger btn-sm" onclick="deleteEnquiry('${e.id}')">Delete</button>
+            </td>
+          </tr>`).join('')}
+      </tbody>
+    </table></div>`;
+}
+function updateEnquiryStatus(id, status){
+  const e = enquiries.find(x=>x.id===id);
+  e.status = status;
+  saveAll();
+  renderEnquiries(document.getElementById('topbar'),document.getElementById('content'));
+}
+function deleteEnquiry(id){
+  if(!confirm('Delete this enquiry?')) return;
+  enquiries = enquiries.filter(e=>e.id!==id);
+  saveAll();
+  renderEnquiries(document.getElementById('topbar'),document.getElementById('content'));
+}
+function openEnquiryModal(){
+  openModal(`
+    <div class="modal-head"><h2 style="font-size:18px;">Add enquiry</h2><button onclick="closeModal()">&times;</button></div>
+    <form id="enquiryForm">
+      <div class="form-grid">
+        <div class="field span2"><label>Child's name</label><input name="childName" required /></div>
+        <div class="field"><label>Date of birth</label><input type="date" name="dob" /></div>
+        <div class="field"><label>Class applying for</label><input name="classApplyingFor" required /></div>
+        <div class="field"><label>Parent's name</label><input name="parentName" required /></div>
+        <div class="field"><label>Parent's phone</label><input name="parentPhone" required /></div>
+        <div class="field"><label>Source</label>
+          <select name="source"><option>Walk-in</option><option>Phone</option><option>Referral</option><option>Website</option><option>Social media</option></select>
+        </div>
+        <div class="field"><label>Next follow-up date</label><input type="date" name="nextFollowUpDate" /></div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Add enquiry</button>
+      </div>
+    </form>`);
+  document.getElementById('enquiryForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const fd = Object.fromEntries(new FormData(e.target).entries());
+    fd.id = uid('enq');
+    fd.enquiryNumber = 'ENQ-' + new Date().getFullYear() + '-' + String(enquiries.length+1).padStart(3,'0');
+    fd.status = 'new';
+    fd.followUps = [];
+    fd.convertedStudentId = null;
+    fd.createdAt = new Date().toISOString();
+    enquiries.push(fd);
+    saveAll();
+    closeModal();
+    renderEnquiries(document.getElementById('topbar'),document.getElementById('content'));
+  });
+}
+function openFollowUpModal(enquiryId){
+  const e = enquiries.find(x=>x.id===enquiryId);
+  openModal(`
+    <div class="modal-head"><h2 style="font-size:18px;">Log a follow-up</h2><button onclick="closeModal()">&times;</button></div>
+    <p style="font-size:13px;color:var(--ink-soft);margin:-8px 0 16px;">${escapeHtml(e.childName)}</p>
+    ${e.followUps.length ? `<div style="margin-bottom:16px;max-height:160px;overflow:auto;">${e.followUps.slice().reverse().map(f=>`
+      <div style="font-size:13px;padding:8px 0;border-top:1px solid var(--line);"><strong>${formatDate(f.date)}</strong> — ${escapeHtml(f.note)}</div>`).join('')}</div>` : ''}
+    <form id="followUpForm">
+      <div class="field"><label>Date</label><input type="date" name="date" value="${todayIso()}" required /></div>
+      <div class="field"><label>Note</label><textarea name="note" rows="3" required></textarea></div>
+      <div class="field"><label>Next follow-up date</label><input type="date" name="nextFollowUpDate" value="${e.nextFollowUpDate||''}" /></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>`);
+  document.getElementById('followUpForm').addEventListener('submit', function(ev){
+    ev.preventDefault();
+    const fd = Object.fromEntries(new FormData(ev.target).entries());
+    e.followUps.push({date:fd.date, note:fd.note});
+    e.nextFollowUpDate = fd.nextFollowUpDate || '';
+    saveAll();
+    closeModal();
+    renderEnquiries(document.getElementById('topbar'),document.getElementById('content'));
+  });
+}
+var pendingConversion = null;
+function prefillFromEnquiry(enquiryId){
+  pendingConversion = enquiryId;
+  const e = enquiries.find(x=>x.id===enquiryId);
+  const parts = e.childName.trim().split(' ');
+  const form = document.getElementById('studentForm');
+  const set = (name, val) => { const el = form.elements.namedItem(name); if(el) el.value = val; };
+  set('firstName', parts[0] || '');
+  set('lastName', parts.slice(1).join(' ') || '');
+  set('dob', e.dob || '');
+  set('cls', e.classApplyingFor || '');
+  set('fatherName', e.parentName || '');
+  set('phone', e.parentPhone || '');
+  set('whatsapp', e.parentPhone || '');
+}
+
+/* ---------------- staff ---------------- */
+function renderStaff(topbar, content){
+  topbar.innerHTML = `
+    <div><h1>Staff Directory</h1><p>${staffList.length} staff on record</p></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-secondary" onclick="exportStaffExcel()">Download Excel</button>
+      <button class="btn btn-secondary" onclick="printStaff()">Print List</button>
+      <button class="btn btn-primary" onclick="openStaffModal()">+ Add staff</button>
+    </div>`;
+
+  content.innerHTML = staffList.length===0 ? `<div class="table-wrap"><div class="empty">No staff added yet.</div></div>` : `
+    <div class="staff-grid">
+      ${staffList.map(m => `
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:10px;">
+            ${avatarHtml(m.photo, m.firstName, m.lastName, 40)}
+            <div style="min-width:0;">
+              <p style="margin:0;font-weight:500;">${escapeHtml(m.firstName)} ${escapeHtml(m.lastName)}</p>
+              <p style="margin:1px 0 0;font-size:12px;color:var(--ink-soft);">${escapeHtml(m.role)}${m.department?' · '+escapeHtml(m.department):''}</p>
+            </div>
+          </div>
+          <div style="margin-top:14px;font-size:12px;color:var(--ink-soft);display:grid;gap:5px;">
+            <div style="display:flex;justify-content:space-between;"><span>Employee ID</span><span class="record-tag">${escapeHtml(m.employeeId)}</span></div>
+            ${m.phone?`<div style="display:flex;justify-content:space-between;"><span>Phone</span><span style="font-family:'IBM Plex Mono',monospace;color:var(--ink);">${escapeHtml(m.phone)}</span></div>`:''}
+            <div style="display:flex;justify-content:space-between;align-items:center;"><span>${monthLabel(currentMonthKey())} salary</span>${(() => {
+              const rec = salaries.find(x=>x.staffId===m.id && x.month===currentMonthKey());
+              return rec ? feeStatusPill(rec) : `<span class="pill pill-neutral">Not recorded</span>`;
+            })()}</div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:14px;">
+            <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="openStaffModal('${m.id}')">Edit</button>
+            <button class="btn btn-secondary btn-sm" onclick="openSalaryModal(null,'${m.id}')">Salary</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteStaffMember('${m.id}')">Delete</button>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+function openStaffModal(existingId){
+  const m = existingId ? staffList.find(x=>x.id===existingId) : null;
+  const photoPreview = m && m.photo ? `<img src="${m.photo}" alt="" style="width:56px;height:56px;border-radius:8px;object-fit:cover;display:block;margin-bottom:6px;" />` : '';
+  openModal(`
+    <div class="modal-head"><h2 style="font-size:18px;">${m?'Edit staff':'Add staff'}</h2><button onclick="closeModal()">&times;</button></div>
+    <form id="staffForm">
+      <div class="form-grid">
+        <div class="field"><label>First name</label><input name="firstName" value="${escapeHtml(m?.firstName)}" required /></div>
+        <div class="field"><label>Last name</label><input name="lastName" value="${escapeHtml(m?.lastName)}" required /></div>
+        <div class="field"><label>Role</label>
+          <select name="role">${['Teacher','Admin','Principal','Support'].map(r=>`<option ${m?.role===r?'selected':''}>${r}</option>`).join('')}</select>
+        </div>
+        <div class="field"><label>Department</label><input name="department" value="${escapeHtml(m?.department)}" /></div>
+        <div class="field"><label>Phone</label><input name="phone" value="${escapeHtml(m?.phone)}" /></div>
+        <div class="field"><label>Email</label><input type="email" name="email" value="${escapeHtml(m?.email)}" /></div>
+        <div class="field"><label>Date of joining</label><input type="date" name="dateOfJoining" value="${m?.dateOfJoining||todayIso()}" /></div>
+        <div class="field"><label>Status</label>
+          <select name="employmentStatus">
+            <option value="active" ${(!m||m.employmentStatus==='active')?'selected':''}>Active</option>
+            <option value="on_leave" ${m?.employmentStatus==='on_leave'?'selected':''}>On leave</option>
+            <option value="inactive" ${m?.employmentStatus==='inactive'?'selected':''}>Inactive</option>
+          </select>
+        </div>
+        <div class="field span2">
+          <label>Passport size photo</label>
+          ${photoPreview}
+          <input type="file" name="photoFile" accept="image/*" />
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">${m?'Save changes':'Add staff'}</button>
+      </div>
+    </form>`);
+  document.getElementById('staffForm').addEventListener('submit', async function(e){
+    e.preventDefault();
+    const fd = Object.fromEntries(new FormData(e.target).entries());
+    const photoFile = e.target.elements.namedItem('photoFile').files[0];
+    delete fd.photoFile;
+    fd.photo = photoFile ? await fileToBase64(photoFile) : (m ? m.photo : null);
+    if(m){ Object.assign(m, fd); }
+    else {
+      fd.id = uid('stf');
+      fd.employeeId = 'STF-' + String(staffList.length+1).padStart(3,'0');
+      staffList.push(fd);
+    }
+    saveAll();
+    closeModal();
+    renderStaff(document.getElementById('topbar'),document.getElementById('content'));
+  });
+}
+function deleteStaffMember(id){
+  if(!confirm('Delete this staff record?')) return;
+  staffList = staffList.filter(m=>m.id!==id);
+  saveAll();
+  renderStaff(document.getElementById('topbar'),document.getElementById('content'));
+}
+
+/* ---------------- attendance (high-level, class/section daily counts) ---------------- */
+function renderAttendance(topbar, content){
+  topbar.innerHTML = `<div><h1>Attendance</h1><p>Daily present/absent counts by class and section — no individual tracking needed.</p></div>`;
+
+  content.innerHTML = `
+    <div class="card" style="margin-bottom:16px;">
+      <h2 style="font-size:16px;" id="attendanceFormTitle">Record attendance</h2>
+      <form id="attendanceForm" style="margin-top:12px;">
+        <input type="hidden" name="editId" id="attendanceEditId" value="" />
+        <div class="form-grid">
+          <div class="field"><label>Date</label><input type="date" name="date" value="${todayIso()}" required /></div>
+          <div class="field"><label>Class</label><select name="cls" required><option value="">Select class</option>${CLASS_LEVELS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
+          <div class="field"><label>Section</label><input name="section" placeholder="e.g. A" required /></div>
+          <div class="field"><label>Total Present</label><input type="number" min="0" name="totalPresent" required oninput="updateAttendanceStrength()" /></div>
+          <div class="field"><label>Total Absent</label><input type="number" min="0" name="totalAbsent" required oninput="updateAttendanceStrength()" /></div>
+          <div class="field"><label>Total Strength</label><div id="attendanceStrengthDisplay" style="padding:8px 10px;font-family:'IBM Plex Mono',monospace;font-weight:500;background:var(--surface-alt);border-radius:6px;">0</div></div>
+        </div>
+        <div class="modal-actions" style="justify-content:flex-start;margin-top:4px;">
+          <button type="submit" class="btn btn-primary">Save attendance</button>
+          <button type="button" class="btn btn-secondary" id="attendanceCancelBtn" style="display:none;" onclick="cancelAttendanceEdit()">Cancel edit</button>
+        </div>
+      </form>
+    </div>
+    <div id="attendanceTableWrap"></div>`;
+
+  document.getElementById('attendanceForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const fd = Object.fromEntries(new FormData(e.target).entries());
+    const editId = fd.editId;
+    delete fd.editId;
+
+    if(editId){
+      const rec = attendanceRecords.find(a=>a.id===editId);
+      if(rec) Object.assign(rec, fd);
+    } else {
+      const existing = attendanceRecords.find(a => a.date===fd.date && a.cls===fd.cls && a.section===fd.section);
+      if(existing){
+        if(!confirm('A record for this class/section/date already exists. Update it instead?')) return;
+        Object.assign(existing, fd);
+      } else {
+        fd.id = uid('att');
+        attendanceRecords.push(fd);
+      }
+    }
+    saveAll();
+    cancelAttendanceEdit();
+    renderAttendanceTable();
+  });
+
+  renderAttendanceTable();
+}
+function updateAttendanceStrength(){
+  const form = document.getElementById('attendanceForm');
+  if(!form) return;
+  const present = Number(form.elements.namedItem('totalPresent').value) || 0;
+  const absent = Number(form.elements.namedItem('totalAbsent').value) || 0;
+  document.getElementById('attendanceStrengthDisplay').textContent = present + absent;
+}
+function renderAttendanceTable(){
+  const rows = [...attendanceRecords].sort((a,b) => (b.date||'').localeCompare(a.date||'') || (a.cls||'').localeCompare(b.cls||''));
+  document.getElementById('attendanceTableWrap').innerHTML = rows.length===0 ? `<div class="table-wrap"><div class="empty">No attendance recorded yet.</div></div>` : `
+    <div class="table-wrap"><table>
+      <thead><tr><th>Date</th><th>Class</th><th>Section</th><th>Present</th><th>Absent</th><th>Strength</th><th></th></tr></thead>
+      <tbody>
+        ${rows.map(a => `
+          <tr>
+            <td>${formatDate(a.date)}</td>
+            <td>${escapeHtml(a.cls)}</td>
+            <td>${escapeHtml(a.section)}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;">${escapeHtml(a.totalPresent)}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;">${escapeHtml(a.totalAbsent)}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;font-weight:500;">${(Number(a.totalPresent)||0)+(Number(a.totalAbsent)||0)}</td>
+            <td style="text-align:right;white-space:nowrap;">
+              <button class="btn btn-secondary btn-sm" onclick="editAttendance('${a.id}')">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteAttendance('${a.id}')">Delete</button>
+            </td>
+          </tr>`).join('')}
+      </tbody>
+    </table></div>`;
+}
+function editAttendance(id){
+  const rec = attendanceRecords.find(a=>a.id===id);
+  if(!rec) return;
+  const form = document.getElementById('attendanceForm');
+  form.elements.namedItem('date').value = rec.date;
+  form.elements.namedItem('cls').value = rec.cls;
+  form.elements.namedItem('section').value = rec.section;
+  form.elements.namedItem('totalPresent').value = rec.totalPresent;
+  form.elements.namedItem('totalAbsent').value = rec.totalAbsent;
+  document.getElementById('attendanceEditId').value = id;
+  document.getElementById('attendanceFormTitle').textContent = 'Edit attendance';
+  document.getElementById('attendanceCancelBtn').style.display = 'inline-flex';
+  updateAttendanceStrength();
+}
+function cancelAttendanceEdit(){
+  const form = document.getElementById('attendanceForm');
+  if(!form) return;
+  form.reset();
+  document.getElementById('attendanceEditId').value = '';
+  document.getElementById('attendanceFormTitle').textContent = 'Record attendance';
+  document.getElementById('attendanceCancelBtn').style.display = 'none';
+  form.elements.namedItem('date').value = todayIso();
+  updateAttendanceStrength();
+}
+function deleteAttendance(id){
+  if(!confirm('Delete this attendance record?')) return;
+  attendanceRecords = attendanceRecords.filter(a=>a.id!==id);
+  saveAll();
+  renderAttendanceTable();
+}
+
+/* ---------------- fees ---------------- */
+function renderFees(topbar, content){
+  topbar.innerHTML = `
+    <div><h1>Fees</h1><p>${fees.length} fee record${fees.length===1?'':'s'} across all sessions</p></div>
+    <button class="btn btn-primary" onclick="openFeeModal()">+ Add fee record</button>`;
+
+  const sessions = [...new Set([currentAcademicYear(), ...fees.map(f=>f.session)])].sort().reverse();
+
+  content.innerHTML = `
+    <div class="toolbar">
+      <select onchange="feeFilters.session=this.value; renderFeesTable();">
+        <option value="">All sessions</option>
+        ${sessions.map(s=>`<option value="${s}" ${feeFilters.session===s?'selected':''}>${s}</option>`).join('')}
+      </select>
+      <select onchange="feeFilters.cls=this.value; renderFeesTable();">
+        <option value="">All classes</option>
+        ${CLASS_LEVELS.map(c=>`<option value="${c}" ${feeFilters.cls===c?'selected':''}>Class ${c}</option>`).join('')}
+      </select>
+      <select onchange="feeFilters.status=this.value; renderFeesTable();">
+        <option value="">Any status</option>
+        <option value="pending" ${feeFilters.status==='pending'?'selected':''}>Pending</option>
+        <option value="partial" ${feeFilters.status==='partial'?'selected':''}>Partial</option>
+        <option value="paid" ${feeFilters.status==='paid'?'selected':''}>Paid</option>
+      </select>
+    </div>
+    <div id="feesSummary"></div>
+    <div id="feesTableWrap"></div>`;
+  renderFeesTable();
+}
+function feeStatusPill(rec){
+  const st = feeStatus(rec);
+  if(st==='paid') return `<span class="pill pill-good">Paid</span>`;
+  if(st==='partial') return `<span class="pill pill-accent">Partial</span>`;
+  return `<span class="pill pill-bad">Pending</span>`;
+}
+function renderFeesTable(){
+  const rows = fees.map(f => Object.assign({}, f, {student: students.find(s=>s.id===f.studentId)})).filter(f => {
+    if(feeFilters.session && f.session !== feeFilters.session) return false;
+    if(feeFilters.cls && (!f.student || f.student.cls !== feeFilters.cls)) return false;
+    if(feeFilters.status && feeStatus(f) !== feeFilters.status) return false;
+    return true;
+  }).sort((a,b) => (a.dueDate||'').localeCompare(b.dueDate||''));
+
+  const totalDue = rows.reduce((s,f)=>s+(Number(f.amountDue)||0),0);
+  const totalPaid = rows.reduce((s,f)=>s+(Number(f.amountPaid)||0),0);
+  const totalPending = Math.max(0, totalDue-totalPaid);
+
+  document.getElementById('feesSummary').innerHTML = `
+    <div class="stat-grid" style="margin-bottom:16px;">
+      <div class="stat-card"><div class="label">Total due</div><div class="value" style="font-size:24px;">${money(totalDue)}</div></div>
+      <div class="stat-card good"><div class="label">Collected</div><div class="value" style="font-size:24px;">${money(totalPaid)}</div></div>
+      <div class="stat-card accent"><div class="label">Pending</div><div class="value" style="font-size:24px;">${money(totalPending)}</div></div>
+    </div>`;
+
+  document.getElementById('feesTableWrap').innerHTML = rows.length===0 ? `<div class="table-wrap"><div class="empty">No fee records match these filters.</div></div>` : `
+    <div class="table-wrap"><table>
+      <thead><tr><th>Student</th><th>Class</th><th>Session</th><th>Particulars</th><th>Total Due</th><th>Deposited</th><th>Remaining</th><th>Mode</th><th>Status</th><th>Due date</th><th></th></tr></thead>
+      <tbody>
+        ${rows.map(f => `
+          <tr>
+            <td>${f.student ? `<span style="font-weight:500;cursor:pointer;" onclick="goToStudent('${f.student.id}')">${escapeHtml(f.student.firstName)} ${escapeHtml(f.student.lastName)}</span>` : '<span style="color:var(--ink-soft);">Unknown student</span>'}</td>
+            <td style="color:var(--ink-soft);">${f.student?escapeHtml(f.student.cls)+escapeHtml(f.student.section):'—'}</td>
+            <td style="color:var(--ink-soft);">${escapeHtml(f.session)}</td>
+            <td>${escapeHtml(f.particulars)}${f.particulars==='Board Exam Fee'?' <span class="record-tag" style="padding:1px 6px;">Board</span>':''}${f.negotiated?' <span class="record-tag" style="padding:1px 6px;">Negotiated</span>':''}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;">${money(f.amountDue)}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;">${money(f.amountPaid)}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;">${money(Math.max(0,(Number(f.amountDue)||0)-(Number(f.amountPaid)||0)))}</td>
+            <td style="color:var(--ink-soft);">${escapeHtml(f.paymentMode)}</td>
+            <td>${feeStatusPill(f)}</td>
+            <td style="color:var(--ink-soft);">${formatDate(f.dueDate)}</td>
+            <td style="text-align:right;white-space:nowrap;">
+              <button class="btn btn-secondary btn-sm" onclick="openFeeModal('${f.id}')">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteFee('${f.id}')">Delete</button>
+            </td>
+          </tr>`).join('')}
+      </tbody>
+    </table></div>`;
+}
+function feeModalOnContextChange(){
+  const form = document.getElementById('feeForm');
+  if(!form) return;
+  const particularsField = form.elements.namedItem('particulars');
+  const negotiatedField = form.elements.namedItem('negotiated');
+  if(particularsField.value === 'Other') negotiatedField.checked = true;
+  const negotiated = negotiatedField.checked;
+  const dueInput = form.elements.namedItem('amountDue');
+  dueInput.readOnly = !negotiated;
+  if(!negotiated){
+    const studentId = form.elements.namedItem('studentId').value;
+    dueInput.value = computeTotalDue(studentId, particularsField.value);
+  }
+  feeModalUpdateRemaining();
+}
+function feeModalUpdateRemaining(){
+  const form = document.getElementById('feeForm');
+  if(!form) return;
+  const due = Number(form.elements.namedItem('amountDue').value) || 0;
+  const paid = Number(form.elements.namedItem('amountPaid').value) || 0;
+  const el = document.getElementById('feeRemainingDisplay');
+  if(el) el.textContent = money(Math.max(0, due-paid));
+}
+function openFeeModal(existingId, presetStudentId){
+  const f = existingId ? fees.find(x=>x.id===existingId) : null;
+  const studentId = f ? f.studentId : presetStudentId;
+  const particulars = f ? f.particulars : TERMS[0];
+  const negotiated = f ? !!f.negotiated : false;
+  const initialDue = f ? f.amountDue : (studentId ? computeTotalDue(studentId, particulars) : 0);
+  openModal(`
+    <div class="modal-head"><h2 style="font-size:18px;">${f?'Edit fee record':'Add fee record'}</h2><button onclick="closeModal()">&times;</button></div>
+    <form id="feeForm">
+      <div class="form-grid">
+        <div class="field span2"><label>Student</label>
+          <select name="studentId" required onchange="feeModalOnContextChange()">
+            <option value="">Select student</option>
+            ${students.map(s=>`<option value="${s.id}" ${studentId===s.id?'selected':''}>${escapeHtml(s.firstName)} ${escapeHtml(s.lastName)} (${escapeHtml(s.cls)}${escapeHtml(s.section)}) · ${escapeHtml(s.admissionNumber)}</option>`).join('')}
+          </select>
+        </div>
+        <div class="field"><label>Session</label><input name="session" value="${escapeHtml(f?f.session:currentAcademicYear())}" required /></div>
+        <div class="field"><label>Particulars</label><select name="particulars" onchange="feeModalOnContextChange()">${TERMS.map(t=>`<option ${particulars===t?'selected':''}>${t}</option>`).join('')}</select></div>
+
+        <div class="field span2" style="display:flex;align-items:center;gap:8px;margin-top:2px;">
+          <input type="checkbox" name="negotiated" id="feeNegotiatedCheckbox" style="width:auto;" ${negotiated?'checked':''} onchange="feeModalOnContextChange()" />
+          <label for="feeNegotiatedCheckbox" style="margin:0;font-weight:400;">Negotiated fee — manually override the total due</label>
+        </div>
+
+        <div class="field"><label>Total Due (&#8377;)</label><input name="amountDue" value="${escapeHtml(initialDue)}" ${negotiated?'':'readonly'} oninput="feeModalUpdateRemaining()" required /></div>
+        <div class="field"><label>Deposited Amount (&#8377;)</label><input name="amountPaid" value="${escapeHtml(f?f.amountPaid:'0')}" oninput="feeModalUpdateRemaining()" /></div>
+        <div class="field"><label>Payment Mode</label><select name="paymentMode"><option ${(!f||f.paymentMode==='Cash')?'selected':''}>Cash</option><option ${f?.paymentMode==='Online'?'selected':''}>Online</option></select></div>
+        <div class="field">
+          <label>Remaining Due</label>
+          <div id="feeRemainingDisplay" style="padding:8px 10px;font-family:'IBM Plex Mono',monospace;font-weight:500;color:var(--bad);background:var(--bad-soft);border-radius:6px;">${money(Math.max(0,(Number(initialDue)||0)-(Number(f?f.amountPaid:0)||0)))}</div>
+        </div>
+        <div class="field"><label>Due date</label><input type="date" name="dueDate" value="${f?.dueDate||''}" /></div>
+        <div class="field"><label>Paid date</label><input type="date" name="paidDate" value="${f?.paidDate||''}" /></div>
+        <div class="field span2"><label>Notes</label><input name="notes" value="${escapeHtml(f?.notes)}" /></div>
+      </div>
+      <p style="font-size:12px;color:var(--ink-soft);margin:-6px 0 14px;">Total Due auto-fills from the class fee structure. Board Exam Fee applies to Class 5 &amp; 8 (&#8377;500) and Class 9 &amp; 10 (&#8377;2350).</p>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">${f?'Save changes':'Add record'}</button>
+      </div>
+    </form>`);
+  document.getElementById('feeForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const fd = Object.fromEntries(new FormData(e.target).entries());
+    fd.negotiated = !!document.getElementById('feeNegotiatedCheckbox').checked;
+    if(f){ Object.assign(f, fd); }
+    else { fd.id = uid('fee'); fees.push(fd); }
+    saveAll();
+    closeModal();
+    if(view.name==='studentDetail') renderStudentDetail(document.getElementById('topbar'),document.getElementById('content'), view.studentId);
+    else renderFees(document.getElementById('topbar'),document.getElementById('content'));
+  });
+}
+function deleteFee(id){
+  if(!confirm('Delete this fee record?')) return;
+  fees = fees.filter(f=>f.id!==id);
+  saveAll();
+  if(view.name==='studentDetail') renderStudentDetail(document.getElementById('topbar'),document.getElementById('content'), view.studentId);
+  else renderFees(document.getElementById('topbar'),document.getElementById('content'));
+}
+function printStudentFeeRecord(studentId){
+  const s = students.find(x=>x.id===studentId);
+  if(!s) return;
+  const rows = fees.filter(f=>f.studentId===studentId).sort((a,b)=>(a.dueDate||'').localeCompare(b.dueDate||''));
+  const totalDue = rows.reduce((sum,f)=>sum+(Number(f.amountDue)||0),0);
+  const totalPaid = rows.reduce((sum,f)=>sum+(Number(f.amountPaid)||0),0);
+  const totalRemaining = Math.max(0, totalDue-totalPaid);
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html><head><title>Fee Record — ${escapeHtml(s.firstName)} ${escapeHtml(s.lastName)}</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;color:#000;margin:20px;}
+    h1{font-size:18px;margin:0 0 2px;text-align:center;}
+    .sub{text-align:center;font-size:12px;margin:0 0 10px;color:#000;}
+    .meta{font-size:12px;margin-bottom:14px;display:flex;justify-content:space-between;}
+    table{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:16px;}
+    th,td{border:1px solid #000;padding:5px 6px;text-align:left;background:#fff;color:#000;}
+    th{font-weight:bold;}
+    .summary{display:flex;gap:0;border:1px solid #000;margin-bottom:16px;}
+    .summary div{flex:1;text-align:center;padding:10px;border-right:1px solid #000;}
+    .summary div:last-child{border-right:none;}
+    .summary .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.03em;}
+    .summary .val{font-size:18px;font-weight:bold;margin-top:4px;}
+    @media print{ body{margin:8mm;} }
+  </style></head><body>
+    <img src="${LOGO_DATA_URI}" alt="" style="height:48px;display:block;margin:0 auto 6px;" />
+    <h1>${escapeHtml(SCHOOL_NAME)}</h1>
+    <p class="sub">${escapeHtml(SCHOOL_ADDRESS)}</p>
+    <div class="meta">
+      <span>Fee Record: ${escapeHtml(s.firstName)} ${escapeHtml(s.lastName)} — ${escapeHtml(s.admissionNumber)} — Class ${escapeHtml(s.cls)}${escapeHtml(s.section)}</span>
+      <span>Generated ${formatDate(todayIso())}</span>
+    </div>
+    <div class="summary">
+      <div><div class="lbl">Total</div><div class="val">${money(totalDue)}</div></div>
+      <div><div class="lbl">Paid</div><div class="val">${money(totalPaid)}</div></div>
+      <div><div class="lbl">Remaining</div><div class="val">${money(totalRemaining)}</div></div>
+    </div>
+    <table>
+      <thead><tr><th>Session</th><th>Particulars</th><th>Total Due</th><th>Deposited</th><th>Remaining</th><th>Mode</th><th>Due Date</th><th>Paid Date</th></tr></thead>
+      <tbody>
+        ${rows.length===0 ? `<tr><td colspan="8" style="text-align:center;">No fee records on file.</td></tr>` : rows.map(f => `
+          <tr>
+            <td>${escapeHtml(f.session)}</td>
+            <td>${escapeHtml(f.particulars)}</td>
+            <td>${money(f.amountDue)}</td>
+            <td>${money(f.amountPaid)}</td>
+            <td>${money(Math.max(0,(Number(f.amountDue)||0)-(Number(f.amountPaid)||0)))}</td>
+            <td>${escapeHtml(f.paymentMode||'—')}</td>
+            <td>${formatDate(f.dueDate)}</td>
+            <td>${formatDate(f.paidDate)}</td>
+          </tr>`).join('')}
+      </tbody>
+    </table>
+    <script>window.onload = () => window.print();<\/script>
+  </body></html>`);
+  win.document.close();
+}
+
+/* ---------------- salary ---------------- */
+function renderSalary(topbar, content){
+  topbar.innerHTML = `
+    <div><h1>Salary</h1><p>${salaries.length} salary record${salaries.length===1?'':'s'} on file</p></div>
+    <button class="btn btn-primary" onclick="openSalaryModal()">+ Add salary record</button>`;
+
+  const months = [...new Set([currentMonthKey(), ...salaries.map(s=>s.month)])].sort().reverse();
+
+  content.innerHTML = `
+    <div class="toolbar">
+      <select onchange="salaryFilters.month=this.value; renderSalaryTable();">
+        <option value="">All months</option>
+        ${months.map(m=>`<option value="${m}" ${salaryFilters.month===m?'selected':''}>${monthLabel(m)}</option>`).join('')}
+      </select>
+      <select onchange="salaryFilters.status=this.value; renderSalaryTable();">
+        <option value="">Any status</option>
+        <option value="pending" ${salaryFilters.status==='pending'?'selected':''}>Pending</option>
+        <option value="partial" ${salaryFilters.status==='partial'?'selected':''}>Partial</option>
+        <option value="paid" ${salaryFilters.status==='paid'?'selected':''}>Paid</option>
+      </select>
+    </div>
+    <div id="salarySummary"></div>
+    <div id="salaryTableWrap"></div>`;
+  renderSalaryTable();
+}
+function renderSalaryTable(){
+  const rows = salaries.map(s => Object.assign({}, s, {staff: staffList.find(m=>m.id===s.staffId)})).filter(s => {
+    if(salaryFilters.month && s.month !== salaryFilters.month) return false;
+    if(salaryFilters.status && feeStatus(s) !== salaryFilters.status) return false;
+    return true;
+  }).sort((a,b) => (b.month||'').localeCompare(a.month||''));
+
+  const totalDue = rows.reduce((s,r)=>s+(Number(r.amountDue)||0),0);
+  const totalPaid = rows.reduce((s,r)=>s+(Number(r.amountPaid)||0),0);
+  const totalPending = Math.max(0, totalDue-totalPaid);
+
+  document.getElementById('salarySummary').innerHTML = `
+    <div class="stat-grid" style="margin-bottom:16px;">
+      <div class="stat-card"><div class="label">Total due</div><div class="value" style="font-size:24px;">${money(totalDue)}</div></div>
+      <div class="stat-card good"><div class="label">Paid</div><div class="value" style="font-size:24px;">${money(totalPaid)}</div></div>
+      <div class="stat-card accent"><div class="label">Pending</div><div class="value" style="font-size:24px;">${money(totalPending)}</div></div>
+    </div>`;
+
+  document.getElementById('salaryTableWrap').innerHTML = rows.length===0 ? `<div class="table-wrap"><div class="empty">No salary records match these filters.</div></div>` : `
+    <div class="table-wrap"><table>
+      <thead><tr><th>Staff</th><th>Role</th><th>Month</th><th>Due</th><th>Paid</th><th>Status</th><th>Paid date</th><th></th></tr></thead>
+      <tbody>
+        ${rows.map(r => `
+          <tr>
+            <td style="font-weight:500;">${r.staff?escapeHtml(r.staff.firstName)+' '+escapeHtml(r.staff.lastName):'<span style="color:var(--ink-soft);">Unknown staff</span>'}</td>
+            <td style="color:var(--ink-soft);">${r.staff?escapeHtml(r.staff.role):'—'}</td>
+            <td style="color:var(--ink-soft);">${monthLabel(r.month)}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;">${money(r.amountDue)}</td>
+            <td style="font-family:'IBM Plex Mono',monospace;">${money(r.amountPaid)}</td>
+            <td>${feeStatusPill(r)}</td>
+            <td style="color:var(--ink-soft);">${formatDate(r.paidDate)}</td>
+            <td style="text-align:right;white-space:nowrap;">
+              <button class="btn btn-secondary btn-sm" onclick="openSalaryModal('${r.id}')">Edit</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteSalary('${r.id}')">Delete</button>
+            </td>
+          </tr>`).join('')}
+      </tbody>
+    </table></div>`;
+}
+function openSalaryModal(existingId, presetStaffId){
+  const r = existingId ? salaries.find(x=>x.id===existingId) : null;
+  const staffId = r ? r.staffId : presetStaffId;
+  openModal(`
+    <div class="modal-head"><h2 style="font-size:18px;">${r?'Edit salary record':'Add salary record'}</h2><button onclick="closeModal()">&times;</button></div>
+    <form id="salaryForm">
+      <div class="form-grid">
+        <div class="field span2"><label>Staff member</label>
+          <select name="staffId" required>
+            <option value="">Select staff</option>
+            ${staffList.map(m=>`<option value="${m.id}" ${staffId===m.id?'selected':''}>${escapeHtml(m.firstName)} ${escapeHtml(m.lastName)} · ${escapeHtml(m.role)} (${escapeHtml(m.employeeId)})</option>`).join('')}
+          </select>
+        </div>
+        <div class="field"><label>Month</label><input type="month" name="month" value="${r?r.month:currentMonthKey()}" required /></div>
+        <div class="field"><label>Amount due (&#8377;)</label><input name="amountDue" value="${escapeHtml(r?.amountDue)}" required /></div>
+        <div class="field"><label>Amount paid (&#8377;)</label><input name="amountPaid" value="${escapeHtml(r?r.amountPaid:'0')}" /></div>
+        <div class="field"><label>Paid date</label><input type="date" name="paidDate" value="${r?.paidDate||''}" /></div>
+        <div class="field span2"><label>Notes</label><input name="notes" value="${escapeHtml(r?.notes)}" /></div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">${r?'Save changes':'Add record'}</button>
+      </div>
+    </form>`);
+  document.getElementById('salaryForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const fd = Object.fromEntries(new FormData(e.target).entries());
+    if(r){ Object.assign(r, fd); }
+    else { fd.id = uid('sal'); salaries.push(fd); }
+    saveAll();
+    closeModal();
+    renderSalary(document.getElementById('topbar'),document.getElementById('content'));
+  });
+}
+function deleteSalary(id){
+  if(!confirm('Delete this salary record?')) return;
+  salaries = salaries.filter(s=>s.id!==id);
+  saveAll();
+  renderSalary(document.getElementById('topbar'),document.getElementById('content'));
+}
+
+/* ---------------- excel export & print rosters ---------------- */
+const STUDENT_STATUS_LABELS = {active:'Active', inactive:'Inactive', tc_issued:'TC Issued'};
+const STAFF_STATUS_LABELS = {active:'Active', on_leave:'On Leave', inactive:'Inactive'};
+
+const STUDENT_COLUMNS = [
+  {key:'admissionNumber', label:'Scholar No.', group:'Basic', get:s=>s.admissionNumber},
+  {key:'fullName', label:'Student Name', group:'Basic', get:s=>`${s.firstName||''} ${s.lastName||''}`.trim()},
+  {key:'gender', label:'Gender', group:'Basic', get:s=>s.gender},
+  {key:'dob', label:'Date of Birth', group:'Basic', get:s=>formatDate(s.dob)},
+  {key:'placeOfBirth', label:'Place of Birth', group:'Basic', get:s=>s.placeOfBirth},
+  {key:'nationality', label:'Nationality', group:'Basic', get:s=>s.nationality},
+  {key:'religion', label:'Religion', group:'Basic', get:s=>s.religion},
+  {key:'caste', label:'Caste', group:'Basic', get:s=>s.caste},
+  {key:'category', label:'Category', group:'Basic', get:s=>s.category},
+  {key:'motherTongue', label:'Mother Tongue', group:'Basic', get:s=>s.motherTongue},
+  {key:'bloodGroup', label:'Blood Group', group:'Basic', get:s=>s.bloodGroup},
+  {key:'weight', label:'Weight (kg)', group:'Basic', get:s=>s.weight},
+  {key:'height', label:'Height (cm)', group:'Basic', get:s=>s.height},
+
+  {key:'cls', label:'Class', group:'Academic', get:s=>s.cls},
+  {key:'section', label:'Section', group:'Academic', get:s=>s.section},
+  {key:'rollNumber', label:'Roll No.', group:'Academic', get:s=>s.rollNumber},
+  {key:'status', label:'Status', group:'Academic', get:s=>STUDENT_STATUS_LABELS[s.status]||s.status},
+  {key:'medium', label:'Medium', group:'Academic', get:s=>s.medium},
+  {key:'session', label:'Session', group:'Academic', get:s=>s.session},
+  {key:'admissionDate', label:'Admission Date', group:'Academic', get:s=>formatDate(s.admissionDate)},
+  {key:'previousSchool', label:'Previous School', group:'Academic', get:s=>s.previousSchool},
+  {key:'previousClassStudied', label:'Previous Class', group:'Academic', get:s=>s.previousClassStudied},
+  {key:'previousSession', label:'Previous Session', group:'Academic', get:s=>s.previousSession},
+  {key:'previousResult', label:'Previous Result', group:'Academic', get:s=>s.previousResult},
+  {key:'admissionFeesPaid', label:'Admission Fees Paid', group:'Academic', get:s=>s.admissionFeesPaid},
+  {key:'yearlyFeesPaid', label:"1 Year's Fees Paid", group:'Academic', get:s=>s.yearlyFeesPaid},
+
+  {key:'studentAadhar', label:"Student's Aadhar", group:'Government IDs', get:s=>s.studentAadhar},
+  {key:'fatherAadhar', label:"Father's Aadhar", group:'Government IDs', get:s=>s.fatherAadhar},
+  {key:'motherAadhar', label:"Mother's Aadhar", group:'Government IDs', get:s=>s.motherAadhar},
+  {key:'studentPEN', label:'PEN Card', group:'Government IDs', get:s=>s.studentPEN},
+  {key:'studentAPAR', label:'APAR ID', group:'Government IDs', get:s=>s.studentAPAR},
+  {key:'studentSSSM', label:'Student SSSM ID', group:'Government IDs', get:s=>s.studentSSSM},
+  {key:'familySSSM', label:'Family SSSM ID', group:'Government IDs', get:s=>s.familySSSM},
+
+  {key:'phone', label:'Phone', group:'Contact & Address', get:s=>s.phone},
+  {key:'whatsapp', label:'WhatsApp', group:'Contact & Address', get:s=>s.whatsapp},
+  {key:'email', label:'Email', group:'Contact & Address', get:s=>s.email},
+  {key:'address', label:'Address', group:'Contact & Address', get:s=>s.address},
+  {key:'city', label:'City', group:'Contact & Address', get:s=>s.city},
+  {key:'pincode', label:'Pin Code', group:'Contact & Address', get:s=>s.pincode},
+  {key:'permanentAddress', label:'Permanent Address', group:'Contact & Address', get:s=>s.permanentAddress},
+
+  {key:'fatherName', label:"Father's Name", group:'Parent / Guardian', get:s=>s.fatherName},
+  {key:'fatherPhone', label:"Father's Phone", group:'Parent / Guardian', get:s=>s.fatherPhone},
+  {key:'fatherEducation', label:"Father's Education", group:'Parent / Guardian', get:s=>s.fatherEducation},
+  {key:'fatherOccupation', label:"Father's Occupation", group:'Parent / Guardian', get:s=>s.fatherOccupation},
+  {key:'motherName', label:"Mother's Name", group:'Parent / Guardian', get:s=>s.motherName},
+  {key:'motherPhone', label:"Mother's Phone", group:'Parent / Guardian', get:s=>s.motherPhone},
+  {key:'motherEducation', label:"Mother's Education", group:'Parent / Guardian', get:s=>s.motherEducation},
+  {key:'motherOccupation', label:"Mother's Occupation", group:'Parent / Guardian', get:s=>s.motherOccupation},
+  {key:'guardianName', label:"Guardian's Name", group:'Parent / Guardian', get:s=>s.guardianName},
+  {key:'guardianRelation', label:'Relationship', group:'Parent / Guardian', get:s=>s.guardianRelation},
+  {key:'guardianPhone', label:"Guardian's Phone", group:'Parent / Guardian', get:s=>s.guardianPhone},
+
+  {key:'bankAccountNumber', label:'Bank Account No.', group:'Bank', get:s=>s.bankAccountNumber},
+  {key:'bankName', label:'Bank Name', group:'Bank', get:s=>s.bankName},
+  {key:'ifscCode', label:'IFSC Code', group:'Bank', get:s=>s.ifscCode},
+
+  {key:'transportMode', label:'Transport Mode', group:'Transport', get:s=>s.transportMode},
+  {key:'pickupPersonName', label:'Picked Up By', group:'Transport', get:s=>s.pickupPersonName},
+  {key:'pickupPersonPhone', label:'Pickup Phone', group:'Transport', get:s=>s.pickupPersonPhone},
+  {key:'driverName', label:"Driver's Name", group:'Transport', get:s=>s.driverName},
+  {key:'driverPhone', label:"Driver's Phone", group:'Transport', get:s=>s.driverPhone},
+  {key:'vehicleNumber', label:'Vehicle No.', group:'Transport', get:s=>s.vehicleNumber},
+];
+const STUDENT_PRESETS = [
+  {name:'Basic Roster', keys:['admissionNumber','fullName','cls','section','rollNumber','status']},
+  {name:'Contact List', keys:['fullName','cls','section','phone','whatsapp','fatherName','fatherPhone','motherName','motherPhone','address','city']},
+  {name:'Government IDs', keys:['fullName','cls','section','studentAadhar','studentPEN','studentAPAR','studentSSSM','familySSSM']},
+  {name:'Transport List', keys:['fullName','cls','section','transportMode','pickupPersonName','pickupPersonPhone','driverName','driverPhone','vehicleNumber']},
+  {name:'All Fields', keys:STUDENT_COLUMNS.map(c=>c.key)},
+];
+
+const STAFF_COLUMNS = [
+  {key:'employeeId', label:'Employee ID', group:'Details', get:m=>m.employeeId},
+  {key:'firstName', label:'First Name', group:'Details', get:m=>m.firstName},
+  {key:'lastName', label:'Last Name', group:'Details', get:m=>m.lastName},
+  {key:'role', label:'Role', group:'Details', get:m=>m.role},
+  {key:'department', label:'Department', group:'Details', get:m=>m.department},
+  {key:'phone', label:'Contact', group:'Details', get:m=>m.phone},
+  {key:'email', label:'Email', group:'Details', get:m=>m.email},
+  {key:'dateOfJoining', label:'Date of Joining', group:'Details', get:m=>formatDate(m.dateOfJoining)},
+  {key:'employmentStatus', label:'Status', group:'Details', get:m=>STAFF_STATUS_LABELS[m.employmentStatus]||m.employmentStatus},
+];
+const STAFF_PRESETS = [
+  {name:'Default', keys:['employeeId','firstName','lastName','role','department','phone','employmentStatus']},
+  {name:'All Fields', keys:STAFF_COLUMNS.map(c=>c.key)},
+];
+
+function getColumnsFor(entity){ return entity==='students' ? STUDENT_COLUMNS : STAFF_COLUMNS; }
+function getPresetsFor(entity){ return entity==='students' ? STUDENT_PRESETS : STAFF_PRESETS; }
+function getSavedColumnKeys(entity){
+  try{
+    const saved = JSON.parse(localStorage.getItem('conduct_columns_'+entity) || 'null');
+    if(saved && saved.length) return saved;
+  }catch(e){}
+  return getPresetsFor(entity)[0].keys.slice();
+}
+
+function openColumnPicker(entity, action){
+  const columns = getColumnsFor(entity);
+  const presets = getPresetsFor(entity);
+  const selected = new Set(getSavedColumnKeys(entity));
+  const groups = [...new Set(columns.map(c=>c.group))];
+  const actionLabel = action==='excel' ? 'Download Excel' : 'Print list';
+  openModal(`
+    <div class="modal-head"><h2 style="font-size:18px;">${actionLabel} — choose columns</h2><button onclick="closeModal()">&times;</button></div>
+    <p style="font-size:12px;color:var(--ink-soft);margin:-6px 0 12px;">Pick a starting point, then check or uncheck anything. Your selection is remembered for next time.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
+      ${presets.map(p => `<button type="button" class="btn btn-secondary btn-sm" onclick="applyColumnPreset('${entity}','${escapeHtml(p.name)}')">${escapeHtml(p.name)}</button>`).join('')}
+      <button type="button" class="btn btn-secondary btn-sm" onclick="setAllColumnChecks(true)">Select all</button>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="setAllColumnChecks(false)">Select none</button>
+    </div>
+    <div id="columnPickerList" style="max-height:340px;overflow:auto;border-top:1px solid var(--line);padding-top:8px;">
+      ${groups.map(g => `
+        <p style="font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--brand);margin:12px 0 6px;">${escapeHtml(g)}</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:5px 12px;">
+          ${columns.filter(c=>c.group===g).map(c => `
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;margin:0;">
+              <input type="checkbox" value="${c.key}" ${selected.has(c.key)?'checked':''} style="width:auto;" />
+              ${escapeHtml(c.label)}
+            </label>`).join('')}
+        </div>`).join('')}
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button type="button" class="btn btn-primary" onclick="runColumnAction('${entity}','${action}')">${actionLabel}</button>
+    </div>`);
+}
+function applyColumnPreset(entity, presetName){
+  const preset = getPresetsFor(entity).find(p=>p.name===presetName);
+  if(!preset) return;
+  const keys = new Set(preset.keys);
+  document.querySelectorAll('#columnPickerList input[type=checkbox]').forEach(cb => { cb.checked = keys.has(cb.value); });
+}
+function setAllColumnChecks(checked){
+  document.querySelectorAll('#columnPickerList input[type=checkbox]').forEach(cb => { cb.checked = checked; });
+}
+function runColumnAction(entity, action){
+  const checked = [...document.querySelectorAll('#columnPickerList input[type=checkbox]:checked')].map(cb=>cb.value);
+  if(checked.length === 0){ alert('Select at least one column.'); return; }
+  localStorage.setItem('conduct_columns_'+entity, JSON.stringify(checked));
+  const columns = getColumnsFor(entity).filter(c => checked.includes(c.key));
+  closeModal();
+  if(entity==='students'){
+    if(action==='excel') generateStudentsExcel(columns); else generateStudentsPrint(columns);
+  } else {
+    if(action==='excel') generateStaffExcel(columns); else generateStaffPrint(columns);
+  }
+}
+
+function printStudents(){ openColumnPicker('students','print'); }
+function exportStudentsExcel(){ openColumnPicker('students','excel'); }
+function printStaff(){ openColumnPicker('staff','print'); }
+function exportStaffExcel(){ openColumnPicker('staff','excel'); }
+
+function csvEscape(val){
+  val = val==null ? '' : String(val);
+  return /[",\n\r]/.test(val) ? '"' + val.replace(/"/g,'""') + '"' : val;
+}
+function downloadCSV(columns, rows, filename){
+  const header = columns.map(c=>csvEscape(c.label)).join(',');
+  const lines = rows.map(r => columns.map(c => csvEscape(c.get(r))).join(','));
+  const csv = '\uFEFF' + [header, ...lines].join('\r\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+}
+function generateStudentsExcel(columns){
+  downloadCSV(columns, getFilteredStudents(), 'students-roster-' + todayIso() + '.csv');
+}
+function generateStaffExcel(columns){
+  downloadCSV(columns, staffList, 'staff-roster-' + todayIso() + '.csv');
+}
+
+function generatePrintList(title, columns, rows){
+  const win = window.open('', '_blank');
+  win.document.write(`<!DOCTYPE html><html><head><title>${escapeHtml(title)}</title>
+  <style>
+    body{font-family:Arial,Helvetica,sans-serif;color:#000;margin:20px;}
+    h1{font-size:18px;margin:0 0 2px;text-align:center;}
+    .sub{text-align:center;font-size:12px;margin:0 0 10px;color:#000;}
+    .meta{font-size:11px;color:#000;margin-bottom:10px;display:flex;justify-content:space-between;}
+    table{width:100%;border-collapse:collapse;font-size:11px;}
+    th,td{border:1px solid #000;padding:5px 6px;text-align:left;background:#fff;color:#000;}
+    th{font-weight:bold;}
+    @media print{ body{margin:8mm;} }
+  </style></head><body>
+    <img src="${LOGO_DATA_URI}" alt="" style="height:48px;display:block;margin:0 auto 6px;" />
+    <h1>${escapeHtml(SCHOOL_NAME)}</h1>
+    <p class="sub">${escapeHtml(SCHOOL_ADDRESS)}</p>
+    <div class="meta"><span>${escapeHtml(title)}</span><span>Generated ${formatDate(todayIso())} · ${rows.length} record${rows.length===1?'':'s'}</span></div>
+    <table>
+      <thead><tr>${columns.map(c=>`<th>${escapeHtml(c.label)}</th>`).join('')}</tr></thead>
+      <tbody>${rows.map(r => `<tr>${columns.map(c=>`<td>${escapeHtml(c.get(r))}</td>`).join('')}</tr>`).join('')}</tbody>
+    </table>
+    <script>window.onload = () => window.print();<\/script>
+  </body></html>`);
+  win.document.close();
+}
+function generateStudentsPrint(columns){ generatePrintList('Student Roster', columns, getFilteredStudents()); }
+function generateStaffPrint(columns){ generatePrintList('Staff Roster', columns, staffList); }
+
+/* ---------------- modal shell ---------------- */
+function openModal(html){
+  document.getElementById('modalRoot').innerHTML = `<div class="modal-backdrop" onclick="if(event.target===this)closeModal()"><div class="modal">${html}</div></div>`;
+}
+function closeModal(){
+  document.getElementById('modalRoot').innerHTML = '';
+  pendingConversion = null;
+}
+
+/* ---------------- backup ---------------- */
+function exportBackup(){
+  const blob = new Blob([JSON.stringify({students, enquiries, staff:staffList, fees, salaries, exportedAt:new Date().toISOString()}, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'conduct-backup-' + todayIso() + '.json';
+  a.click();
+}
+function importBackup(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(){
+    try{
+      const data = JSON.parse(reader.result);
+      if(!confirm('This replaces all current data in this browser with the backup file. Continue?')) return;
+      students = data.students || [];
+      enquiries = data.enquiries || [];
+      staffList = data.staff || [];
+      fees = data.fees || [];
+      salaries = data.salaries || [];
+      saveAll();
+      renderApp();
+    }catch(err){
+      alert('Could not read that file — make sure it is a Conduct backup JSON.');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+/* ---------------- global auto-capitalization ----------------
+   Forces every free-text input/textarea to store CAPITAL LETTERS,
+   both as the user types and therefore whatever gets saved.
+   Select dropdowns, dates, numbers, and the passcode field are
+   untouched — those hold fixed values, not free text. */
+document.addEventListener('input', function(e){
+  const el = e.target;
+  const isFreeText = el.tagName === 'TEXTAREA' || (el.tagName === 'INPUT' && (el.type === 'text' || !el.getAttribute('type')));
+  if(!isFreeText) return;
+  const start = el.selectionStart, end = el.selectionEnd;
+  const upper = el.value.toUpperCase();
+  if(upper !== el.value){
+    el.value = upper;
+    if(typeof start === 'number') el.setSelectionRange(start, end);
+  }
+}, true);
+
+/* ---------------- init ---------------- */
+loadData();
+seedIfNeeded();
+seedFeesIfNeeded();
+checkSession();
+</script>
+</body>
+</html>
