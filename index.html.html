@@ -143,14 +143,14 @@
 
 <div id="lockScreen">
   <div class="lock-wrap">
-    <div class="wordmark"><img id="lockLogo" alt="" style="height:56px;margin-bottom:8px;display:none;" /><span class="school-name">BOMBAY KIDS INTERNATIONAL SCHOOL</span><span class="word">Conduct — Student &amp; Staff Records</span></div>
+    <div class="wordmark"><img id="lockLogo" alt="Bombay Kids International School" style="height:64px;margin-bottom:8px;display:none;" /><span class="word">Conduct — Student &amp; Staff Records</span></div>
     <div class="lock-card">
       <span class="record-tag" id="ayTag">AY — · Staff Access</span>
       <h1 style="font-size:20px;margin:14px 0 4px;">Sign in</h1>
-      <p style="font-size:13px;color:var(--ink-soft);margin:0 0 18px;">This device passcode is shared by your front office — ask your admin if you don't have it.</p>
+      <p style="font-size:13px;color:var(--ink-soft);margin:0 0 18px;">Use the username and password your admin set up for you.</p>
       <form id="lockForm">
-        <div class="field"><label>Your name</label><input type="text" id="staffName" placeholder="e.g. Priya Nair" required /></div>
-        <div class="field"><label>Passcode</label><input type="password" id="passcode" required /></div>
+        <div class="field"><label>Username</label><input type="text" id="loginUsername" placeholder="e.g. priya.nair" required autofocus /></div>
+        <div class="field"><label>Password</label><input type="password" id="loginPassword" required /></div>
         <div class="msg msg-error" id="lockMsg" style="display:none;"></div>
         <button type="submit" class="btn btn-primary btn-block">Sign in</button>
       </form>
@@ -160,10 +160,11 @@
 
 <div id="app" style="display:none;">
   <aside class="sidebar">
-    <div class="brand"><img id="sidebarLogo" alt="" style="height:32px;margin-bottom:6px;display:none;" /><span class="school-name">BOMBAY KIDS<br/>INTERNATIONAL SCHOOL</span><span class="word">Conduct</span><p>Arihant Nagar, Indore</p></div>
+    <div class="brand"><img id="sidebarLogo" alt="Bombay Kids International School" style="height:38px;margin-bottom:6px;display:none;" /><span class="word">Conduct</span><p>Arihant Nagar, Indore</p></div>
     <nav id="sidebarNav"></nav>
     <div class="footer">
-      Signed in as <span class="name" id="footerName">—</span>
+      <div>Signed in as <span class="name" id="footerName">—</span></div>
+      <div id="footerRole" style="margin-top:2px;"></div>
       <button onclick="exportBackup()">Export backup</button>
       <button onclick="document.getElementById('importInput').click()">Import backup</button>
       <button onclick="lockApp()">Sign out</button>
@@ -184,7 +185,6 @@ const SCHOOL_NAME = "Bombay Kids International School";
 const SCHOOL_ADDRESS = "Arihant Nagar, Indore (M.P.)";
 const SCHOOL_PHONE = "9981258867";
 const LOGO_DATA_URI = "data:image/jpeg;base64,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";
-const STAFF_PASSCODE = "conduct2026";
 const CLASS_LEVELS = ['Pre Nursery','Nursery','KG-I','KG-II','1','2','3','4','5','6','7','8','9','10'];
 const BOARD_CLASSES = ['5','8','9','10'];
 const TERMS = ['Admission Fee','Term 1 (June-July)','Term 2 (October)','Term 3 (January)','Board Exam Fee','Other'];
@@ -226,14 +226,44 @@ function computeTotalDue(studentId, particulars){
 }
 /* ================================================================================ */
 
-const LS = { students:'conduct_students', enquiries:'conduct_enquiries', staff:'conduct_staff', fees:'conduct_fees', salaries:'conduct_salaries', attendance:'conduct_attendance', seeded:'conduct_seeded_v1', feesSeeded:'conduct_fees_seeded_v1', session:'conduct_session' };
+const LS = { students:'conduct_students', enquiries:'conduct_enquiries', staff:'conduct_staff', fees:'conduct_fees', salaries:'conduct_salaries', attendance:'conduct_attendance', users:'conduct_users', seeded:'conduct_seeded_v1', feesSeeded:'conduct_fees_seeded_v1', class10Imported:'conduct_class10_import_v1', kg2to9Imported:'conduct_kg2to9_import_v1', usersSeeded:'conduct_users_seeded_v1', session:'conduct_session' };
 
-var students = [], enquiries = [], staffList = [], fees = [], salaries = [], attendanceRecords = [];
+var students = [], enquiries = [], staffList = [], fees = [], salaries = [], attendanceRecords = [], users = [];
 var view = { name: 'dashboard', studentId: null };
 var studentFilters = { q:'', cls:'', status:'' };
 var feeFilters = { session:'', cls:'', status:'' };
 var salaryFilters = { month:'', status:'' };
 var dashboardTimeframe = 'thisMonth';
+
+/* ---------------- roles & permissions ----------------
+   Access control lives entirely in this browser's JavaScript — it stops
+   staff from casually clicking into sections they shouldn't see, but it
+   is not cryptographic security. Anyone with browser dev tools can still
+   read the underlying data. Treat this as organizational access control,
+   not a guarantee against a deliberate technical attempt. */
+var PERMISSION_KEYS = ['dashboard','enquiries','students','staffDirectory','fees','salary','userManagement'];
+const PERMISSION_LABELS = {
+  dashboard: 'Dashboard', enquiries: 'Enquiries', students: 'Students (admissions, TC, attendance)',
+  staffDirectory: 'Staff Directory', fees: 'Fees', salary: 'Salary', userManagement: 'User Access (admin)',
+};
+const ROLE_LABELS = { admin: 'Admin', board: 'Board of Directors', office: 'Office Staff', custom: 'Custom' };
+const ROLE_PRESETS = {
+  admin:  { dashboard:true,  enquiries:true,  students:true,  staffDirectory:true,  fees:true,  salary:true,  userManagement:true  },
+  board:  { dashboard:true,  enquiries:true,  students:true,  staffDirectory:true,  fees:true,  salary:true,  userManagement:false },
+  office: { dashboard:true,  enquiries:true,  students:true,  staffDirectory:true,  fees:true,  salary:false, userManagement:false },
+  custom: { dashboard:true,  enquiries:false, students:false, staffDirectory:false, fees:false, salary:false, userManagement:false },
+};
+function currentUser(){
+  try{
+    const session = JSON.parse(localStorage.getItem(LS.session) || 'null');
+    if(!session) return null;
+    return users.find(u => u.id === session.userId && u.status === 'active') || null;
+  }catch(e){ return null; }
+}
+function can(permKey){
+  const u = currentUser();
+  return !!(u && u.permissions && u.permissions[permKey]);
+}
 
 /* ---------------- utils ---------------- */
 function uid(prefix){ return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
@@ -317,6 +347,21 @@ function feeStatus(rec){
   return 'paid';
 }
 function money(n){ return '₹' + (Number(n)||0).toLocaleString('en-IN'); }
+/** '5' -> 'Class 5'; non-numeric names (Pre Nursery, KG-I...) are already proper names, left as-is. */
+function classDisplayLabel(cls){
+  return /^\d+$/.test(cls) ? 'Class ' + cls : cls;
+}
+/** Upserts today's present/absent count for a class, right from its Dashboard block. */
+function saveClassAttendance(cls, field, value){
+  const date = todayIso();
+  let rec = attendanceRecords.find(a => a.date===date && a.cls===cls);
+  if(!rec){
+    rec = {id: uid('att'), date, cls, totalPresent:'', totalAbsent:''};
+    attendanceRecords.push(rec);
+  }
+  rec[field] = value;
+  saveAll();
+}
 function fileToBase64(file){
   return new Promise((resolve, reject) => {
     if(!file){ resolve(null); return; }
@@ -339,6 +384,7 @@ function loadData(){
   fees = JSON.parse(localStorage.getItem(LS.fees) || '[]');
   salaries = JSON.parse(localStorage.getItem(LS.salaries) || '[]');
   attendanceRecords = JSON.parse(localStorage.getItem(LS.attendance) || '[]');
+  users = JSON.parse(localStorage.getItem(LS.users) || '[]');
 }
 function saveAll(){
   localStorage.setItem(LS.students, JSON.stringify(students));
@@ -347,6 +393,19 @@ function saveAll(){
   localStorage.setItem(LS.fees, JSON.stringify(fees));
   localStorage.setItem(LS.salaries, JSON.stringify(salaries));
   localStorage.setItem(LS.attendance, JSON.stringify(attendanceRecords));
+  localStorage.setItem(LS.users, JSON.stringify(users));
+}
+function seedUsersIfNeeded(){
+  if(localStorage.getItem(LS.usersSeeded)) return;
+  localStorage.setItem(LS.usersSeeded, '1');
+  if(users.length === 0){
+    users.push({
+      id: uid('usr'), name: 'Houdini', username: 'houdini', password: 'houdini123',
+      role: 'admin', permissions: Object.assign({}, ROLE_PRESETS.admin),
+      status: 'active', createdAt: todayIso(),
+    });
+    saveAll();
+  }
 }
 function seedIfNeeded(){
   if(localStorage.getItem(LS.seeded)) return;
@@ -419,8 +478,438 @@ function seedFeesIfNeeded(){
   }
   saveAll();
 }
+/** One-time import of the real Class 10 admitted cohort. Purely additive —
+ *  never touches or removes anything already in this browser. Runs once,
+ *  gated by its own flag, independent of the demo-data seeding above. */
+function importClass10Batch(){
+  if(localStorage.getItem(LS.class10Imported)) return;
+  localStorage.setItem(LS.class10Imported, '1');
 
-/* ---------------- lock screen ---------------- */
+  const rows = [
+    ['ANAMIKA','BHATIYA','PANKAJ','MAMTA','2012-04-23','OBC','693643790059','198754331','ARIHANT NAGAR','7987182352'],
+    ['ESHIQA','UTWAL','ASHISH','SANGEETA','2009-01-19','SC','302779629911','104348045','MULTI','8358962939'],
+    ['KANAK','PEJWAL','ASHOK','HEMA','2011-04-11','ST','319569588902','136351783','161 ARIHANT NAGAR','9301026438'],
+    ['KRATIKA','SOLANKI','SURAJ','PRERNA','2011-09-20','OBC','498570026188','319001103','188/C SIDDARTH NAGAR','8103837630'],
+    ['LAVISHA','TOMAR','SATENDRA','BHARTI','2011-05-03','General','850562983159','304373769','SIDHARTH','8989768243'],
+    ['MUSKAN','SINGH','RAKESH','GEETA','2010-03-31','General','579547751047','322017886','ARIHANT NAGAR','8821010369'],
+    ['SANDHYA','KEWAT','LAXMAN SINGH','LALITA','2012-08-31','OBC','468502017818','199943286','SUKSANTOSH','8085497329'],
+    ['TANISHKA','PARE','RAJESH','JYOTI','2011-04-06','General','276430814002','141906902','SAMARTH CITY','9893433454'],
+    ['VEDIKA','RATHORE','MUKESH','RENU','2010-03-22','OBC','761913756037','111731117','SIDHARTH','9399128938'],
+    ['ABHISHEK','YADAV','SURESH','DURPTA','2011-06-16','OBC','428257949665','303945548','NENOD','9977205653'],
+    ['ADITYA','RAIKWAR','AJAY','RANU','2010-10-14','OBC','223644117656','189003378','SAMARTH DRIM','9926112010'],
+    ['ANANT','MATRE','MOHANSHANKAR','MAMTA','2011-05-05','OBC','798961602129','162657404','ARIHANT NAGAR','7509880542'],
+    ['ANSHUMAN','PAWAR','CHANDAN','SANTA BAI','2011-11-07','OBC','893520259316','157982672','SIDHARTH','9630879617'],
+    ['ARJUN','SINGH SOLANKI','BHANWAR','INDUSINGH','2011-08-18','General','380995422810','307716613','ARIHANT NAGAR','9509623566'],
+    ['BHUVANSH','KAMEDIYA','ANAND','POONAM','2010-11-10','OBC','694872022540','196236564','GOMTESH','8225854570'],
+    ['DHANANJAY','SOLANKI','BHARAT','RINA','2012-10-13','OBC','497736976340','164003722','JAMBURDI HAPSI','7067778423'],
+    ['DIVYANSH','GIRI GOSWAMI','CHANDRESH','MANISHA','2012-01-01','OBC','879285531058','130961820','ARIHANT NAGAR','9926548684'],
+    ['KANHAIYA','GOUR','KEVALRAM','KSHAMA','2011-11-16','OBC','870881130554','193943980','ARIHANT NAGAR','7225951130'],
+    ['KRISHNA','BHABHAR','RAJU','NARMDA','2010-04-20','ST','487402148607','309091056','BUDHANIYA','7828731699'],
+    ['LALIT','REBARI','DINESH LAL','RAJU BAI','2010-08-03','OBC','708113071437','200503760','GOMTESH','9171215395'],
+    ['NAMAN','VISHWAKARAMA','AMARCHANDRA','VARSHA','2010-01-01','OBC','585803743999','167421840','ARIHANT NAGAR','9669131995'],
+    ['PAWAN','GOSWAMI','NAGUGIR','KUSHAL','2010-02-14','General','831293402053','199110037','SATPUDA','9691936616'],
+    ['PURVANSH','TIWARI','NITESH','SHILPA','2009-12-09','General','229869923226','138966674','SIDHARTH','9165365612'],
+    ['RAJA','RATHORE','ANIL','SUNITA','2011-08-19','ST','550983953065','303890101','BHERU MAHARAJ','6268450550'],
+    ['RAMCHANDRA','GUJJAR','PUSHKAR LAL','PREM BAI','2011-05-10','OBC','843069205152','178570728','GOMTESH','9826818537'],
+    ['VIRENDRA','SINGH SISODIYA','GAJENDRA SINGH','URMILA','2011-08-23','General','389216942390','156219116','356 ARIHANT NAGAR','9039621156'],
+    ['ADESH','YADAV','ATMA','BIMLA','2011-09-15','OBC','857728833416','992510666','ARIHANT NAGAR','9770393244'],
+  ];
+
+  rows.forEach(([firstName,lastName,fatherName,motherName,dob,category,studentAadhar,studentSSSM,address,phone]) => {
+    const year = new Date().getFullYear();
+    students.push({
+      id: uid('stu'),
+      admissionNumber: 'CND/' + year + '/' + String(students.length+1).padStart(3,'0'),
+      firstName, lastName, fatherName, motherName, dob, category, studentAadhar, studentSSSM, address,
+      phone, whatsapp: phone,
+      cls: '10', section: 'A', status: 'active',
+      medium: 'English Medium', session: currentAcademicYear(),
+      motherTongue: 'Hindi', nationality: 'Indian',
+      tc: {issued:false}
+    });
+  });
+  saveAll();
+}
+
+function importKG2To9Batch(){
+  if(localStorage.getItem(LS.kg2to9Imported)) return;
+  localStorage.setItem(LS.kg2to9Imported, '1');
+
+  // [firstName,lastName,fatherName,motherName,dob,category,studentAadhar,studentSSSM,address,phone,schNo,cls,section,rollNumber]
+  const rows = [
+    ['AARYA','SENGAR','SURAJ','VINITA','2021-01-05','General','','','ARIHANT NAGAR','8630911475','394','KG-II','A','1'],
+    ['AAYUSHI','SHARMA','KAPIL','ROSHNI','2021-01-11','General','868122023331','319880800','ARIHANT NAGAR','9098513113','396','KG-II','A','2'],
+    ['ABHILASHI','LONE','NILESH','SAMIKSHA','2020-10-05','SC','','','RAM KAMAL','7987642504','564','KG-II','A','3'],
+    ['AYANSHI','SHARMA','SANDEEP','NISHA','2012-07-13','General','','319308126','ARIHANT NAGAR','9893186729','588','KG-II','A','4'],
+    ['BHAGYASHRI','VERMA','JAYNARYAN','SONALI','2021-07-22','OBC','527361175152','322351447','ARIHANT NAGAR','6267412668','398','KG-II','A','5'],
+    ['DIVYANSHI','VISHWKARMA','BALKRISHNA','RITU','2021-07-30','OBC','339418562284','','ARIHANT NAGAR','9826729179','401','KG-II','A','6'],
+    ['DURGESHWARI','BHABAR','VIKAS','ARCHANA','2019-01-27','ST','350315533422','313161766','BUDHANIYA','8770105462','402','KG-II','A','7'],
+    ['HANISHKA','CHOUHAN','KESHAV','PRIYANKA','2021-02-24','OBC','647228058298','','','9238146045','614','KG-II','A','8'],
+    ['HIMANGI','NAMDEV','CHANDAN','PINKEE','2020-06-23','OBC','','','ARIHANT NAGAR','7898406430','287','KG-II','A','9'],
+    ['MAHAK','YADAV','BHURELAL','PAPITA','2021-11-06','OBC','332080054101','321333361','ARIHANT NAGAR','8959793264','380','KG-II','A','10'],
+    ['MISHTHI','DASHAYA','VIPIN','CHANDA','2020-10-29','OBC','213094583491','311504072','JAMBUDI HAPSI','9977798599','407','KG-II','A','11'],
+    ['NIKITA','KUMAWAT','SHYAMLAL','PUSHPA','2021-03-06','OBC','557924609269','','ARIHANT NAGAR','9509787101','388','KG-II','A','12'],
+    ['NITYANSHI','PURI','NARESH','NEHA','2020-11-19','OBC','668389447357','','ARIHANT NAGAR','9644460241','381','KG-II','A','13'],
+    ['PURVI','NAMDEV','AMIT','DIPIKA','2021-06-18','OBC','373738585530','314031061','ARIHANT NAGAR','7898562486','569','KG-II','A','14'],
+    ['RINKITA','DOLAI','DINESH','KARUNA','2021-05-18','SC','217159968615','','ARIHANT NAGAR','7489633362','411','KG-II','A','15'],
+    ['SAMRIDDHI','RAJPUT','SURENDRA','KOUSHALIYA','2020-03-05','General','','','1296 ARIHANT NAGAR','9754039722','557','KG-II','A','16'],
+    ['SHIKSHA','SASTE','NITESH','ROMA','2020-08-24','ST','202769468870','314563177','BHERU MAHARAJ','9977672610','618','KG-II','A','17'],
+    ['SUCHITA','CHOUHAN','SHOBHARAM','SADHANA','2021-06-05','OBC','','','ARIHANT NAGAR','7773086076','428','KG-II','A','18'],
+    ['TASVEEKA','VISHWAKARMA','LOKESH','POOJA','2021-03-31','OBC','793072854425','','ARIHANT NAGAR','9575501611','429','KG-II','A','19'],
+    ['VANDANA','GURJAR','DEVILAL','SUSHILA','2022-03-22','OBC','601893859536','315902556','GOMETESH CITY','9201828798','627','KG-II','A','20'],
+    ['AARUSH','RATHORE','ROHIT','DEEPIKA','2021-11-30','OBC','','','ARIHANT NAGAR','7509334943','562','KG-II','A','21'],
+    ['AAYUSH','LODHI','AVTAR','SUNITA','','OBC','','','ARIHANT NAGAR','9977380972','563','KG-II','A','22'],
+    ['ABHISHEK','LOHAR','KAMLESH','SANJU','2021-03-15','OBC','','','ARIHANT NAGAR','9108778483','585','KG-II','A','23'],
+    ['ADITYA','PATEL','PRAVEEN','CHHAYA','2020-06-18','OBC','749391082881','317924011','ARIHANT NAGAR','9755333030','379','KG-II','A','24'],
+    ['ANUGRAH','RAJGON','MUKESH','PRATIBHA','2021-03-24','ST','980706152779','','BHERUMAHARAJ','8319146352','598','KG-II','A','25'],
+    ['ARUSH','YADAV','ANIL','SUNITA','2021-06-23','OBC','837209811345','314541937','ARIHANT NAGAR','7415805565','384','KG-II','A','26'],
+    ['AAYU','PANDEY','DHIRENDRA','SURUCHI','2021-01-28','General','665780846450','','ARIHANT NAGAR','6263479895','382','KG-II','A','27'],
+    ['ANIKET','PATRA','ABHIJEET','RABINA','2021-01-17','General','284133027753','307462300','ARIHANT NAGAR','7470826593','397','KG-II','A','28'],
+    ['AVYUKT','SHRIVASTAV','SANDEEP','AYSHA','2020-11-22','General','877981050838','','419 ARIHANT NAGAR','8103305615','636','KG-II','A','29'],
+    ['BHAVESH','GURJAR','DINESHCHANDRA','LEELA','2020-11-17','OBC','645772794350','318585694','706 ARIHANT NAGAR','9399212033','600','KG-II','A','30'],
+    ['DAKSH','SINGH THAKUR','ROHIT','NISHA','2019-05-01','General','233327912401','321334276','MULTI','9977651703','399','KG-II','A','31'],
+    ['DIVYANSH','DHOLPURIYA','NARENDRA','MANISHA','2020-08-08','SC','447331339747','','JAMBUDI HAPSI','9752146140','400','KG-II','A','32'],
+    ['KHUSHIL','RAJPUT','KAMAL','MONIKA','2021-05-03','General','495673629204','314157096','ARIHANT NAGAR','9926720303','383','KG-II','A','33'],
+    ['KRIYANSH','DHOLPURIYA','VIRENDRA','URMILA','2021-05-16','SC','499456452962','316293493','JAMBURDI HAPSI','8770563503','571','KG-II','A','34'],
+    ['KUNDAN','CHOUHAN','SANJAY','POOJA','2017-02-07','SC','629911917378','304565622','JAMBURDI HAPSI','6260189102','404','KG-II','A','35'],
+    ['PARTH','KUMAWAT','MANISH','SEEMA','2021-09-09','OBC','966483859390','','ARIHANT NAGAR','7000731856','377','KG-II','A','36'],
+    ['PRANAV','SONGARA','SHUBHAM','RANU','2022-11-28','OBC','','','ARIHANT NAGAR','9826556634','415','KG-II','A','37'],
+    ['RIYANSH','MAKWANA','RAHUL','REKHA','2020-04-06','SC','925894396597','318476597','JAMBURDI HAPSI','91317437896','423','KG-II','A','38'],
+    ['ROHIT','PRAJAPAT','ANKIT','SANGITA','2022-04-17','OBC','','','SAMARTH CITY','9752950194','424','KG-II','A','39'],
+    ['SHIVANSH','BOYAT','AMIT','REENA','2021-01-17','SC','630862696827','321408333','MULTI','8817759434','426','KG-II','A','40'],
+    ['SHIVANSH','RATHORE','INDAL SINGH','SHALU','2021-03-11','OBC','611927204831','320065837','954 ARIHANT NAGAR','7651845691','574','KG-II','A','41'],
+    ['SHREYANSH','MOURY','SANDEEP','KRISHNA','2021-06-27','OBC','','','JAMBURDI HAPSI','9340099615','408','KG-II','A','42'],
+    ['AAROHI','PANCHO','SUDEEP','DIPALI','2020-06-23','OBC','877128365064','','ARIHANT NAGAR','9617865857','315','1','A','1'],
+    ['AABHA','RAJPUT','JITENDRA','DEEKSHA','2021-06-14','General','377482763256','314305325','1277 ARIHANT NAGAR','8770568756','602','1','A','2'],
+    ['ANIKA','PANDEY','DHIRENDRA','SURUCHI','2019-12-24','General','780380624865','','ARIHANT NAGAR','6263479895','56','1','A','3'],
+    ['AVIKA','RATHORE','AMAR','POOJA','2020-11-22','OBC','419761589894','','ARIHANT NAGAR','9589677595','284','1','A','4'],
+    ['CHHAYA','RATHOD','MAHESH','KOMAL','2021-02-22','OBC','','','ARIHANT NAGAR','9617120522','583','1','A','5'],
+    ['ISHIKA','DHOLPURIYA','VIRENDRA','URMILA','2020-03-26','SC','777685591628','311330642','JAMBURDI HAPSI','8770563503','567','1','A','6'],
+    ['JANVI','PARMAR','AKSHAY','ARCHANA','2020-07-06','SC','556975526903','','ARIHANT NAGAR','7898069999','446','1','A','7'],
+    ['JHUNJHUN','GURJAR','SURESH','PUSHPA','2020-05-18','OBC','352262063198','319985954','ARIHANT NAGAR','9131629687','52','1','A','8'],
+    ['KANAK','GIRI','PANKAJ','MEENA','2019-03-14','OBC','','','ARIHANT NAGAR','9617812668','166','1','A','9'],
+    ['MAHI','SOLANKI','SANJAY','TINA','2019-10-15','ST','610821488782','318584198','BUDHANIYA','7898575341','436','1','A','10'],
+    ['NIHARIKA','KOSAL','VIKAS','ANITA','2020-05-09','OBC','826112734198','321945904','321 ARIHANT NAGAR','7489585990','544','1','A','11'],
+    ['NITYA','THORAT','DEEPAK','VAISHALI','2020-07-03','OBC','323130353299','','ARIHANT NAGAR','6264178757','413','1','A','12'],
+    ['PIHU','DHANWARE','VIJAY','PINKI','2020-12-21','SC','549774085495','313275503','DEV DHARAM TANKI','9165912287','439','1','A','13'],
+    ['PRISHA','SINGH','AVINASH SINGH','MEENU','2020-07-27','General','490171328161','314501197','ARIHANT NAGAR','9826063545','206','1','A','14'],
+    ['PRIYANSHI','RATHORE','ANAND','REKHA','2020-10-15','OBC','762379812011','','ARIHANT NAGAR','8269144414','493','1','A','15'],
+    ['PURVI','KOUSHAL','KAILASH','KAVITA','2020-11-11','OBC','','','ARIHANT NAGAR','9340401935','543','1','A','16'],
+    ['RIDHIMA','PIROCHHA','SANI','DIVYA','2020-02-14','SC','703355321236','','MULTI','9993311509','35','1','A','17'],
+    ['SHANVI','VISHWAKARMA','SOHAN LAL','SURBHI','2020-10-04','OBC','','','ARIHANT NAGAR','9753878182','301','1','A','18'],
+    ['SNEHA','JUPATIYA','SAMLESH','MAHIMA','2019-07-16','SC','998177365972','312310720','ARIHANT NAGAR','9009934968','547','1','A','19'],
+    ['SIDDHI','SHARMA','LAKHAN','POONAM','2020-08-16','General','','313548500','ARIHANT NAGAR','9630074421','337','1','A','20'],
+    ['SUHANI','TIROLE','ASHOK','MANJU','2019-09-13','OBC','254822173766','','GOMETESH','7987423142','126','1','A','21'],
+    ['TRISHA','VISHWAKARMA','AASHISH','JAYDEVI V','2020-12-12','OBC','726557468939','','ARIHANT NAGAR','9993698297','141','1','A','22'],
+    ['VAANI','VISHWAKARAMA','DILIP','HEMLATA','2019-04-17','OBC','788366150133','','ARIHANT NAGAR','6232959371','440','1','A','23'],
+    ['YASHVI','NAMDEV','RAHUL','BHARTI','2019-02-06','OBC','','312960548','ARIHANT NAGAR','8269824068','318','1','A','24'],
+    ['ADITYA','KODLI','YOGESH','BULBUL','2019-09-30','ST','628608538608','','BUDHANIYA','8770730135','640','1','A','25'],
+    ['AYANSH','YADAV','ANIL','SUNITA','2020-03-31','OBC','566280284146','314841938','ARIHANT NAGAR','7415805565','231','1','A','26'],
+    ['DARSHAN','SUTAR','PUKHRAJ','ARTI','2019-09-13','OBC','974694679771','','JAMBURDI HAPSI','8871045693','572','1','A','27'],
+    ['DEEP','CHAROLE','LANKESH','HEENA','2019-12-06','OBC','662546304403','320070967','ARIHANT NAGAR','9770083970','9','1','A','28'],
+    ['GEETANSH','SONWANE','MOHAN','ANURADHA','2020-01-26','SC','','','JAMBUDI HAPSI','8103088459','355','1','A','29'],
+    ['HEMANT','UPADAYAY','ANIL','RITU','2020-12-05','General','469334594786','318669044','ARIHANT NAGAR','6263313365','103','1','A','30'],
+    ['ISHAN','BAIRAGI','RAHUL','SANDHYTA','2020-05-22','OBC','429656115839','','ARIHANT NAGAR','7697989924','438','1','A','31'],
+    ['JAY','CHAROLE','KAMLESH','MANJU','2017-08-29','OBC','826645553567','','ARIHANT NAGAR','7000961233','14','1','A','32'],
+    ['KARTIK','NAMDEV','ASHISH','VANDANA','2020-04-27','OBC','855047658673','314058336','ARIHANT NAGAR','9993471675','568','1','A','33'],
+    ['KARTIK','SONI','PREM','BHAVNA','2019-11-16','OBC','826154542548','314491531','ARIHANT NAGAR','9826054635','19','1','A','34'],
+    ['KARTIKEY','MISHRA','KRIPA SHANKAR','KAVITA','2019-09-25','General','200774749028','','ARIHANT NAGAR','7225961092','55','1','A','35'],
+    ['LAVANSH','UPADHYAY','DEEPAK','CHANCHAL','2020-05-21','General','','','ARIHANT NAGAR','8871790807','300','1','A','36'],
+    ['LAVESH','PIROCHHA','SANI','DIVYA','2019-01-15','SC','208549742987','','MULTI','9993311509','36','1','A','37'],
+    ['NAITIK','KUMAWAT','MUKESH','MANJU','2020-05-08','OBC','','','ARIHANT NAGAR','6265744678','621','1','A','38'],
+    ['NAKSH','CHOUHAN','KESHAV','PRIYANKA','2020-01-20','OBC','893975011458','','ARIHANT NAGAR','9238146045','606','1','A','39'],
+    ['PRATIK','PRAJAPAT','BIJESH','AARTI','2020-06-01','OBC','790118067883','320031615','ARIHANT NAGAR','8719838364','27','1','A','40'],
+    ['RAJVEER','BUNDELA','RAMSINGH','REENA','2020-02-17','General','648494602767','','ARIHANT NAGAR','8602875919','49','1','A','41'],
+    ['RIYANSH','MALI','RAVI','ANKITA','2020-08-23','OBC','788583844271','318262433','GOMATGIRI','8224801666','468','1','A','42'],
+    ['SAJAN','SINGH RAJPUT','ARJUN SINGH','LAXMI','2020-04-24','General','','','ARIHANT NAGAR','9131422367','156','1','A','43'],
+    ['VIHAN','CHOUHAN','SANDEEP','JYOTI','2020-03-15','OBC','441049193378','','ARIHANT NAGAR','9174498149','5','1','A','44'],
+    ['YASH','MAKWANA','DINESH','POOJA','2019-10-19','ST','','','BUDHANIYA','7489267387','545','1','A','45'],
+    ['YUVIT','LAGAS','MOHAN','DIKSHA','2020-04-12','OBC','612443974901','319321110','ARIHANT NAGAR','9685371245','258','1','A','46'],
+    ['YUVRAJ','BHAVAR','RAKESH','LALITA','2018-07-12','ST','604763327811','322130656','ARIHANT NAGAR','9981615151','79','1','A','47'],
+    ['AARADHYA','SOLANKI','RAHUL','SONU','2019-12-02','General','283074962282','311103480','ARIHANT NAGAR','9617310441','492','2','A','1'],
+    ['AASHI','MALVIYA','KAPIL','ANJALI','2019-06-22','OBC','280973018278','312073327','GOMETESH CITY','9993314417','530','2','A','2'],
+    ['ANANYA','KUMARI','KUNDAN','REKHA DEVI','2018-03-21','OBC','','','MULTI','8871912601','634','2','A','3'],
+    ['CHAHAT','MISHRA','PUSHPENDRA','LAXMI','2019-10-24','General','','','SIDDARTH NAGAR','9993068867','510','2','A','4'],
+    ['DEWANSHI','MAKWANA','SUNIL','POOJA','2019-04-05','ST','956026559247','313367472','BUDHANIYA','9685946330','509','2','A','5'],
+    ['DISHA','SHARMA','JITENDRA','CHETNA','2019-01-12','General','','315387861','ARIHANT NAGAR','7224070518','203','2','A','6'],
+    ['DIVANSHIKA','ALAVA','SANJAY','REENA','2018-09-24','ST','447633511503','321268924','BHERU MAHARAJ','8839665079','353','2','A','7'],
+    ['DIVYANSHI','DASHAYA','PRAVIN','HEENA','2019-05-01','OBC','844526219911','315404036','JAMBUDI HAPSI','7879686478','359','2','A','8'],
+    ['DIVYA','SUTHAR','DINESH CHANDRA','GEETA','2018-10-23','OBC','841983458983','','GOMTESH','9713152851','296','2','A','9'],
+    ['DRASHIKA','MAKWANA','INDAR SINGH','REENA','2018-08-29','ST','','316717681','BUDHANIYA','8450804441','517','2','A','10'],
+    ['HARSHITA','RATHOD','MAHESH','KOMAL','2018-09-06','OBC','','','913 ARIHANT NAGAR','9617120522','582','2','A','11'],
+    ['HIMANSHI','CHANDEL','RAHUL','KAJAL','2018-12-25','ST','880835953189','314238694','','9770956055','615','2','A','12'],
+    ['HITANSHI','TIWARI','GAURAV','KAVITA','2019-05-10','General','682298516072','319891271','SIDDARTH NAGAR','7999108479','554','2','A','13'],
+    ['KANAK','SAVNER','UTTAM SINGH','PRIYA','2020-07-19','General','','313508283','ARIHANT NAGAR','6265671821','514','2','A','14'],
+    ['KAVYA','OJHA','DEEPAK','DIVYA','2019-10-19','General','441016366125','312897499','ARIHANT NAGAR','8349307473','265','2','A','15'],
+    ['KHUSHI','WANKHADE','NITIN','MEGHA','2019-02-10','OBC','796685963164','','MULTI','9111475905','459','2','A','16'],
+    ['MAHAK','CHOUHAN','SACHIN','HEENA','2017-12-09','OBC','673796299916','305677241','ARIHANT NAGAR','9753666716','214','2','A','17'],
+    ['MOUSUMI','DOLAI','GOUTAM','REKHA','2018-12-07','SC','488034306213','321460491','1292 ARIHANT NAGAR','9111833486','531','2','A','18'],
+    ['MINI','RAJPUT','RAHUL','RAMA','2018-10-06','General','329365469875','314106803','DHARAM TAKERI','7080881299','169','2','A','19'],
+    ['PALAK','SASTE','NARESH','MANJU','2019-03-20','ST','223654407742','310141711','BHERU MAHARAJ','7805060572','303','2','A','20'],
+    ['PRAKRUTI','MAKWANA','KAILASH','NEHA','2018-09-12','ST','203073241358','315153665','BUDHANIYA','9340198005','461','2','A','21'],
+    ['RADHIKA','PANCHAL','BHARAT','KRASHNA BAI','2018-08-17','OBC','856911692750','313225196','JAMBUDI HAPSI','9977131128','593','2','A','22'],
+    ['ROSHNI','PARMAR','RAJESH','REKHA','2019-04-20','OBC','704049936956','310201195','ARIHANT NAGAR','8982397833','414','2','A','23'],
+    ['SANSKRITI','RAJPUT','SURENDRA','KOUSHILYA','2020-03-05','General','560880011829','','ARIHANT NAGAR','9754039722','165','2','A','24'],
+    ['YAMINI','PATEL','GANESH','SAVITA','2019-10-31','OBC','334673578049','','ARIHANT NAGAR','9977886204','302','2','A','25'],
+    ['AARAV','CHOUHAN','DILIP','LAXMI','2019-06-29','OBC','772059607404','','GOMTESH','8224040891','70','2','A','26'],
+    ['AAYUSH','SHARMA','KAPIL','ROSHNI','2019-06-09','General','760389176953','319880807','ARIHANT NAGAR','9098513113','37','2','A','27'],
+    ['ABHIJEET','KODLI','YOGESH','BULBUL','2018-05-14','ST','622271755194','','BUDHANIYA','8770730156','639','2','A','28'],
+    ['ABHINANDAN','PAWAR','KAMAL','JYOTI','','OBC','','','SIDDARTH NAGAR','8889090223','362','2','A','29'],
+    ['ANIVESH','PRAJAPAT','VINOD','JYOTI','2020-05-03','OBC','713673194033','321414049','ARIHANT NAGAR','8109955061','389','2','A','30'],
+    ['ANSH','LODHI','AVTAR','SUNITA','2019-03-17','OBC','','318869519','ARIHANT NAGAR','9977380972','159','2','A','31'],
+    ['AYAN','BHURIYA','DILIP SINGH','REENA','2019-08-19','ST','628103080240','319880807','BHERU MAHARAJ','8770741448','308','2','A','32'],
+    ['ANURAG','SAMANTA','SANDEEP','KRISHNA','2018-04-05','General','491227703839','','ARIHANT NAGAR','8839812633','347','2','A','33'],
+    ['BHAVYA','YADAV','KRISHNA','VANDANA','2019-10-07','OBC','918204456200','315041457','1242/2 GOMETESH CITY','8818812230','539','2','A','34'],
+    ['DEVANSH','MOURYA','RAVI','SADHNA','2019-05-30','OBC','607150413250','311003038','JAMBUDI HAPSI','9926861878','168','2','A','35'],
+    ['ESHAN','VISHWAKRMA','DEVRAM','SHIVANI','2019-02-13','OBC','458271569607','','ARIHANT NAGAR','7879993611','215','2','A','36'],
+    ['GORANSH','SANWANE','DEEPAK','UMA','2016-12-05','SC','999783090630','310266018','JAMBUDI HAPSI','8103088459','360','2','A','37'],
+    ['KARTIK','CHOUHAN','SHOBHARAM','SADHANA','2019-02-13','ST','841726995236','318344252','ARIHANT NAGAR','7773086076','239','2','A','38'],
+    ['KARTIK','PANTHI','NITESH','KAJAL','2019-09-26','General','958067236465','','ARIHANT NAGAR','9754539750','134','2','A','39'],
+    ['KRISHNA','ROYAL','ANIL','AARTI','2018-09-03','OBC','337815063335','320650813','ARIHANT NAGAR','7828124421','75','2','A','40'],
+    ['NEERAJ','GURJAR','DINESH CHANDRA','LEELA','2018-02-03','OBC','991498813511','318585693','706 ARIHANT NAGAR','9399212033','599','2','A','41'],
+    ['NIDHIR','GIRI GOSWAMI','CHANDRESH','MANISHA','2019-08-09','OBC','327670898046','322595334','ARIHANT NAGAR','9826239413','630','2','A','42'],
+    ['NITYANSH','MEENA','SANTOSH','TEENA','2019-04-22','OBC','532747326705','','ARIHANT NAGAR','9977817116','125','2','A','43'],
+    ['NAITIK','SASTE','NITESH','RUMAN','2019-04-12','ST','615797409912','','BHERU MAHARAJ','9977672610','257','2','A','44'],
+    ['PARTH','BHATIYA','PANKAJ','MAMTA','2018-07-19','OBC','371439212824','','ARIHANT NAGAR','7987182352','119','2','A','45'],
+    ['SAAKSH','UMARIYA','HARESINGH','PROMILA','2019-10-02','SC','211016959488','','ARIHANT NAGAR','9977997246','515','2','A','46'],
+    ['TANMAY','SASTE','VINOD','MANISHA','2017-11-30','ST','827191318707','309832424','BHERU MAHARAJ','9399770026','256','2','A','47'],
+    ['VIHAN','SAHU','OMPRAKASH','NEHA','2018-10-01','OBC','489396331095','314761799','ARIHANT NAGAR','8819041075','442','2','A','48'],
+    ['YASH','BUNDELA','KRISHNA','SEEMA','2019-05-10','General','359710484331','314993473','ARIHANT NAGAR','9617374097','48','2','A','49'],
+    ['ADITI','TOMAR','SONU','SNEHLATA','2018-03-16','General','638206223859','310056339','410 SIDDARTH NAGAR','7024661942','273','3','A','1'],
+    ['ANUSHKA','NAMDEV','CHANDAN','PINKEE','2017-03-31','OBC','','','ARIHANT NAGAR','7898409430','286','3','A','2'],
+    ['AVANI','AASKAR','RAHUL','LALITA','2018-08-06','OBC','366067353390','','ARIHANT NAGAR','9755940530','507','3','A','3'],
+    ['DARSHANA','LONE','NILESH','SAMIKSHA','2017-03-20','SC','723974930351','','RAM KAMAL','9770696079','565','3','A','4'],
+    ['DISHA','DHANAWAT','DEEPAK','RAVINA','2017-07-10','OBC','558882428070','320785511','ARIHANT NAGAR','8818883822','349','3','A','5'],
+    ['DIVYANSHI','BADOLE','SUNIL','BHAVNA','2017-10-06','SC','457082813339','305777599','955 ARIHANT NAGAR','9479972199','537','3','A','6'],
+    ['HIMANSHI','VERMA','RAHUL','POOJA','2017-09-15','OBC','','311046684','JAMBUDI HAPSI','9399421998','505','3','A','7'],
+    ['HITANSHI','YADAV','BHURELAL','PAPITA','2018-10-21','OBC','','','ARIHANT NAGAR','8959793264','182','3','A','8'],
+    ['ISHVI','AACHARYA','RAGHVENDRA','SHWETA','2018-11-04','General','381367891279','321560256','ARIHANT NAGAR','8962466087','201','3','A','9'],
+    ['JAHNAVI','LOHAR','KAMLESH','SANJU','2018-03-19','OBC','760476804901','','ARIHANT NAGAR','9108778483','490','3','A','10'],
+    ['JIYA','DUOD','BHURELAL','MANISHA','2017-06-30','OBC','','309490396','SIDDARTH NAGAR','9303636110','624','3','A','11'],
+    ['KHUSHI','KUMAWAT','SHYAMLAL','PUSHPA','2016-11-06','OBC','725244858839','305777698','ARIHANT NAGAR','9630189761','387','3','A','12'],
+    ['MAHI','YADAV','SADARAM','MANISHA','2017-07-08','OBC','','','GOSHALA','9009229140','269','3','A','13'],
+    ['NAYRA','GIRI','SUNIL','POOJA','2017-03-29','OBC','727319153065','306747933','ARIHANT NAGAR','7610531121','486','3','A','14'],
+    ['PARI','RAYAL','ANIL','ARTI','2017-01-07','OBC','663777118213','320650814','ARIHANT NAGAR','7828124421','76','3','A','15'],
+    ['PARIDHI','DHANWARE','VIJAY SINGH','PINKI','2018-09-26','SC','979271735585','313275518','DEV DHARAM TANKI','8965001834','472','3','A','16'],
+    ['PIHU','RAYAL','ANIL','ARTI ROYAL','2017-07-01','OBC','640873780443','320650815','ARIHANT NAGAR','7828124421','74','3','A','17'],
+    ['PRIYANSHI','DHOLPURIYA','NARENDRA','MANISHA','2017-07-29','SC','774069962713','304777565','JAMBUDI HAPSI','9752146140','342','3','A','18'],
+    ['RAJVI','MISHRA','RAJESH','TANNU','2017-11-01','General','359236644433','314411946','ARIHANT NAGAR','9399284749','188','3','A','19'],
+    ['RAVEENA','CHOUDHARY','SANTOSH','MAMTA','2018-07-20','OBC','451915985362','313610094','BUDHANIYA','9981110865','462','3','A','20'],
+    ['SHINU','SHARMA','PRAKASH CHAND','ASHA','2018-06-17','OBC','937442566028','311144659','ARIHANT NAGAR','9770199935','29','3','A','21'],
+    ['TRAPTI','SAHU','OMPRAKASH','NEHA','2017-09-23','OBC','776959819421','307676554','GOMETESH CITY','8819041075','469','3','A','22'],
+    ['AARAV','GOUR','RAKESH','ARCHANA','2018-08-08','OBC','568830127179','312152972','','','319','3','A','23'],
+    ['ANMOL','RAO','LOKESH','PUJA RAO','2016-01-17','OBC','408023320975','302706740','ARIHANT NAGAR','7999822326','478','3','A','24'],
+    ['BHAVYANSH','MAKWANA','SANTOSH','RACHNA','2017-09-01','SC','754420767778','315153664','BUDHANIYA','9754261530','431','3','A','25'],
+    ['DIVYANSH','DHANAWAT','PANKAJ','AARTI','2017-10-23','OBC','941724378314','320785510','ARIHANT NAGAR','8818883822','348','3','A','26'],
+    ['GOPAL','PANDEY','RAVINDRA','NISHA','2018-04-12','General','840058707680','312355198','ARIHANT NAGAR','6265240039','534','3','A','27'],
+    ['GOUTAM','MAKWANA','AJAY','BHARTI','2018-11-16','ST','','317452146','BUDHANIYA','9098508574','596','3','A','28'],
+    ['KUNAL','BABESKAR','VINOD','KIRAN','2016-12-14','OBC','627120395366','316133801','BHERU MAHARAJ','8085999278','485','3','A','29'],
+    ['NAKSH','DHOLPURE','ARJUN','MUSKAN','2018-05-30','SC','312903736575','','MULTI','9370067593','38','3','A','30'],
+    ['RANVEER','MAKWANA','SUNEEL','POOJA','2016-11-27','ST','590217056985','306563894','BUDHANIYA','9685946330','502','3','A','31'],
+    ['RANVEER','SINGH','ROHIT','NISHA','2017-04-13','General','972726903785','312237446','MULTI','9977651703','470','3','A','32'],
+    ['RUDRAKSH','SHARMA','RAHUL','SONALI','2018-12-21','General','579299665706','','ARIHANT NAGAR','8458889062','542','3','A','33'],
+    ['VANSH','KUSHWAH','BABULAL','KAUSHALIYA','2018-10-11','OBC','','315114272','ARIHANT NAGAR','7987752065','17','3','A','34'],
+    ['VEDANSH','MEENA','GULSHAN','POOJA','2017-07-01','OBC','663777118213','320650814','ARIHANT NAGAR','8349298412','191','3','A','35'],
+    ['AAROHI','RAJPUT','JITENDRA','DEEKSHA','2018-01-17','General','424013844787','314305323','1277 ARIHANT NAGAR','8770568576','601','4','A','1'],
+    ['AASTHA','MEHRA','MURARILAL','DALI','2017-10-25','SC','432494285398','311858756','ARIHANT NAGAR','9669498827','363','4','A','2'],
+    ['BHAKTI','TONGARA','NILESH','REKHA','2017-09-05','General','729241757808','316277657','ARIHANT NAGAR','9630074421','464','4','A','3'],
+    ['BHAVIKA','KAUR','AMARDEEP SINGH','SURABHI KAUR','2015-01-19','General','285175902106','','SIDDARTH NAGAR','8224959911','483','4','A','4'],
+    ['BHAVYA','VERMA','RAVI','BHAVNA','2016-07-19','OBC','919755482950','305804157','ARIHANT NAGAR','7987851780','211','4','A','5'],
+    ['DISHA','RAGHUVANSHI','RAHUL','RANU','2017-08-06','General','','307462227','ARIHANT NAGAR','9754873230','324','4','B','6'],
+    ['DIVYA','GOYAL','ARJUN GOYAL','KIRAN','2017-04-19','OBC','338941049109','314365781','ARIHANT NAGAR','9753564440','444','4','A','7'],
+    ['DIVYANSHI','MOURYA','RAVI','SADHNA','2017-02-25','OBC','304858256484','311003033','JAMBUDI HAPSI','9926861878','167','4','B','8'],
+    ['JIYA','LODHI','SANTOSH','SOMA','2018-10-04','OBC','414466718783','318996351','ARIHANT NAGAR','8109778761','340','4','B','9'],
+    ['NAVYA','JAIN','RUPESH','RADHIKA','2019-05-18','General','602730785785','','ARIHANT NAGAR','8319482678','216','4','A','10'],
+    ['NANDINI','CHITODIYA','ISHAVAR SINGH','BATONI','2014-09-06','General','','','GOSHALA','9669189230','498','4','B','11'],
+    ['NIHARIKA','CHOKSE','MURARIDHAR','POOJA','2018-07-22','OBC','','','ARIHANT NAGAR','7697636176','34','4','B','12'],
+    ['PARTHI','PANCHAL','JITENDRA','AARTI','2018-04-27','OBC','','','1270 ARIHANT NAGAR','7879267976','540','4','A','13'],
+    ['POORNIMA','DANGI','PRABHAN SINGH','KAMNI','2018-09-24','General','525667541682','318961431','ARIHANT NAGAR','9691237678','174','4','B','14'],
+    ['PURVI','CHAROLE','LANKESH','HEENA','2016-06-17','OBC','635287326971','305669749','ARIHANT NAGAR','9770083970','10','4','A','15'],
+    ['RAKHI','DANGI','PRABHAN SINGH','KAMNI','2017-02-26','General','405374026608','318961438','ARIHANT NAGAR','9691237678','170','4','A','16'],
+    ['RASHMI','GOSWAMI','NILESH','PINKEY','2016-12-30','OBC','560739851233','314281006','ARIHANT NAGAR','6263537629','500','4','B','17'],
+    ['SRUSHTI','SOLANKI','RAHUL S','SONU','2017-06-04','General','436150285825','307462031','ARIHANT NAGAR','9617310441','496','4','A','18'],
+    ['SWARA','ACHARYA','RAGHVENDRA','SHWETA','2016-03-25','General','553533640660','310592218','ARIHANT NAGAR','8962466087','202','4','A','19'],
+    ['SWATI','SONGARA','SHUBHAM','RANU','2017-07-02','OBC','794272121531','313382665','ARIHANT NAGAR','9826556634','197','4','A','20'],
+    ['VAIDEHI','RAJPUT','PINTU','NEHA','2017-12-30','General','502708416275','314145648','ARIHANT NAGAR','8085776161','248','4','A','21'],
+    ['ABHIMANYU','LODHI','GHANSHYAM','SAPNA','2016-09-25','OBC','214005261664','313067883','GOMETESH CITY','7724801033','463','4','A','22'],
+    ['ADITY','SAUNER','DEEPAK S','MANJU','2016-07-05','General','886725263550','305439304','ARIHANT NAGAR','9179023238','22','4','A','23'],
+    ['ANSH','PATEL','AANAND','SAPNA','2016-06-02','OBC','','','ARIHANT NAGAR','6390479074','259','4','B','24'],
+    ['AZAD','AHIRWAL','RAJKUMAR','GUDDI BAI','2017-08-15','OBC','297596338597','','ARIHANT NAGAR','6266651517','86','4','A','25'],
+    ['BHUWAN','SINGH MEVADA','MANGAL','POOJA','2014-11-08','OBC','512198418955','301063206','ARIHANT NAGAR','9669655270','622','4','A','26'],
+    ['DARSHAN','CHOUHAN','JITENDRA','MEENA','2017-11-30','OBC','870809026764','320022873','ARIHANT NAGAR','9713243029','432','4','B','27'],
+    ['KUSH','GIRI GOSWAMI','AAKASH','RANI','2017-08-08','OBC','443098981952','306019038','ARIHANT NAGAR','9981543436','330','4','A','28'],
+    ['LAKSHYA','YADAV','KRISHNA','VANDANA','2017-12-28','OBC','404819785092','315041456','1242/2 GOMETESHCITY','8818812230','538','4','A','29'],
+    ['LOVE','GIRI GOSWAMI','AAKASH','RANI','2017-08-08','OBC','963818807650','306019037','ARIHANT NAGAR','9981543436','329','4','A','30'],
+    ['PIYUSH','PANWAR','KALYANSINGH','SANGEETA  BAI','2015-10-30','OBC','','','ARIHANT NAGAR','7415854997','352','4','A','31'],
+    ['PRATHMESH','PAWAR','ROHIT','KOMAL','2018-03-05','OBC','732158231338','312544871','ARIHANT NAGAR','7028325602','200','4','A','32'],
+    ['RISHABH','CHOUHAN','SONU','KOMAL','2016-06-26','OBC','870809026764','','ARIHANT NAGAR','7869154748','192','4','B','33'],
+    ['AMBIKA','RATHORE','INDAL SINGH','SHALU','2015-08-10','OBC','643019953757','320065835','ARIHANT NAGAR','7651845691','225','5','A','1'],
+    ['DHARA','PARMAR','AKSHAY','ARCHNA','2016-03-05','SC','801740183218','313638544','ARIHANT NAGAR','7898069999','171','5','A','2'],
+    ['HARLEEN','JHALA','SHAILENDRA','AAYUSHI','2016-12-16','General','470541402555','316261212','ARIHANT NAGAR','9617591403','445','5','A','3'],
+    ['KANAK','SAWNER','ASHISH','NEMIKA','2015-02-10','SC','757870707861','304855703','1292 GOMETESH','9826880335','561','5','A','4'],
+    ['KHUSHI','MEVADA','MANGAL','POOJA','2013-06-11','OBC','359647898668','301063329','ARIHANT NAGAR','9669655270','620','5','A','5'],
+    ['MAHIMA','RAJPUT','KAMAL RAJPUT','MONIKA','2016-01-26','General','705855752071','304932234','ARIHANT NAGAR','9926720303','253','5','A','6'],
+    ['NAVYA','MISHRA','PUSHPENDRA','LAXMI','2017-09-25','General','978688412536','323402432','SIDDARTH NAGAR','9993068867','23','5','A','7'],
+    ['NIKITA','JUPATIYA','SAMLESH','MAHIMA','2016-11-02','SC','869763255401','302809281','ARIHANT NAGAR','9009934968','546','5','A','8'],
+    ['PRISHA','YADAV','ATISH KUMAR','RINTA','2016-04-20','OBC','550782827611','318208526','ARIHANT NAGAR','9993191501','151','5','A','9'],
+    ['RISHIKA','GURJAR','GANESH','DURGA','2015-09-18','OBC','738223907963','304046361','GOMETESH CITY','9893441035','549','5','A','10'],
+    ['SOMIKA','DANGI','HARNAM','SUMAN','2015-06-29','General','704530871359','311714342','ARIHANT NAGAR','6261452525','289','5','A','11'],
+    ['TANU','SINGH','ANOOP SINGH','ARCHNA','2017-07-16','General','831721437416','323918703','ARIHANT NAGAR','9336268356','2','5','A','12'],
+    ['ADITYA','SASTE','NARESH','MANJU','2016-04-14','ST','295359128570','310141709','BHERU MAHARAJ','6260854363','617','5','A','13'],
+    ['AELEX','BHURIYA','DEELIP','REENA','2017-01-20','ST','809745414844','','BHERU MAHARAJ','8770741448','586','5','A','14'],
+    ['CHITRANSH','YADAV','GOVIND','MONIKA','2016-09-18','OBC','357892138906','314855704','ARIHANT NAGAR','6265987652','105','5','A','15'],
+    ['HIMANSHU','CHOUHAN','MONU','BULBUL','2017-04-05','General','','','ARIHANT NAGAR','7869154748','26','5','A','16'],
+    ['KARTIK','SASTE','SURESH','TARABAI','2013-03-13','ST','461334526150','164033018','BHRU MAHARAJ','9977230372','589','5','A','17'],
+    ['MANGAL','MAKWANA','JITENDRA','AASHA','2016-02-09','ST','932627016104','306563861','BUDHANIYA','9589715152','524','5','A','18'],
+    ['MOHIT','CHOUHAN','YOGESH','PINKY','2015-08-04','OBC','310480287046','306243821','SIDDARTH NAGAR','9826720906','457','5','A','19'],
+    ['PRIYANSHU','CHOUHAN','MONU','BULBUL','2015-05-02','General','367919650119','','ARIHANT NAGAR','7869154748','25','5','A','20'],
+    ['PUSHPENDRA','RAJPUT','PREMNARYAN','MADHURI','2016-03-24','General','306612077815','311983381','407 RISHI NAGAR','7974633200','541','5','A','21'],
+    ['RISHABH','RANAVAT','JITENDRA SINGH','VARSHA','2016-05-25','OBC','499001038925','312574355','405 ARIHANT NAGAR','8815270582','587','5','A','22'],
+    ['RISHI','CHAROLE','KAMLESH','MANJU','2015-05-31','OBC','653508861363','304134724','ARIHANT NAGAR','7000961233','13','5','A','23'],
+    ['RISHIRAJ','DHANAWAT','PANKAJ','AARTI','2016-04-01','OBC','780929680555','320785509','ARIHANT NAGAR','8818883822','504','5','A','24'],
+    ['ROHAN','BADOLE','SUNIL','BHAVNA','2016-03-26','SC','601968190288','301426973','955 ARIHANT NAGAR','9479972199','536','5','A','25'],
+    ['SHIVM','VASUNIYA','ANAND','SAVITRI BAI','2014-03-01','ST','597362800909','200406021','BHERU MAHARAJ','8120771556','633','5','A','26'],
+    ['TANISHK','MAKWANA','KAILASH','NEHA','2016-05-16','ST','236547056285','305103358','JAMBURDI HAPSI','9340198005','489','5','A','27'],
+    ['VIDYANSH','MOURY','LAKHAN','BABITA','2016-08-06','OBC','374686842372','','JAMBUDI HAPSI','9826687533','338','5','A','28'],
+    ['VIVEK','RATHORE','BHAGWAN','SEEMA','2015-10-30','OBC','999364469334','304602930','ARIHANT NAGAR','9340715204','219','5','A','29'],
+    ['YASH','CHAOUHAN','SACHIN','HEENA','2015-07-01','OBC','482231896625','305677240','ARIHANT NAGAR','9753666716','227','5','A','30'],
+    ['YASH','JAIN','RUPESH','RADHIKA','2016-08-14','General','602730785785','315372711','ARIHANT NAGAR','8319482678','217','5','A','31'],
+    ['YASHRAJ','KHARAWALIYA','PREM','JIMEE','2016-04-26','General','908077594204','303268018','SIDDARTH NAGAR','9098519041','512','5','A','32'],
+    ['YUVRAJ','JAISWAL','MILAN','KAVITA','2017-02-11','OBC','468802132104','321476985','GOMTESH','9630802527','45','5','A','33'],
+    ['AAROHI','MAKWANA','DINESH','POOJA','2016-05-17','ST','350297665154','308847926','JAMBURDI HAPSI','7489267387','520','6','A','1'],
+    ['AVIKA','GUND','SANJAY','SEEMA','2014-01-13','OBC','867745047926','200569059','ARIHANT NAGAR','8269866216','434','6','A','2'],
+    ['BHAVIKA','RAGHUWANSHI','SACHIN','ANJALI','2014-07-12','General','752209779448','198732108','ARIHANT NAGAR','9669690892','33','6','A','3'],
+    ['DEVIKA','CHAROLE','LANKESH','HINA','2014-09-27','OBC','455367795618','305669748','ARIHANT NAGAR','9770083970','12','6','A','4'],
+    ['DHWANI','KAMEDIYA','ANAND','POONAM','2015-07-02','OBC','677553306636','3214699225','GOMTESH','8225854570','321','6','A','5'],
+    ['DIVYANSHI','LODHI','SHIVRAJ SINGH','MEENA','2015-05-15','OBC','854523965141','300713934','ARIHANT NAGAR','8871089885','378','6','A','6'],
+    ['HARSHITA','PRAJAPAT','MUKESH','RANI','2015-01-07','OBC','451326131051','308177830','1297 GOMTESH CITY','8889990872','556','6','A','7'],
+    ['ISHIKA','MAKWANA','INDER SINGH','REENA','2013-11-15','ST','710271456699','304251565','BUDHANIYA','8450804441','521','6','A','8'],
+    ['KHUSHI','RAJPUT','ARJUN SINGH','LAXMI','2016-05-04','OBC','308433676808','323918689','ARIHANT NAGAR','9131422367','157','6','A','9'],
+    ['KOMAL','RAM','HARINATH  RAM','POOJA  RAM','2015-08-24','SC','674807845048','300033005','ARIHANT NAGAR','8602644174','62','6','A','10'],
+    ['MAHAK','MISHRA','PUSHPENDRA','LAXMI','2016-02-22','General','303104981594','323402431','SIDDARTH NAGAR','9993068867','24','6','A','11'],
+    ['MAHI','VERMA','KAPIL','SONAM','2015-02-06','SC','217792503693','161105273','ARIHANT NAGAR','7440702391','108','6','A','12'],
+    ['PUNAM','CHANDEL','DINESH','SAPNA','2015-04-03','OBC','555230669616','315206656','JAMBUDI HAPSI','9926861878','164','6','A','13'],
+    ['SANCHI','DEVDA','MAHENDRA','SONU','2013-08-05','ST','216618772520','308210925','ARIHANT NAGAR','9303078438','244','6','A','14'],
+    ['SWETA','SINGH','ANOOP SINGH','ARCHANA SINGH','2015-09-15','General','863377773984','323918702','ARIHANT NAGAR','9336268356','1','6','A','15'],
+    ['TANVI','VERMA','RAHUL','POOJA','2015-12-09','OBC','453334704327','311046685','JAMBUDI HAPSI','9399421998','368','6','A','16'],
+    ['VAN','SHIKA CHOUHAN','JANU','GAYTREE','2014-01-05','OBC','571545676318','197660446','ARIHANT NAGAR','8889159922','548','6','A','17'],
+    ['ANIKET','KHADA','DIPANKAR','LAXMI','2016-01-22','General','952531335086','307462300','ARIHANT NAGAR','9098023192','533','6','A','18'],
+    ['ANMOL','SONGARA','SHUBHAM','RANU','2015-05-09','OBC','349514762469','313382663','ARIHANT NAGAR','9826556634','196','6','A','19'],
+    ['ASHVIK','LODHI','GHANSHYAM','SAPNA','2014-06-29','OBC','290662862714','304658434','GOMETESH CITY','7724801033','529','6','A','20'],
+    ['DANISH','MOTIYANI','RAJKUMAR','SIMRAN','2015-07-08','General','425267408115','305975500','SIDDARTH NAGAR','9424534417','369','6','A','21'],
+    ['JAY','DOUD','BHURALAL','MANISHA','2013-10-12','OBC','','301091850','SIDDARTH NAGAR','9303636110','625','6','A','22'],
+    ['KHEMCHAND','KEWAT','LAXMAN','LALITA','2016-05-31','OBC','','199980132','SUKSANTOSH','8085497329','178','6','A','23'],
+    ['LAXY','JAT','PREM SINGH','HEENA','2014-12-04','OBC','971496079605','307738790','ARIHANT NAGAR','9827220158','292','6','A','24'],
+    ['PRATIK','YADAV','RADHESHYAM','BHARTI','2015-04-08','OBC','863377773984','302993375','ARIHANT NAGAR','9754418178','275','6','A','25'],
+    ['PRIYANK','SINGH SOLANKI','SOHAN SINGH','PINKY','2014-07-05','General','522055500900','190009180','ARIHANT NAGAR','8120655506','92','6','A','26'],
+    ['RAVI','AHIRWAL','RAJKUMAR','GUDDI BAI','2015-07-27','OBC','992409875539','320783910','ARIHANT NAGAR','6266651517','85','6','A','27'],
+    ['SAMARTH','SOLANKI','MUNSHI','SUDARSHANA','2014-06-26','OBC','802271437627','323903343','JAMBURDI HAPSI','7773891321','576','6','A','28'],
+    ['SAMRAT','PANTHI','JITENDRA','DIYA','2015-08-23','OBC','889128432191','307872417','ARIHANT NAGAR','9754539750','132','6','A','29'],
+    ['VANSH','CHOUHAN','ANAND SINGH','SANGITA','2015-03-05','OBC','788501847318','300257713','ARIHANT NAGAR','8719957697','550','6','A','30'],
+    ['VIRAJ','CHOUHAN','NILESH','CHETANA','2013-10-02','OBC','280265765717','323766943','SIDDARTH NAGAR','7999901282','522','6','A','31'],
+    ['AKANSA','LODHI','GHANSHYAM','SAPNA','2012-12-18','OBC','315879424658','301380112','GOMETESH CITY','7724801033','417','7','A','1'],
+    ['ANGEL','AASKAR','RAHUL','LALITA','2014-02-14','OBC','471721264056','301352642','ARIHANT NAGAR','9755940530','416','7','A','2'],
+    ['ANMOL','DASHAYA','PRAVIN','HEENA','2013-09-26','OBC','868555225375','306895088','JAMBUDI HAPSI','7879686478','371','7','A','3'],
+    ['AYUSHI','CHOUHAN','NILESH','CHETNA','2011-11-29','OBC','947391973014','321770482','SIDDARTH NAGAR','7999901282','421','7','A','4'],
+    ['DIVYA','PAWAR','DINESH','BABITA','2013-05-23','OBC','661104441481','198207672','SATPUDA','8733002536','366','7','A','5'],
+    ['HAVIKA','RATHORE','BHAGWAN','SMEETA','2012-06-22','OBC','593660364344','162321599','ARIHANT NAGAR','9340715204','218','7','A','6'],
+    ['IKSHA','GOYAL','ARJUN','KIRAN','2014-09-04','OBC','309866620683','308847186','ARIHANT NAGAR','9753564440','419','7','A','7'],
+    ['KOMAL','GOSWAMI','NAGUGIR','KUSHAL','2012-11-02','General','594628114042','199110039','SATPUDA','9691936616','184','7','A','8'],
+    ['LAKSHMI','MALVIYA','RAJESH','PINKI','2015-04-14','OBC','927200535312','306443221','ARIHANT NAGAR','7974013414','276','7','A','9'],
+    ['MEGHA','MEGHA','SANJAY','SONUBAI','2015-02-04','ST','735545392232','308503993','BUDHANIA','9179472621','629','7','A','10'],
+    ['MINAKSHI','CHANDRAVANSHI','SEETARAM','RENUKA','2015-04-12','OBC','635925779616','316429823','ARIHANT NAGAR','9977125639','250','7','A','11'],
+    ['NISHA','PARMAR','RAM PRASAD','KOMAL','2014-09-02','OBC','576935540145','307505642','SIDDARTH NAGAR','8889583246','418','7','A','12'],
+    ['PALAK','MAKWANA','CHHAGANLAL','SANGEETA','2014-04-19','OBC','238409574655','302587882','BUDHANIYA','8827389338','272','7','A','13'],
+    ['PARI','CHAROLE','LANKESH','HEENA','2012-11-18','OBC','591632568827','305669747','ARIHANT NAGAR','9770083970','11','7','A','14'],
+    ['PRACHI','CHAROLE','KAMLESH','MANJU','2013-06-16','OBC','668008510618','304134723','ARIHANT NAGAR','7000961233','15','7','A','15'],
+    ['PRAGYA','YADAV','RADHESHYAM','BHARTI','2013-08-02','OBC','787906517989','302992780','ARIHANT NAGAR','9754418178','274','7','A','16'],
+    ['RADHIKA','NAMDEV','CHANDAN','PINKEE','2013-11-03','OBC','659108368421','','ARIHANT NAGAR','','293','7','A','17'],
+    ['RAJSHRI','PAWAR','ROHIT','KOMAL','2015-05-02','OBC','897507585228','132984543','ARIHANT NAGAR','7028325602','199','7','A','18'],
+    ['ABHINANDAN','YADAV','SURESH','DURPTA','2014-05-18','OBC','960749958798','303945549','NENOD','9977205653','180','7','A','19'],
+    ['ANSHU','TOMAR','JITENDRA','MAMTA','2015-04-20','General','931314143446','304940865','SIDHARTH','8319528330','87','7','A','20'],
+    ['DHANRAJ','CHOUHAN','DILIP','LAXMI','2014-01-01','OBC','920173687603','197985428','GOMTESH','8224040891','71','7','A','21'],
+    ['DIVYANSHU','KUSHWAH','JAGBHAN','GEETA','2014-05-05','OBC','715786906382','303494890','ARIHANT NAGAR','7987752065','18','7','A','22'],
+    ['JITENDRA','CHOUHAN','DINESH','KIRAN BAI','2014-01-09','ST','514912031165','303661916','BHERUMAHARAJ','7389662072','604','7','A','23'],
+    ['KESHAV','CHANDRAVANSHI','SUNIL','SARITA','2014-02-06','OBC','308433676808','198145731','ARIHANT NAGAR','9826923863','158','7','A','24'],
+    ['KUNAL','CHOUDHARY','SANTOSH','RACHANA','2013-09-14','OBC','224165905425','317864678','BUDHANIYA','6260010240','511','7','A','25'],
+    ['KUNAL','SISODIYA','NARENDRA','REENA','2013-07-13','General','805543229588','194439924','GOMTESH','6262734476','83','7','A','26'],
+    ['MITHILESH','PAWAR','DHEERAJ','YAMINI','2014-05-08','General','934098238538','320147571','ARIHANT NAGAR','8839663439','288','7','A','27'],
+    ['NARAYAN','CHOUHAN','DINESH','KIRAN BAI','2011-11-01','ST','732458726082','199076667','BHERUMAHARAJ','7389662072','603','7','A','28'],
+    ['OMPRAKASH','GURJAR','PUSHKAR LAL','PREM BAI','2014-07-23','OBC','869306326556','178570820','GOMTESH','9826818537','209','7','A','29'],
+    ['RISHIKESH','YADAV','RAMNIVAS','CHHAYA','2014-08-30','OBC','','323864177','SAMARTH DRIM','7803979542','234','7','A','30'],
+    ['RUDRA','JAISWAL','MILAN','KAVITA','2015-02-11','OBC','832352860477','302275582','GOMTESH','9630802527','46','7','A','31'],
+    ['VEER','THAKUR','BIRJU','KALPANA','2011-10-27','General','695863733551','100995127','ARIHANT NAGAR','7869427427','122','7','A','32'],
+    ['DIKSHA','PARMAR','SAWAI SINGH','REKHA','2013-07-25','OBC','896176199228','306639160','SAMARTH CITY','9926014983','475','8','A','1'],
+    ['HIMANGI','NARWALE','RAVI','MILEE','2013-11-23','SC','682062875380','309761561','MULTI','9644076797','120','8','A','2'],
+    ['JAGRATI','PANWAR','CHANDAR SINGH','NIRMALA','2013-10-12','OBC','776118562224','312018905','SIDHARTH','9630879617','372','8','A','3'],
+    ['KANIKA','DAWAR','MAHENDRA','RINA','2014-04-14','ST','990798470716','300173722','BUDHANIYA','9685946330','480','8','A','4'],
+    ['KHUSHI','CHOUHAN','DEELIP','LAXMI','2011-07-16','OBC','287726235172','158827609','GOMTESH','8224040891','77','8','A','5'],
+    ['NAVYA','LUHAR','LAXMAN','BANTI','2014-08-29','OBC','921741447044','320294348','ARIHANT NAGAR','8875464478','447','8','A','6'],
+    ['LAXMI','AHIRWAL','RAJKUMAR','GUDDI BAI','2013-08-31','SC','696951334320','320783912','ARIHANT NAGAR','6266651517','84','8','A','7'],
+    ['PRIYANSHI','TOMAR','JITENDRA','MAMTA','2013-02-01','General','911974213350','304940862','SIDHARTH','8319528330','96','8','A','8'],
+    ['RADHIKA','RAJPUT','ARJUN','LAXMI','2013-04-10','OBC','747259350954','','ARIHANT NAGAR','9131422367','153','8','A','9'],
+    ['RAJANI','YADAV','RAMNIVAS','CHHAYA','2012-11-12','OBC','351216844697','102887128','SAMATH DRIM','7803979542','228','8','A','10'],
+    ['RISHIKA','PAWAR','KAMAL','JYOTI','2013-08-31','OBC','912422666426','305933566','SIDDARTH NAGAR','8889090223','373','8','A','11'],
+    ['ROMA','CHETWANI','ANIL','MADHU','2012-12-13','General','385394439496','305230646','SIDHARTH','7415025873','163','8','A','12'],
+    ['SANDHYA','VISHWKARMA','BALKRISHNA','RITU','2013-03-12','OBC','480316180092','312587351','ARIHANT NAGAR','9826729179','278','8','A','13'],
+    ['SHANU','SHARMA','VIJAY','VANDANA','2013-01-15','General','729644131330','302788273','ARIHANT NAGAR','9098831447','133','8','A','14'],
+    ['VIDHYA','PRAJAPAT','MUKESH','REKHA','2013-12-13','OBC','819820943332','180949652','ARIHANT NAGAR','9753237032','230','8','A','15'],
+    ['AYUSH','DEVDA','MAHENDRA','SONU','2011-11-16','ST','407684803794','310272116','ARIHANT NAGAR','9303078438','243','8','A','16'],
+    ['ABHISHEKH','BOYAT','AMIT','REENA','2012-10-31','SC','940878421974','','MULTI','8817759434','479','8','A','17'],
+    ['AKSHAT','SISODIYA','NARENDRA','REENA','2011-12-09','SC','592286279737','123391362','GOMTESH','6262734476','82','8','A','18'],
+    ['DAKSH','JHALA','SHAILENDRA SINGH','AAYUSHI','2014-01-08','General','309897726760','316261216','ARIHANT NAGAR','9617591403','526','8','A','19'],
+    ['PRINCE','MAKWANA','JAGIDAR','LAXMI','2013-01-26','SC','881688352023','308123226','BUDHANIYA','8889361120','570','8','A','20'],
+    ['PRINCE','MALVIYA','SATYANARAYAN','SANGEETA','2012-01-19','OBC','425558165935','308586996','ARIHANT NAGAR','9977875609','435','8','A','21'],
+    ['RAJVEER','YADAV','NARYAN','MANISHA','2014-06-13','OBC','796618080680','302508785','ARIHANT NAGAR','7771873884','161','8','A','22'],
+    ['RISHI','PARMAR','RAMPRASAD','KOMAL','2012-01-06','OBC','994730196347','307505641','SIDDARTH NAGAR','8889583246','579','8','A','23'],
+    ['RUDRA','CHOUHAN','SANDEEP','JYOTI','2012-06-25','OBC','508946780391','155636119','ARIHANT NAGAR','9174498149','6','8','A','24'],
+    ['SACHIN','SARODE','GIRISH','JYOTI','2012-12-12','OBC','664373463803','320244546','MULTI','9977651703','527','8','A','25'],
+    ['VIRAT','PARMAR','VIJENDRA','NEHA','2013-07-21','OBC','970627381664','311034715','ARIHANT NAGAR','9713780644','476','8','A','26'],
+    ['VINIT','MANGROLE','MANGESH','ANITA','2011-09-20','General','884618128972','103550410','BAHUBALI NAGAR','7974642605','528','8','A','27'],
+    ['AARUSHI','SAWNER','DEEPAK','MANJU','2011-07-29','General','750580221473','305439302','ARIHANT NAGAR','9179023238','28','9','A','1'],
+    ['KHUSHI','PANCHAL','SUNIL','JYOTI','2012-02-13','OBC','312134238412','106281184','ARIHANT NAGAR','9826685560','176','9','A','2'],
+    ['MUSKAN','CHANDRAVANSHI','SUNIL','SARITA','2012-11-29','OBC','422707659005','113102281','ARIHANT NAGAR','9826923863','89','9','A','3'],
+    ['NUPUR','PARMAR','SANTOSH PARMAR','ANITA','2010-04-03','OBC','858791907852','107269839','ARIHANT NAGAR','7879447027','135','9','A','4'],
+    ['PRASIDDHI','TOMAR','SHAILENDRA','SARITA','2012-04-06','General','502298444243','304385692','SIDHARTH NAGAR','6263805264','97','9','A','5'],
+    ['PRATIGYA','TOMAR','NAWAL SINGH','BALLABH BAI','2012-10-04','OBC','243457144857','139732290','780 ARIHANT NAGAR','8120511831','631','9','A','6'],
+    ['PRITI','MALVIYA','SATYNARAYAN','SANGEETA','2011-03-17','OBC','943242568280','308586995','ARIHANT NAGAR','9977875609','443','9','A','7'],
+    ['ROSHNI','JAIN','RAJEEV KUMAR','USHA','2013-05-22','General','535533855852','198354810','GOMETESH CITY','9301013168','433','9','A','8'],
+    ['SOMYA','SOLANKI','SOHAN SINGH S','PINKI','2012-04-25','General','484811524451','190008945','ARIHANT NAGAR','8120655506','100','9','A','9'],
+    ['AALOK','RAM','HARINATH RAM','POOJA RAM','2012-06-30','SC','707170693416','197181089','ARIHANT NAGAR','8602644174','61','9','A','10'],
+    ['BHAVISHYA','YADAV','SUDHEER','VIDHYA','2012-09-07','OBC','520661265800','104894410','ARIHANT NAGAR','7828769921','277','9','A','11'],
+    ['BHUPENDRA','REBARI','DINESH','RAJU','2012-07-04','OBC','813161716181','200503759','GOMTESH','9171215395','335','9','A','12'],
+    ['DIVYANSH','KUSHWAH','BABULAL','KAUSHALIYA','2012-11-24','OBC','659200618756','307236249','ARIHANT NAGAR','7987752065','20','9','A','13'],
+    ['DURGESH','RAGHUWANSHI','SACHIN','ANJALI','2012-03-22','General','891406139303','198732102','ARIHANT NAGAR','9669690892','32','9','A','14'],
+    ['LAKKI','SOLANKI','PANKAJ','BHAWANA','2012-01-31','OBC','881534172377','164065669','JAMBURDI HAPSI','9399542500','449','9','A','15'],
+    ['MOHIT','SHINDE','KUNDAN','LAXMI','2012-04-12','ST','415720051630','150677164','MULTI','9893631934','482','9','A','16'],
+    ['PAVAN','GURJAR','DEVILAL','MEERA DEVI','2011-10-29','OBC','687148424587','','ARIHANT NAGAR','8459431334','619','9','A','17'],
+    ['PIYUSH','YADAV','RAMCHAND','RAMDULARI','2011-11-15','OBC','304814669925','192850773','GOSHALA','9009229140','31','9','A','18'],
+    ['PRANJAL','ACHARYA','SONU','TARUNA','2008-09-22','OBC','','105688317','ARIHANT NAGAR','8305391193','638','9','A','19'],
+    ['PRUTHVIRAJ','MAKWANA','JITENDRA','AASHA','2013-08-15','ST','524045673159','306563740','BUDHANIYA','9589715152','473','9','A','20'],
+    ['PRATIK','MALVIYA','RAJESH','PINKI','2011-05-10','OBC','617229824474','306443210','ARIHANT NAGAR','7974013414','350','9','A','21'],
+    ['SARTHAK','BIHADE','JITENDRA','VANDANA','2011-01-16','OBC','674494059847','312087837','ARIHANT NAGAR','9669301261','351','9','A','22'],
+    ['SHUBHAM','BUNDELIYA','SANJU','KIRTI','2011-06-07','ST','532810860078','303159162','BHERU MAHARAJ','8817295774','410','9','A','23'],
+    ['VANSH','UTWAL','ASHISH','SANGEETA','2011-10-22','SC','613928082261','104348542','MULTI','8358962939','311','9','A','24'],
+    ['VINAYAK','PATEL','RAJESH','TAPSYA','2011-04-10','OBC','976194861172','190646971','ARIHANT NAGAR','6261162394','232','9','A','25'],
+    ['VINAYAK','SAKHALA','RAGHAV','MAYA BAI','2012-07-16','OBC','325281910443','192110097','JAMBURDI HAPSI','9981070519','578','9','A','26'],
+    ['YUVRAJ','CHOUHAN','YOGESH','PINKI','2012-03-10','OBC','310480287046','101197587','SIDDARTH NAGAR','9826720906','450','9','A','27'],
+    ['YUVRAJ','DAYAL','JEEVAN','SAPANA','2012-09-11','OBC','725766462453','160726299','JAMBUDI HAPSI','9691321525','332','9','A','28']
+  ];
+
+  rows.forEach(([firstName,lastName,fatherName,motherName,dob,category,studentAadhar,studentSSSM,address,phone,schNo,cls,section,rollNumber]) => {
+    students.push({
+      id: uid('stu'),
+      admissionNumber: schNo,
+      firstName, lastName, fatherName, motherName, dob, category, studentAadhar, studentSSSM, address,
+      phone, whatsapp: phone, cls, section, rollNumber, status: 'active',
+      medium: 'English Medium', session: currentAcademicYear(),
+      motherTongue: 'Hindi', nationality: 'Indian',
+      tc: {issued:false}
+    });
+  });
+  saveAll();
+}
+
 document.getElementById('ayTag').textContent = 'AY ' + currentAcademicYear() + ' · Staff Access';
 [document.getElementById('lockLogo'), document.getElementById('sidebarLogo')].forEach(img => {
   if(!img) return;
@@ -429,27 +918,33 @@ document.getElementById('ayTag').textContent = 'AY ' + currentAcademicYear() + '
 });
 
 function checkSession(){
-  const raw = localStorage.getItem(LS.session);
-  if(raw){
-    const session = JSON.parse(raw);
+  const u = currentUser();
+  if(u){
     document.getElementById('lockScreen').style.display = 'none';
     document.getElementById('app').style.display = 'flex';
-    document.getElementById('footerName').textContent = session.name;
+    document.getElementById('footerName').textContent = u.name;
+    document.getElementById('footerRole').innerHTML = `<span class="record-tag" style="padding:1px 6px;">${escapeHtml(ROLE_LABELS[u.role]||u.role)}</span>`;
     renderSidebar();
     renderApp();
   }
 }
 document.getElementById('lockForm').addEventListener('submit', function(e){
   e.preventDefault();
-  const name = document.getElementById('staffName').value.trim();
-  const code = document.getElementById('passcode').value;
+  const username = document.getElementById('loginUsername').value.trim().toLowerCase();
+  const password = document.getElementById('loginPassword').value;
   const msg = document.getElementById('lockMsg');
-  if(code !== STAFF_PASSCODE){
-    msg.textContent = 'Incorrect passcode.';
+  const match = users.find(u => u.username.toLowerCase() === username && u.password === password);
+  if(!match){
+    msg.textContent = 'Incorrect username or password.';
     msg.style.display = 'block';
     return;
   }
-  localStorage.setItem(LS.session, JSON.stringify({name, at: Date.now()}));
+  if(match.status !== 'active'){
+    msg.textContent = 'This account has been deactivated. Contact your admin.';
+    msg.style.display = 'block';
+    return;
+  }
+  localStorage.setItem(LS.session, JSON.stringify({userId: match.id, at: Date.now()}));
   msg.style.display = 'none';
   checkSession();
 });
@@ -462,16 +957,16 @@ function lockApp(){
 
 /* ---------------- sidebar / routing ---------------- */
 const NAV_ITEMS = [
-  {name:'dashboard', label:'Dashboard', icon:'&#9632;'},
-  {name:'enquiries', label:'Enquiries', icon:'&#9993;'},
-  {name:'students', label:'Students', icon:'&#9787;'},
-  {name:'staff', label:'Staff', icon:'&#9878;'},
-  {name:'attendance', label:'Attendance', icon:'&#10003;'},
-  {name:'fees', label:'Fees', icon:'&#8377;'},
-  {name:'salary', label:'Salary', icon:'&#128176;'}
+  {name:'dashboard', label:'Dashboard', icon:'&#9632;', perm:'dashboard'},
+  {name:'enquiries', label:'Enquiries', icon:'&#9993;', perm:'enquiries'},
+  {name:'students', label:'Students', icon:'&#9787;', perm:'students'},
+  {name:'staff', label:'Staff', icon:'&#9878;', perm:'staffDirectory'},
+  {name:'fees', label:'Fees', icon:'&#8377;', perm:'fees'},
+  {name:'salary', label:'Salary', icon:'&#128176;', perm:'salary'},
+  {name:'users', label:'User Access', icon:'&#128273;', perm:'userManagement'},
 ];
 function renderSidebar(){
-  document.getElementById('sidebarNav').innerHTML = NAV_ITEMS.map(item => {
+  document.getElementById('sidebarNav').innerHTML = NAV_ITEMS.filter(item => can(item.perm)).map(item => {
     const active = (view.name === item.name) || (item.name==='students' && view.name==='studentDetail');
     return `<button class="nav-link ${active?'active':''}" onclick="goTo('${item.name}')"><span class="dot">${item.icon}</span>${item.label}</button>`;
   }).join('');
@@ -486,17 +981,27 @@ function goToStudent(id){
   renderSidebar();
   renderApp();
 }
+const VIEW_PERMISSIONS = { dashboard:'dashboard', students:'students', studentDetail:'students', enquiries:'enquiries', staff:'staffDirectory', fees:'fees', salary:'salary', users:'userManagement' };
 function renderApp(){
   const topbar = document.getElementById('topbar');
   const content = document.getElementById('content');
+  const needed = VIEW_PERMISSIONS[view.name];
+  if(needed && !can(needed)){ renderAccessDenied(topbar, content); return; }
   if(view.name === 'dashboard'){ renderDashboard(topbar, content); }
   else if(view.name === 'students'){ renderStudents(topbar, content); }
   else if(view.name === 'studentDetail'){ renderStudentDetail(topbar, content, view.studentId); }
   else if(view.name === 'enquiries'){ renderEnquiries(topbar, content); }
   else if(view.name === 'staff'){ renderStaff(topbar, content); }
-  else if(view.name === 'attendance'){ renderAttendance(topbar, content); }
   else if(view.name === 'fees'){ renderFees(topbar, content); }
   else if(view.name === 'salary'){ renderSalary(topbar, content); }
+  else if(view.name === 'users'){ renderUserManagement(topbar, content); }
+}
+function renderAccessDenied(topbar, content){
+  topbar.innerHTML = `<div><h1>Access restricted</h1></div>`;
+  content.innerHTML = `<div class="card" style="max-width:480px;">
+    <p style="font-size:14px;">Your account doesn't have permission to view this section.</p>
+    <p style="font-size:13px;color:var(--ink-soft);margin-top:8px;">If you need access for your role, ask your admin to update it from User Access.</p>
+  </div>`;
 }
 
 /* ---------------- dashboard ---------------- */
@@ -528,18 +1033,28 @@ function renderDashboard(topbar, content){
   const salaryPendingAmt = salaries.filter(s => monthKeyInRange(s.month, dashboardTimeframe) && feeStatus(s) !== 'paid')
     .reduce((sum,s) => sum + Math.max(0,(Number(s.amountDue)||0)-(Number(s.amountPaid)||0)), 0);
 
-  const classCounts = CLASS_LEVELS.map(c => ({label:c, board:BOARD_CLASSES.includes(c), count: students.filter(s=>s.cls===c && s.status==='active').length}));
+  const todayKey = todayIso();
+  const classCounts = CLASS_LEVELS.map(c => {
+    const att = attendanceRecords.find(a => a.date===todayKey && a.cls===c);
+    return {
+      label: c,
+      board: BOARD_CLASSES.includes(c),
+      count: students.filter(s=>s.cls===c && s.status==='active').length,
+      present: att ? att.totalPresent : '',
+      absent: att ? att.totalAbsent : ''
+    };
+  });
   const classMax = Math.max(1, ...classCounts.map(c=>c.count));
 
   const recent = [...enquiries].sort((a,b)=> new Date(b.createdAt)-new Date(a.createdAt)).slice(0,5);
 
   content.innerHTML = `
     <div class="quick-actions">
-      <button class="quick-action" onclick="openStudentModal()"><span class="qa-icon">+</span>New Admission</button>
-      <button class="quick-action" onclick="openEnquiryModal()"><span class="qa-icon">+</span>New Enquiry</button>
-      <button class="quick-action" onclick="openStaffModal()"><span class="qa-icon">+</span>New Staff / Teacher</button>
-      <button class="quick-action" onclick="openFeeModal()"><span class="qa-icon">&#8377;</span>Record Fee Payment</button>
-      <button class="quick-action" onclick="openSalaryModal()"><span class="qa-icon">&#8377;</span>Record Salary Payment</button>
+      ${can('students') ? `<button class="quick-action" onclick="openStudentModal()"><span class="qa-icon">+</span>New Admission</button>` : ''}
+      ${can('enquiries') ? `<button class="quick-action" onclick="openEnquiryModal()"><span class="qa-icon">+</span>New Enquiry</button>` : ''}
+      ${can('staffDirectory') ? `<button class="quick-action" onclick="openStaffModal()"><span class="qa-icon">+</span>New Staff / Teacher</button>` : ''}
+      ${can('fees') ? `<button class="quick-action" onclick="openFeeModal()"><span class="qa-icon">&#8377;</span>Record Fee Payment</button>` : ''}
+      ${can('salary') ? `<button class="quick-action" onclick="openSalaryModal()"><span class="qa-icon">&#8377;</span>Record Salary Payment</button>` : ''}
     </div>
 
     <div class="stat-grid">
@@ -547,8 +1062,8 @@ function renderDashboard(topbar, content){
       <div class="stat-card good"><div class="label">Staff on roll</div><div class="value">${activeStaff}</div><div class="hint">Teaching and non-teaching, all time</div></div>
       <div class="stat-card"><div class="label">Admissions</div><div class="value">${admissionsInPeriod}</div><div class="hint">${timeframeLabel}</div></div>
       <div class="stat-card accent"><div class="label">Enquiries</div><div class="value">${enquiriesInPeriod}</div><div class="hint">${timeframeLabel}</div></div>
-      <div class="stat-card accent"><div class="label">Fees pending</div><div class="value" style="font-size:26px;">${money(feesPendingAmt)}</div><div class="hint">Due ${timeframeLabel.toLowerCase()}</div></div>
-      <div class="stat-card accent"><div class="label">Salary pending</div><div class="value" style="font-size:26px;">${money(salaryPendingAmt)}</div><div class="hint">${timeframeLabel}</div></div>
+      ${can('fees') ? `<div class="stat-card accent"><div class="label">Fees pending</div><div class="value" style="font-size:26px;">${money(feesPendingAmt)}</div><div class="hint">Due ${timeframeLabel.toLowerCase()}</div></div>` : ''}
+      ${can('salary') ? `<div class="stat-card accent"><div class="label">Salary pending</div><div class="value" style="font-size:26px;">${money(salaryPendingAmt)}</div><div class="hint">${timeframeLabel}</div></div>` : ''}
     </div>
 
     <div class="card">
@@ -569,19 +1084,27 @@ function renderDashboard(topbar, content){
 
     <div class="card" style="margin-top:16px;">
       <h2 style="font-size:18px;">Enrollment by class</h2>
-      <p style="font-size:12px;color:var(--ink-soft);margin:2px 0 16px;">Pre Nursery through Class 10 · classes marked <span class="record-tag" style="padding:1px 6px;">Board</span> sit board exams</p>
-      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;">
+      <p style="font-size:12px;color:var(--ink-soft);margin:2px 0 16px;">Click a class name to see its roster · classes marked <span class="record-tag" style="padding:1px 6px;">Board</span> sit board exams · enter today's attendance (P/A) directly below</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;">
         ${classCounts.map(c => `
-          <button onclick="studentFilters={q:'',cls:'${c.label}',status:''};goTo('students');" style="text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;font-family:inherit;">
+          <div style="background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;">
             <div style="display:flex;justify-content:space-between;align-items:center;">
-              <span style="font-size:13px;font-weight:500;">${c.label}</span>
+              <span style="font-size:13px;font-weight:500;${can('students')?'cursor:pointer;':''}" ${can('students')?`onclick="studentFilters={q:'',cls:'${c.label}',status:''};goTo('students');"`:''}>${classDisplayLabel(c.label)}</span>
               ${c.board?'<span class="record-tag" style="padding:1px 6px;">Board</span>':''}
             </div>
             <div style="margin-top:8px;height:6px;background:var(--surface-alt);border-radius:99px;overflow:hidden;">
               <span style="display:block;height:100%;background:${c.board?'var(--accent)':'var(--brand)'};width:${(c.count/classMax)*100}%;"></span>
             </div>
-            <div style="margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:13px;">${c.count}</div>
-          </button>`).join('')}
+            <div style="margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:13px;">${c.count} enrolled</div>
+            <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line);display:flex;gap:8px;">
+              <label style="font-size:11px;font-weight:600;color:var(--good);display:flex;align-items:center;gap:4px;">P
+                <input type="number" min="0" value="${escapeHtml(c.present)}" ${can('students')?'':'disabled'} onchange="saveClassAttendance('${c.label}','totalPresent',this.value)" style="width:48px;border:1px solid var(--good);color:var(--good);background:var(--good-soft);border-radius:4px;padding:3px 4px;font-size:12px;font-weight:600;" />
+              </label>
+              <label style="font-size:11px;font-weight:600;color:var(--bad);display:flex;align-items:center;gap:4px;">A
+                <input type="number" min="0" value="${escapeHtml(c.absent)}" ${can('students')?'':'disabled'} onchange="saveClassAttendance('${c.label}','totalAbsent',this.value)" style="width:48px;border:1px solid var(--bad);color:var(--bad);background:var(--bad-soft);border-radius:4px;padding:3px 4px;font-size:12px;font-weight:600;" />
+              </label>
+            </div>
+          </div>`).join('')}
       </div>
     </div>`;
 }
@@ -854,6 +1377,7 @@ function renderStudentDetail(topbar, content, id){
           </div>
         </div>
 
+        ${can('fees') ? `
         <div class="card">
           <div style="display:flex;justify-content:space-between;align-items:center;">
             <h2 style="font-size:16px;">Fees</h2>
@@ -897,6 +1421,7 @@ function renderStudentDetail(topbar, content, id){
               </div>`).join('')}</div>`;
           })()}
         </div>
+        ` : ''}
 
         <div class="card">
           <h2 style="font-size:16px;">Academic</h2>
@@ -1035,8 +1560,7 @@ function printTC(studentId){
     .sign div{border-top:1px solid #1e2a38;padding-top:6px;width:180px;text-align:center;}
     @media print{ body{margin:0 auto;} }
   </style></head><body>
-    <img src="${LOGO_DATA_URI}" alt="" style="height:48px;display:block;margin:0 auto 6px;" />
-    <h1>${escapeHtml(SCHOOL_NAME)}</h1>
+    <img src="${LOGO_DATA_URI}" alt="Bombay Kids International School" style="height:60px;display:block;margin:0 auto 6px;" />
     <p class="addr">${escapeHtml(SCHOOL_ADDRESS)}</p>
     <p class="title">Transfer Certificate</p>
     <div class="meta"><span>TC No: ${escapeHtml(s.tc.tcNumber)}</span><span>Date: ${formatDate(s.tc.issueDate)}</span></div>
@@ -1089,8 +1613,7 @@ function printAdmissionForm(studentId){
     @media print{ body{margin:0 auto;} }
   </style></head><body>
     <div class="frame">
-      <img src="${LOGO_DATA_URI}" alt="" style="height:48px;display:block;margin:0 auto 6px;" />
-      <h1>${escapeHtml(SCHOOL_NAME.toUpperCase())}</h1>
+      <img src="${LOGO_DATA_URI}" alt="Bombay Kids International School" style="height:60px;display:block;margin:0 auto 6px;" />
       <p class="addr">${escapeHtml(SCHOOL_ADDRESS.toUpperCase())} ${SCHOOL_PHONE ? '· ' + escapeHtml(SCHOOL_PHONE) : ''}</p>
       <div class="topline"><span>Scholar no. ${escapeHtml(s.admissionNumber)}</span><span>${escapeHtml(s.medium||'English Medium')}</span></div>
       <div class="topline" style="margin-top:0;"><span>SSSM ID ${escapeHtml(s.studentSSSM||'—')}</span><span>ADHAR NO. ${escapeHtml(s.studentAadhar||'—')}</span></div>
@@ -1279,14 +1802,14 @@ function renderStaff(topbar, content){
           <div style="margin-top:14px;font-size:12px;color:var(--ink-soft);display:grid;gap:5px;">
             <div style="display:flex;justify-content:space-between;"><span>Employee ID</span><span class="record-tag">${escapeHtml(m.employeeId)}</span></div>
             ${m.phone?`<div style="display:flex;justify-content:space-between;"><span>Phone</span><span style="font-family:'IBM Plex Mono',monospace;color:var(--ink);">${escapeHtml(m.phone)}</span></div>`:''}
-            <div style="display:flex;justify-content:space-between;align-items:center;"><span>${monthLabel(currentMonthKey())} salary</span>${(() => {
+            ${can('salary') ? `<div style="display:flex;justify-content:space-between;align-items:center;"><span>${monthLabel(currentMonthKey())} salary</span>${(() => {
               const rec = salaries.find(x=>x.staffId===m.id && x.month===currentMonthKey());
               return rec ? feeStatusPill(rec) : `<span class="pill pill-neutral">Not recorded</span>`;
-            })()}</div>
+            })()}</div>` : ''}
           </div>
           <div style="display:flex;gap:8px;margin-top:14px;">
             <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="openStaffModal('${m.id}')">Edit</button>
-            <button class="btn btn-secondary btn-sm" onclick="openSalaryModal(null,'${m.id}')">Salary</button>
+            ${can('salary') ? `<button class="btn btn-secondary btn-sm" onclick="openSalaryModal(null,'${m.id}')">Salary</button>` : ''}
             <button class="btn btn-danger btn-sm" onclick="deleteStaffMember('${m.id}')">Delete</button>
           </div>
         </div>`).join('')}
@@ -1348,117 +1871,6 @@ function deleteStaffMember(id){
   staffList = staffList.filter(m=>m.id!==id);
   saveAll();
   renderStaff(document.getElementById('topbar'),document.getElementById('content'));
-}
-
-/* ---------------- attendance (high-level, class/section daily counts) ---------------- */
-function renderAttendance(topbar, content){
-  topbar.innerHTML = `<div><h1>Attendance</h1><p>Daily present/absent counts by class and section — no individual tracking needed.</p></div>`;
-
-  content.innerHTML = `
-    <div class="card" style="margin-bottom:16px;">
-      <h2 style="font-size:16px;" id="attendanceFormTitle">Record attendance</h2>
-      <form id="attendanceForm" style="margin-top:12px;">
-        <input type="hidden" name="editId" id="attendanceEditId" value="" />
-        <div class="form-grid">
-          <div class="field"><label>Date</label><input type="date" name="date" value="${todayIso()}" required /></div>
-          <div class="field"><label>Class</label><select name="cls" required><option value="">Select class</option>${CLASS_LEVELS.map(c=>`<option value="${c}">${c}</option>`).join('')}</select></div>
-          <div class="field"><label>Section</label><input name="section" placeholder="e.g. A" required /></div>
-          <div class="field"><label>Total Present</label><input type="number" min="0" name="totalPresent" required oninput="updateAttendanceStrength()" /></div>
-          <div class="field"><label>Total Absent</label><input type="number" min="0" name="totalAbsent" required oninput="updateAttendanceStrength()" /></div>
-          <div class="field"><label>Total Strength</label><div id="attendanceStrengthDisplay" style="padding:8px 10px;font-family:'IBM Plex Mono',monospace;font-weight:500;background:var(--surface-alt);border-radius:6px;">0</div></div>
-        </div>
-        <div class="modal-actions" style="justify-content:flex-start;margin-top:4px;">
-          <button type="submit" class="btn btn-primary">Save attendance</button>
-          <button type="button" class="btn btn-secondary" id="attendanceCancelBtn" style="display:none;" onclick="cancelAttendanceEdit()">Cancel edit</button>
-        </div>
-      </form>
-    </div>
-    <div id="attendanceTableWrap"></div>`;
-
-  document.getElementById('attendanceForm').addEventListener('submit', function(e){
-    e.preventDefault();
-    const fd = Object.fromEntries(new FormData(e.target).entries());
-    const editId = fd.editId;
-    delete fd.editId;
-
-    if(editId){
-      const rec = attendanceRecords.find(a=>a.id===editId);
-      if(rec) Object.assign(rec, fd);
-    } else {
-      const existing = attendanceRecords.find(a => a.date===fd.date && a.cls===fd.cls && a.section===fd.section);
-      if(existing){
-        if(!confirm('A record for this class/section/date already exists. Update it instead?')) return;
-        Object.assign(existing, fd);
-      } else {
-        fd.id = uid('att');
-        attendanceRecords.push(fd);
-      }
-    }
-    saveAll();
-    cancelAttendanceEdit();
-    renderAttendanceTable();
-  });
-
-  renderAttendanceTable();
-}
-function updateAttendanceStrength(){
-  const form = document.getElementById('attendanceForm');
-  if(!form) return;
-  const present = Number(form.elements.namedItem('totalPresent').value) || 0;
-  const absent = Number(form.elements.namedItem('totalAbsent').value) || 0;
-  document.getElementById('attendanceStrengthDisplay').textContent = present + absent;
-}
-function renderAttendanceTable(){
-  const rows = [...attendanceRecords].sort((a,b) => (b.date||'').localeCompare(a.date||'') || (a.cls||'').localeCompare(b.cls||''));
-  document.getElementById('attendanceTableWrap').innerHTML = rows.length===0 ? `<div class="table-wrap"><div class="empty">No attendance recorded yet.</div></div>` : `
-    <div class="table-wrap"><table>
-      <thead><tr><th>Date</th><th>Class</th><th>Section</th><th>Present</th><th>Absent</th><th>Strength</th><th></th></tr></thead>
-      <tbody>
-        ${rows.map(a => `
-          <tr>
-            <td>${formatDate(a.date)}</td>
-            <td>${escapeHtml(a.cls)}</td>
-            <td>${escapeHtml(a.section)}</td>
-            <td style="font-family:'IBM Plex Mono',monospace;">${escapeHtml(a.totalPresent)}</td>
-            <td style="font-family:'IBM Plex Mono',monospace;">${escapeHtml(a.totalAbsent)}</td>
-            <td style="font-family:'IBM Plex Mono',monospace;font-weight:500;">${(Number(a.totalPresent)||0)+(Number(a.totalAbsent)||0)}</td>
-            <td style="text-align:right;white-space:nowrap;">
-              <button class="btn btn-secondary btn-sm" onclick="editAttendance('${a.id}')">Edit</button>
-              <button class="btn btn-danger btn-sm" onclick="deleteAttendance('${a.id}')">Delete</button>
-            </td>
-          </tr>`).join('')}
-      </tbody>
-    </table></div>`;
-}
-function editAttendance(id){
-  const rec = attendanceRecords.find(a=>a.id===id);
-  if(!rec) return;
-  const form = document.getElementById('attendanceForm');
-  form.elements.namedItem('date').value = rec.date;
-  form.elements.namedItem('cls').value = rec.cls;
-  form.elements.namedItem('section').value = rec.section;
-  form.elements.namedItem('totalPresent').value = rec.totalPresent;
-  form.elements.namedItem('totalAbsent').value = rec.totalAbsent;
-  document.getElementById('attendanceEditId').value = id;
-  document.getElementById('attendanceFormTitle').textContent = 'Edit attendance';
-  document.getElementById('attendanceCancelBtn').style.display = 'inline-flex';
-  updateAttendanceStrength();
-}
-function cancelAttendanceEdit(){
-  const form = document.getElementById('attendanceForm');
-  if(!form) return;
-  form.reset();
-  document.getElementById('attendanceEditId').value = '';
-  document.getElementById('attendanceFormTitle').textContent = 'Record attendance';
-  document.getElementById('attendanceCancelBtn').style.display = 'none';
-  form.elements.namedItem('date').value = todayIso();
-  updateAttendanceStrength();
-}
-function deleteAttendance(id){
-  if(!confirm('Delete this attendance record?')) return;
-  attendanceRecords = attendanceRecords.filter(a=>a.id!==id);
-  saveAll();
-  renderAttendanceTable();
 }
 
 /* ---------------- fees ---------------- */
@@ -1646,8 +2058,7 @@ function printStudentFeeRecord(studentId){
     .summary .val{font-size:18px;font-weight:bold;margin-top:4px;}
     @media print{ body{margin:8mm;} }
   </style></head><body>
-    <img src="${LOGO_DATA_URI}" alt="" style="height:48px;display:block;margin:0 auto 6px;" />
-    <h1>${escapeHtml(SCHOOL_NAME)}</h1>
+    <img src="${LOGO_DATA_URI}" alt="Bombay Kids International School" style="height:60px;display:block;margin:0 auto 6px;" />
     <p class="sub">${escapeHtml(SCHOOL_ADDRESS)}</p>
     <div class="meta">
       <span>Fee Record: ${escapeHtml(s.firstName)} ${escapeHtml(s.lastName)} — ${escapeHtml(s.admissionNumber)} — Class ${escapeHtml(s.cls)}${escapeHtml(s.section)}</span>
@@ -1981,8 +2392,7 @@ function generatePrintList(title, columns, rows){
     th{font-weight:bold;}
     @media print{ body{margin:8mm;} }
   </style></head><body>
-    <img src="${LOGO_DATA_URI}" alt="" style="height:48px;display:block;margin:0 auto 6px;" />
-    <h1>${escapeHtml(SCHOOL_NAME)}</h1>
+    <img src="${LOGO_DATA_URI}" alt="Bombay Kids International School" style="height:60px;display:block;margin:0 auto 6px;" />
     <p class="sub">${escapeHtml(SCHOOL_ADDRESS)}</p>
     <div class="meta"><span>${escapeHtml(title)}</span><span>Generated ${formatDate(todayIso())} · ${rows.length} record${rows.length===1?'':'s'}</span></div>
     <table>
@@ -1995,6 +2405,126 @@ function generatePrintList(title, columns, rows){
 }
 function generateStudentsPrint(columns){ generatePrintList('Student Roster', columns, getFilteredStudents()); }
 function generateStaffPrint(columns){ generatePrintList('Staff Roster', columns, staffList); }
+
+/* ---------------- user access (admin only) ---------------- */
+function renderUserManagement(topbar, content){
+  topbar.innerHTML = `
+    <div><h1>User Access</h1><p>Control who can sign in and what each person can see.</p></div>
+    <button class="btn btn-primary" onclick="openUserModal()">+ Add user</button>`;
+
+  content.innerHTML = `
+    <div class="table-wrap"><table>
+      <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Access</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        ${users.map(u => `
+          <tr>
+            <td style="font-weight:500;">${escapeHtml(u.name)}</td>
+            <td><span class="record-tag">${escapeHtml(u.username)}</span></td>
+            <td>${escapeHtml(ROLE_LABELS[u.role]||u.role)}</td>
+            <td style="font-size:12px;color:var(--ink-soft);max-width:260px;">${PERMISSION_KEYS.filter(k=>u.permissions[k]).map(k=>PERMISSION_LABELS[k].split(' (')[0]).join(', ') || '—'}</td>
+            <td>${u.status==='active' ? '<span class="pill pill-good">Active</span>' : '<span class="pill pill-neutral">Inactive</span>'}</td>
+            <td style="text-align:right;white-space:nowrap;">
+              <button class="btn btn-secondary btn-sm" onclick="openUserModal('${u.id}')">Edit</button>
+              <button class="btn btn-secondary btn-sm" onclick="toggleUserStatus('${u.id}')">${u.status==='active'?'Deactivate':'Activate'}</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteUser('${u.id}')">Delete</button>
+            </td>
+          </tr>`).join('')}
+      </tbody>
+    </table></div>`;
+}
+function applyRolePreset(role){
+  const preset = ROLE_PRESETS[role] || ROLE_PRESETS.custom;
+  PERMISSION_KEYS.forEach(key => {
+    const cb = document.querySelector('#userPermList input[value="'+key+'"]');
+    if(cb) cb.checked = !!preset[key];
+  });
+}
+function openUserModal(existingId){
+  const u = existingId ? users.find(x=>x.id===existingId) : null;
+  const role = u ? u.role : 'office';
+  const perms = u ? u.permissions : ROLE_PRESETS[role];
+  openModal(`
+    <div class="modal-head"><h2 style="font-size:18px;">${u?'Edit user':'Add user'}</h2><button onclick="closeModal()">&times;</button></div>
+    <form id="userForm">
+      <div class="form-grid">
+        <div class="field"><label>Full name</label><input name="name" value="${escapeHtml(u?.name)}" required /></div>
+        <div class="field"><label>Username</label><input name="username" value="${escapeHtml(u?.username)}" required /></div>
+        <div class="field"><label>Password${u?' (leave blank to keep current)':''}</label><input type="password" name="password" ${u?'':'required'} /></div>
+        <div class="field"><label>Role</label>
+          <select name="role" onchange="applyRolePreset(this.value)">
+            ${Object.keys(ROLE_LABELS).map(r=>`<option value="${r}" ${role===r?'selected':''}>${ROLE_LABELS[r]}</option>`).join('')}
+          </select>
+        </div>
+        ${u ? `<div class="field"><label>Status</label><select name="status"><option value="active" ${u.status==='active'?'selected':''}>Active</option><option value="inactive" ${u.status==='inactive'?'selected':''}>Inactive</option></select></div>` : ''}
+      </div>
+      <div style="margin-top:14px;">
+        <p style="font-size:12px;font-weight:500;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin:0 0 8px;">Permissions</p>
+        <div id="userPermList" style="display:grid;grid-template-columns:1fr 1fr;gap:7px 12px;">
+          ${PERMISSION_KEYS.map(key => `
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;margin:0;">
+              <input type="checkbox" value="${key}" ${perms[key]?'checked':''} style="width:auto;" />
+              ${escapeHtml(PERMISSION_LABELS[key])}
+            </label>`).join('')}
+        </div>
+        <p style="font-size:11px;color:var(--bad);margin-top:8px;">Salary is visible only to whoever you check it for here — by default that's Admin and Board of Directors.</p>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary">${u?'Save changes':'Add user'}</button>
+      </div>
+    </form>`);
+  document.getElementById('userForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const fd = Object.fromEntries(new FormData(e.target).entries());
+    const usernameLower = fd.username.trim().toLowerCase();
+    const clash = users.find(x => x.username.toLowerCase()===usernameLower && x.id !== (u?u.id:null));
+    if(clash){ alert('That username is already taken.'); return; }
+    const permissions = {};
+    PERMISSION_KEYS.forEach(key => {
+      const cb = document.querySelector('#userPermList input[value="'+key+'"]');
+      permissions[key] = !!(cb && cb.checked);
+    });
+    if(u){
+      u.name = fd.name; u.username = fd.username.trim(); u.role = fd.role; u.permissions = permissions;
+      if(fd.status) u.status = fd.status;
+      if(fd.password) u.password = fd.password;
+    } else {
+      users.push({
+        id: uid('usr'), name: fd.name, username: fd.username.trim(), password: fd.password,
+        role: fd.role, permissions, status: 'active', createdAt: todayIso(),
+      });
+    }
+    saveAll();
+    closeModal();
+    renderUserManagement(document.getElementById('topbar'), document.getElementById('content'));
+  });
+}
+function countActiveAdmins(excludeId){
+  return users.filter(u => u.role==='admin' && u.status==='active' && u.id!==excludeId).length;
+}
+function toggleUserStatus(id){
+  const u = users.find(x=>x.id===id);
+  if(!u) return;
+  if(u.role==='admin' && u.status==='active' && countActiveAdmins(id)===0){
+    alert("Can't deactivate the last active admin account.");
+    return;
+  }
+  u.status = u.status==='active' ? 'inactive' : 'active';
+  saveAll();
+  renderUserManagement(document.getElementById('topbar'), document.getElementById('content'));
+}
+function deleteUser(id){
+  const u = users.find(x=>x.id===id);
+  if(!u) return;
+  if(u.role==='admin' && u.status==='active' && countActiveAdmins(id)===0){
+    alert("Can't delete the last active admin account.");
+    return;
+  }
+  if(!confirm('Delete this user account? They will no longer be able to sign in.')) return;
+  users = users.filter(x=>x.id!==id);
+  saveAll();
+  renderUserManagement(document.getElementById('topbar'), document.getElementById('content'));
+}
 
 /* ---------------- modal shell ---------------- */
 function openModal(html){
@@ -2057,6 +2587,9 @@ document.addEventListener('input', function(e){
 loadData();
 seedIfNeeded();
 seedFeesIfNeeded();
+importClass10Batch();
+importKG2To9Batch();
+seedUsersIfNeeded();
 checkSession();
 </script>
 </body>
