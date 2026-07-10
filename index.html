@@ -62,6 +62,13 @@
   .pill-bad{background:var(--bad-soft);color:var(--bad);}
   .pill-neutral{background:var(--surface-alt);color:var(--ink-soft);}
   .pill-accent{background:var(--accent-soft);color:var(--accent);}
+  .att-toggle{display:inline-flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;}
+  .att-btn{border:none;background:var(--surface);padding:4px 11px;font-size:12px;font-weight:700;cursor:pointer;color:var(--ink-soft);font-family:inherit;}
+  .att-btn+.att-btn{border-left:1px solid var(--line);}
+  .att-btn.active.att-p{background:var(--good);color:#fff;}
+  .att-btn.active.att-a{background:var(--bad);color:#fff;}
+  .att-btn.active.att-l{background:var(--accent);color:#fff;}
+  .pill-accent{background:var(--accent-soft);color:var(--accent);}
   .card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:20px;}
   .avatar{display:inline-flex;align-items:center;justify-content:center;border-radius:999px;background:var(--brand-soft);color:var(--brand-dark);font-size:12px;font-weight:500;flex-shrink:0;}
 
@@ -184,6 +191,8 @@
 const SCHOOL_NAME = "Bombay Kids International School";
 const SCHOOL_ADDRESS = "Arihant Nagar, Indore (M.P.)";
 const SCHOOL_PHONE = "9981258867";
+var SCHOOL_DISE_CODE = "23260503114";
+var SCHOOL_REG_NO = "168774";
 const LOGO_DATA_URI = "data:image/jpeg;base64,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";
 const CLASS_LEVELS = ['Pre Nursery','Nursery','KG-I','KG-II','1','2','3','4','5','6','7','8','9','10'];
 const BOARD_CLASSES = ['5','8','9','10'];
@@ -226,9 +235,11 @@ function computeTotalDue(studentId, particulars){
 }
 /* ================================================================================ */
 
-const LS = { students:'conduct_students', enquiries:'conduct_enquiries', staff:'conduct_staff', fees:'conduct_fees', salaries:'conduct_salaries', attendance:'conduct_attendance', users:'conduct_users', seeded:'conduct_seeded_v1', feesSeeded:'conduct_fees_seeded_v1', class10Imported:'conduct_class10_import_v1', kg2to9Imported:'conduct_kg2to9_import_v1', usersSeeded:'conduct_users_seeded_v1', session:'conduct_session' };
+const LS = { students:'conduct_students', enquiries:'conduct_enquiries', staff:'conduct_staff', fees:'conduct_fees', salaries:'conduct_salaries', attendance:'conduct_attendance', studentAttendance:'conduct_student_attendance', staffAttendance:'conduct_staff_attendance', users:'conduct_users', seeded:'conduct_seeded_v1', feesSeeded:'conduct_fees_seeded_v1', class10Imported:'conduct_class10_import_v1', kg2to9Imported:'conduct_kg2to9_import_v1', usersSeeded:'conduct_users_seeded_v1', timeTable:'conduct_timetable_image', session:'conduct_session' };
 
-var students = [], enquiries = [], staffList = [], fees = [], salaries = [], attendanceRecords = [], users = [];
+var students = [], enquiries = [], staffList = [], fees = [], salaries = [], attendanceRecords = [], users = [], studentAttendance = [], staffAttendance = [];
+var attendanceView = { cls: '', date: '' };
+var staffAttendanceView = { date: '' };
 var view = { name: 'dashboard', studentId: null };
 var studentFilters = { q:'', cls:'', status:'' };
 var feeFilters = { session:'', cls:'', status:'' };
@@ -237,21 +248,45 @@ var dashboardTimeframe = 'thisMonth';
 
 /* ---------------- roles & permissions ----------------
    Access control lives entirely in this browser's JavaScript — it stops
-   staff from casually clicking into sections they shouldn't see, but it
-   is not cryptographic security. Anyone with browser dev tools can still
-   read the underlying data. Treat this as organizational access control,
-   not a guarantee against a deliberate technical attempt. */
-var PERMISSION_KEYS = ['dashboard','enquiries','students','staffDirectory','fees','salary','userManagement'];
-const PERMISSION_LABELS = {
-  dashboard: 'Dashboard', enquiries: 'Enquiries', students: 'Students (admissions, TC, attendance)',
-  staffDirectory: 'Staff Directory', fees: 'Fees', salary: 'Salary', userManagement: 'User Access (admin)',
+   staff from casually clicking into (or editing) sections they shouldn't,
+   but it is not cryptographic security. Anyone with browser dev tools can
+   still read the underlying data. Treat this as organizational access
+   control, not a guarantee against a deliberate technical attempt.
+
+   Two independent layers: VIEW (can this person even see the section?)
+   and EDIT (can they add/change/delete records in it, once they can see
+   it?). By default only Admin gets edit rights anywhere — Board and
+   Office Staff start view-only, and the admin grants editing per person,
+   per module, from User Access. */
+var VIEW_PERMISSION_KEYS = ['dashboard','enquiries','students','staffDirectory','studentAttendance','staffAttendance','fees','salary','userManagement'];
+var EDIT_PERMISSION_KEYS = ['enquiries','students','staffDirectory','studentAttendance','staffAttendance','fees','salary'];
+const VIEW_PERMISSION_LABELS = {
+  dashboard: 'Dashboard', enquiries: 'Enquiries', students: 'Students (admissions, TC)',
+  staffDirectory: 'Staff Directory', studentAttendance: 'Student Attendance', staffAttendance: 'Staff Attendance',
+  fees: 'Fees', salary: 'Salary', userManagement: 'User Access (admin)',
+};
+const EDIT_PERMISSION_LABELS = {
+  enquiries: 'Enquiries', students: 'Students', staffDirectory: 'Staff Directory',
+  studentAttendance: 'Student Attendance', staffAttendance: 'Staff Attendance', fees: 'Fees', salary: 'Salary',
 };
 const ROLE_LABELS = { admin: 'Admin', board: 'Board of Directors', office: 'Office Staff', custom: 'Custom' };
 const ROLE_PRESETS = {
-  admin:  { dashboard:true,  enquiries:true,  students:true,  staffDirectory:true,  fees:true,  salary:true,  userManagement:true  },
-  board:  { dashboard:true,  enquiries:true,  students:true,  staffDirectory:true,  fees:true,  salary:true,  userManagement:false },
-  office: { dashboard:true,  enquiries:true,  students:true,  staffDirectory:true,  fees:true,  salary:false, userManagement:false },
-  custom: { dashboard:true,  enquiries:false, students:false, staffDirectory:false, fees:false, salary:false, userManagement:false },
+  admin: {
+    view: { dashboard:true, enquiries:true, students:true, staffDirectory:true, studentAttendance:true, staffAttendance:true, fees:true, salary:true, userManagement:true },
+    edit: { enquiries:true, students:true, staffDirectory:true, studentAttendance:true, staffAttendance:true, fees:true, salary:true },
+  },
+  board: {
+    view: { dashboard:true, enquiries:true, students:true, staffDirectory:true, studentAttendance:true, staffAttendance:true, fees:true, salary:true, userManagement:false },
+    edit: { enquiries:false, students:false, staffDirectory:false, studentAttendance:false, staffAttendance:false, fees:false, salary:false },
+  },
+  office: {
+    view: { dashboard:true, enquiries:true, students:true, staffDirectory:true, studentAttendance:true, staffAttendance:true, fees:true, salary:false, userManagement:false },
+    edit: { enquiries:false, students:false, staffDirectory:false, studentAttendance:false, staffAttendance:false, fees:false, salary:false },
+  },
+  custom: {
+    view: { dashboard:true, enquiries:false, students:false, staffDirectory:false, studentAttendance:false, staffAttendance:false, fees:false, salary:false, userManagement:false },
+    edit: { enquiries:false, students:false, staffDirectory:false, studentAttendance:false, staffAttendance:false, fees:false, salary:false },
+  },
 };
 function currentUser(){
   try{
@@ -262,7 +297,31 @@ function currentUser(){
 }
 function can(permKey){
   const u = currentUser();
-  return !!(u && u.permissions && u.permissions[permKey]);
+  return !!(u && u.permissions && u.permissions.view && u.permissions.view[permKey]);
+}
+function canEdit(permKey){
+  const u = currentUser();
+  if(!u) return false;
+  if(u.role === 'admin') return true; // admin always has edit rights, regardless of stored flags
+  return !!(u.permissions && u.permissions.edit && u.permissions.edit[permKey]);
+}
+/** Upgrades any user record still on the old flat permissions shape
+ *  (from before view/edit were split) to the new nested shape, in place.
+ *  Existing view access is preserved exactly; edit access starts closed
+ *  for everyone except admins, matching the new default. */
+function migrateUserPermissionsIfNeeded(){
+  let changed = false;
+  users.forEach(u => {
+    if(u.permissions && !u.permissions.view){
+      const oldFlat = u.permissions;
+      const view = Object.assign({ studentAttendance: !!oldFlat.students, staffAttendance: !!oldFlat.staffDirectory }, oldFlat);
+      const edit = {};
+      EDIT_PERMISSION_KEYS.forEach(k => { edit[k] = u.role === 'admin'; });
+      u.permissions = { view, edit };
+      changed = true;
+    }
+  });
+  if(changed) saveAll();
 }
 
 /* ---------------- utils ---------------- */
@@ -340,6 +399,11 @@ function dateInWords(iso){
   const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
   return ordinal(d.getDate()) + ' ' + months[d.getMonth()] + ' ' + numberToWords(d.getFullYear());
 }
+function pronounSet(gender){
+  if(gender === 'Female') return {subj:'She', poss:'Her', child:'daughter'};
+  if(gender === 'Male') return {subj:'He', poss:'His', child:'son'};
+  return {subj:'They', poss:'Their', child:'son/daughter'};
+}
 function feeStatus(rec){
   const due = Number(rec.amountDue)||0, paid = Number(rec.amountPaid)||0;
   if(paid <= 0) return 'pending';
@@ -351,22 +415,37 @@ function money(n){ return '₹' + (Number(n)||0).toLocaleString('en-IN'); }
 function classDisplayLabel(cls){
   return /^\d+$/.test(cls) ? 'Class ' + cls : cls;
 }
-/** Upserts today's present/absent count for a class, right from its Dashboard block. */
-function saveClassAttendance(cls, field, value){
-  const date = todayIso();
-  let rec = attendanceRecords.find(a => a.date===date && a.cls===cls);
-  if(!rec){
-    rec = {id: uid('att'), date, cls, totalPresent:'', totalAbsent:''};
-    attendanceRecords.push(rec);
-  }
-  rec[field] = value;
-  saveAll();
-}
 function fileToBase64(file){
   return new Promise((resolve, reject) => {
     if(!file){ resolve(null); return; }
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+/** Downscales a large photographed image (e.g. a timetable shot on a phone)
+ *  before storing it as base64, so it doesn't eat the localStorage quota. */
+function resizeImageFile(file, maxDim, quality){
+  return new Promise((resolve, reject) => {
+    if(!file){ resolve(null); return; }
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let w = img.width, h = img.height;
+        if(w > maxDim || h > maxDim){
+          if(w > h){ h = Math.round(h * maxDim/w); w = maxDim; }
+          else { w = Math.round(w * maxDim/h); h = maxDim; }
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality || 0.85));
+      };
+      img.onerror = reject;
+      img.src = e.target.result;
+    };
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
@@ -385,6 +464,8 @@ function loadData(){
   salaries = JSON.parse(localStorage.getItem(LS.salaries) || '[]');
   attendanceRecords = JSON.parse(localStorage.getItem(LS.attendance) || '[]');
   users = JSON.parse(localStorage.getItem(LS.users) || '[]');
+  studentAttendance = JSON.parse(localStorage.getItem(LS.studentAttendance) || '[]');
+  staffAttendance = JSON.parse(localStorage.getItem(LS.staffAttendance) || '[]');
 }
 function saveAll(){
   localStorage.setItem(LS.students, JSON.stringify(students));
@@ -394,6 +475,8 @@ function saveAll(){
   localStorage.setItem(LS.salaries, JSON.stringify(salaries));
   localStorage.setItem(LS.attendance, JSON.stringify(attendanceRecords));
   localStorage.setItem(LS.users, JSON.stringify(users));
+  localStorage.setItem(LS.studentAttendance, JSON.stringify(studentAttendance));
+  localStorage.setItem(LS.staffAttendance, JSON.stringify(staffAttendance));
 }
 function seedUsersIfNeeded(){
   if(localStorage.getItem(LS.usersSeeded)) return;
@@ -401,7 +484,7 @@ function seedUsersIfNeeded(){
   if(users.length === 0){
     users.push({
       id: uid('usr'), name: 'Houdini', username: 'houdini', password: 'houdini123',
-      role: 'admin', permissions: Object.assign({}, ROLE_PRESETS.admin),
+      role: 'admin', permissions: JSON.parse(JSON.stringify(ROLE_PRESETS.admin)),
       status: 'active', createdAt: todayIso(),
     });
     saveAll();
@@ -958,15 +1041,18 @@ function lockApp(){
 /* ---------------- sidebar / routing ---------------- */
 const NAV_ITEMS = [
   {name:'dashboard', label:'Dashboard', icon:'&#9632;', perm:'dashboard'},
+  {name:'timetable', label:'Time Table', icon:'&#128197;', perm:null},
   {name:'enquiries', label:'Enquiries', icon:'&#9993;', perm:'enquiries'},
   {name:'students', label:'Students', icon:'&#9787;', perm:'students'},
   {name:'staff', label:'Staff', icon:'&#9878;', perm:'staffDirectory'},
+  {name:'studentAttendance', label:'Student Attendance', icon:'&#10003;', perm:'studentAttendance'},
+  {name:'staffAttendance', label:'Staff Attendance', icon:'&#128337;', perm:'staffAttendance'},
   {name:'fees', label:'Fees', icon:'&#8377;', perm:'fees'},
   {name:'salary', label:'Salary', icon:'&#128176;', perm:'salary'},
   {name:'users', label:'User Access', icon:'&#128273;', perm:'userManagement'},
 ];
 function renderSidebar(){
-  document.getElementById('sidebarNav').innerHTML = NAV_ITEMS.filter(item => can(item.perm)).map(item => {
+  document.getElementById('sidebarNav').innerHTML = NAV_ITEMS.filter(item => !item.perm || can(item.perm)).map(item => {
     const active = (view.name === item.name) || (item.name==='students' && view.name==='studentDetail');
     return `<button class="nav-link ${active?'active':''}" onclick="goTo('${item.name}')"><span class="dot">${item.icon}</span>${item.label}</button>`;
   }).join('');
@@ -981,17 +1067,20 @@ function goToStudent(id){
   renderSidebar();
   renderApp();
 }
-const VIEW_PERMISSIONS = { dashboard:'dashboard', students:'students', studentDetail:'students', enquiries:'enquiries', staff:'staffDirectory', fees:'fees', salary:'salary', users:'userManagement' };
+const VIEW_PERMISSIONS = { dashboard:'dashboard', students:'students', studentDetail:'students', enquiries:'enquiries', staff:'staffDirectory', studentAttendance:'studentAttendance', staffAttendance:'staffAttendance', fees:'fees', salary:'salary', users:'userManagement' };
 function renderApp(){
   const topbar = document.getElementById('topbar');
   const content = document.getElementById('content');
   const needed = VIEW_PERMISSIONS[view.name];
   if(needed && !can(needed)){ renderAccessDenied(topbar, content); return; }
   if(view.name === 'dashboard'){ renderDashboard(topbar, content); }
+  else if(view.name === 'timetable'){ renderTimeTable(topbar, content); }
   else if(view.name === 'students'){ renderStudents(topbar, content); }
   else if(view.name === 'studentDetail'){ renderStudentDetail(topbar, content, view.studentId); }
   else if(view.name === 'enquiries'){ renderEnquiries(topbar, content); }
   else if(view.name === 'staff'){ renderStaff(topbar, content); }
+  else if(view.name === 'studentAttendance'){ renderStudentAttendance(topbar, content); }
+  else if(view.name === 'staffAttendance'){ renderStaffAttendance(topbar, content); }
   else if(view.name === 'fees'){ renderFees(topbar, content); }
   else if(view.name === 'salary'){ renderSalary(topbar, content); }
   else if(view.name === 'users'){ renderUserManagement(topbar, content); }
@@ -1035,13 +1124,16 @@ function renderDashboard(topbar, content){
 
   const todayKey = todayIso();
   const classCounts = CLASS_LEVELS.map(c => {
-    const att = attendanceRecords.find(a => a.date===todayKey && a.cls===c);
+    const enrolled = students.filter(s=>s.cls===c && s.status==='active').length;
+    const todaysMarks = studentAttendance.filter(a => a.date===todayKey && a.cls===c);
+    const absent = todaysMarks.filter(a=>a.status==='A').length;
+    const leave = todaysMarks.filter(a=>a.status==='L').length;
     return {
       label: c,
       board: BOARD_CLASSES.includes(c),
-      count: students.filter(s=>s.cls===c && s.status==='active').length,
-      present: att ? att.totalPresent : '',
-      absent: att ? att.totalAbsent : ''
+      count: enrolled,
+      absent, leave,
+      registerTaken: can('studentAttendance') && (todaysMarks.length > 0),
     };
   });
   const classMax = Math.max(1, ...classCounts.map(c=>c.count));
@@ -1050,11 +1142,11 @@ function renderDashboard(topbar, content){
 
   content.innerHTML = `
     <div class="quick-actions">
-      ${can('students') ? `<button class="quick-action" onclick="openStudentModal()"><span class="qa-icon">+</span>New Admission</button>` : ''}
-      ${can('enquiries') ? `<button class="quick-action" onclick="openEnquiryModal()"><span class="qa-icon">+</span>New Enquiry</button>` : ''}
-      ${can('staffDirectory') ? `<button class="quick-action" onclick="openStaffModal()"><span class="qa-icon">+</span>New Staff / Teacher</button>` : ''}
-      ${can('fees') ? `<button class="quick-action" onclick="openFeeModal()"><span class="qa-icon">&#8377;</span>Record Fee Payment</button>` : ''}
-      ${can('salary') ? `<button class="quick-action" onclick="openSalaryModal()"><span class="qa-icon">&#8377;</span>Record Salary Payment</button>` : ''}
+      ${canEdit('students') ? `<button class="quick-action" onclick="openStudentModal()"><span class="qa-icon">+</span>New Admission</button>` : ''}
+      ${canEdit('enquiries') ? `<button class="quick-action" onclick="openEnquiryModal()"><span class="qa-icon">+</span>New Enquiry</button>` : ''}
+      ${canEdit('staffDirectory') ? `<button class="quick-action" onclick="openStaffModal()"><span class="qa-icon">+</span>New Staff / Teacher</button>` : ''}
+      ${canEdit('fees') ? `<button class="quick-action" onclick="openFeeModal()"><span class="qa-icon">&#8377;</span>Record Fee Payment</button>` : ''}
+      ${canEdit('salary') ? `<button class="quick-action" onclick="openSalaryModal()"><span class="qa-icon">&#8377;</span>Record Salary Payment</button>` : ''}
     </div>
 
     <div class="stat-grid">
@@ -1083,8 +1175,11 @@ function renderDashboard(topbar, content){
     </div>
 
     <div class="card" style="margin-top:16px;">
-      <h2 style="font-size:18px;">Enrollment by class</h2>
-      <p style="font-size:12px;color:var(--ink-soft);margin:2px 0 16px;">Click a class name to see its roster · classes marked <span class="record-tag" style="padding:1px 6px;">Board</span> sit board exams · enter today's attendance (P/A) directly below</p>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <h2 style="font-size:18px;">Enrollment by class</h2>
+        ${can('studentAttendance') ? `<button class="btn btn-secondary btn-sm" onclick="goTo('studentAttendance')">Open Attendance Register</button>` : ''}
+      </div>
+      <p style="font-size:12px;color:var(--ink-soft);margin:2px 0 16px;">Click a class to see its roster · <span class="record-tag" style="padding:1px 6px;">Board</span> marks board-exam classes · today's absent/leave counts come from the Attendance Register</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;">
         ${classCounts.map(c => `
           <div style="background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;">
@@ -1096,14 +1191,12 @@ function renderDashboard(topbar, content){
               <span style="display:block;height:100%;background:${c.board?'var(--accent)':'var(--brand)'};width:${(c.count/classMax)*100}%;"></span>
             </div>
             <div style="margin-top:6px;font-family:'IBM Plex Mono',monospace;font-size:13px;">${c.count} enrolled</div>
-            <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line);display:flex;gap:8px;">
-              <label style="font-size:11px;font-weight:600;color:var(--good);display:flex;align-items:center;gap:4px;">P
-                <input type="number" min="0" value="${escapeHtml(c.present)}" ${can('students')?'':'disabled'} onchange="saveClassAttendance('${c.label}','totalPresent',this.value)" style="width:48px;border:1px solid var(--good);color:var(--good);background:var(--good-soft);border-radius:4px;padding:3px 4px;font-size:12px;font-weight:600;" />
-              </label>
-              <label style="font-size:11px;font-weight:600;color:var(--bad);display:flex;align-items:center;gap:4px;">A
-                <input type="number" min="0" value="${escapeHtml(c.absent)}" ${can('students')?'':'disabled'} onchange="saveClassAttendance('${c.label}','totalAbsent',this.value)" style="width:48px;border:1px solid var(--bad);color:var(--bad);background:var(--bad-soft);border-radius:4px;padding:3px 4px;font-size:12px;font-weight:600;" />
-              </label>
-            </div>
+            ${can('studentAttendance') ? `
+              <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-size:11px;cursor:pointer;" onclick="attendanceView={cls:'${c.label}',date:todayIso()};goTo('studentAttendance');">
+                ${c.registerTaken
+                  ? `<span style="color:var(--bad);font-weight:600;">${c.absent} absent</span> · <span style="color:var(--accent);font-weight:600;">${c.leave} leave</span> today`
+                  : `<span style="color:var(--ink-soft);">Today's register not taken yet</span>`}
+              </div>` : ''}
           </div>`).join('')}
       </div>
     </div>`;
@@ -1116,7 +1209,7 @@ function renderStudents(topbar, content){
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
       <button class="btn btn-secondary" onclick="exportStudentsExcel()">Download Excel</button>
       <button class="btn btn-secondary" onclick="printStudents()">Print List</button>
-      <button class="btn btn-primary" onclick="openStudentModal()">+ Add student</button>
+      ${canEdit('students') ? `<button class="btn btn-primary" onclick="openStudentModal()">+ Add student</button>` : ''}
     </div>`;
 
   content.innerHTML = `
@@ -1350,8 +1443,10 @@ function renderStudentDetail(topbar, content, id){
       <p>Class ${escapeHtml(s.cls)}${escapeHtml(s.section)} · Roll ${escapeHtml(s.rollNumber||'—')}</p>
     </div>
     <div style="display:flex;gap:8px;">
-      <button class="btn btn-secondary" onclick="openStudentModal('${s.id}')">Edit</button>
-      <button class="btn btn-danger" onclick="deleteStudent('${s.id}')">Delete</button>
+      ${canEdit('students') ? `
+        <button class="btn btn-secondary" onclick="openStudentModal('${s.id}')">Edit</button>
+        <button class="btn btn-danger" onclick="deleteStudent('${s.id}')">Delete</button>
+      ` : ''}
     </div>`;
 
   const g2 = (...pairs) => `<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:13px;">${pairs.map(([l,v])=>detailField(l,v||'—')).join('')}</div>`;
@@ -1383,7 +1478,7 @@ function renderStudentDetail(topbar, content, id){
             <h2 style="font-size:16px;">Fees</h2>
             <div style="display:flex;gap:8px;">
               <button class="btn btn-secondary btn-sm" onclick="printStudentFeeRecord('${s.id}')">Print Fee Record</button>
-              <button class="btn btn-secondary btn-sm" onclick="openFeeModal(null,'${s.id}')">+ Add fee record</button>
+              ${canEdit('fees') ? `<button class="btn btn-secondary btn-sm" onclick="openFeeModal(null,'${s.id}')">+ Add fee record</button>` : ''}
             </div>
           </div>
           ${(() => {
@@ -1416,7 +1511,7 @@ function renderStudentDetail(topbar, content, id){
                 </div>
                 <div style="display:flex;align-items:center;gap:8px;">
                   ${feeStatusPill(f)}
-                  <button class="btn btn-secondary btn-sm" onclick="openFeeModal('${f.id}')">Edit</button>
+                  ${canEdit('fees') ? `<button class="btn btn-secondary btn-sm" onclick="openFeeModal('${f.id}')">Edit</button>` : ''}
                 </div>
               </div>`).join('')}</div>`;
           })()}
@@ -1494,10 +1589,10 @@ function renderStudentDetail(topbar, content, id){
               ${detailField('Attendance', (s.tc.daysPresent||'—')+' / '+(s.tc.workingDays||'—')+' working days')}
             </div>
             <button class="btn btn-primary btn-block" onclick="printTC('${s.id}')">Print TC</button>
-          ` : `
+          ` : (canEdit('students') ? `
             <p style="font-size:13px;color:var(--ink-soft);margin:4px 0 16px;">No TC issued yet. Filling this in marks the student as left and produces a printable certificate.</p>
             <button class="btn btn-primary btn-block" onclick="openTCModal('${s.id}')">Generate TC</button>
-          `}
+          ` : `<p style="font-size:13px;color:var(--ink-soft);margin:4px 0;">No TC issued yet.</p>`)}
         </div>
       </div>
     </div>`;
@@ -1516,6 +1611,9 @@ function openTCModal(studentId){
         <div class="field"><label>Date of issue</label><input type="date" name="issueDate" value="${todayIso()}" required /></div>
         <div class="field"><label>Last class studied</label><input name="lastClassStudied" value="${escapeHtml(s.cls)}" required /></div>
         <div class="field span2"><label>Reason for leaving</label><input name="reasonForLeaving" placeholder="e.g. Family relocation" required /></div>
+        <div class="field"><label>Result of last annual exam</label>
+          <select name="lastExamResult"><option>Passed</option><option>Promoted</option><option>Failed</option><option>Awaited</option></select>
+        </div>
         <div class="field"><label>Promotion status</label><input name="promotionStatus" placeholder="e.g. Promoted to Class 6" /></div>
         <div class="field"><label>General conduct</label>
           <select name="conductRemark">
@@ -1524,6 +1622,10 @@ function openTCModal(studentId){
         </div>
         <div class="field"><label>Working days</label><input type="number" name="workingDays" min="0" /></div>
         <div class="field"><label>Days present</label><input type="number" name="daysPresent" min="0" /></div>
+        <div class="field span2" style="display:flex;align-items:center;gap:8px;margin-top:2px;">
+          <input type="checkbox" name="duesCleared" id="tcDuesCleared" checked style="width:auto;" />
+          <label for="tcDuesCleared" style="margin:0;font-weight:400;">All fee dues paid before leaving</label>
+        </div>
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
@@ -1533,9 +1635,10 @@ function openTCModal(studentId){
   document.getElementById('tcForm').addEventListener('submit', function(e){
     e.preventDefault();
     const fd = Object.fromEntries(new FormData(e.target).entries());
+    fd.duesCleared = !!document.getElementById('tcDuesCleared').checked;
     const year = fd.issueDate.slice(0,4);
     const seq = students.filter(x=>x.tc && x.tc.issued).length + 1;
-    s.tc = { issued:true, tcNumber:'TC/'+year+'/'+String(seq).padStart(3,'0'), ...fd };
+    s.tc = { issued:true, tcNumber: year+'/'+seq, ...fd };
     s.status = 'tc_issued';
     saveAll();
     closeModal();
@@ -1545,40 +1648,63 @@ function openTCModal(studentId){
 }
 function printTC(studentId){
   const s = students.find(x=>x.id===studentId);
+  const p = pronounSet(s.gender);
   const win = window.open('', '_blank');
   win.document.write(`<!DOCTYPE html><html><head><title>TC — ${escapeHtml(s.firstName)} ${escapeHtml(s.lastName)}</title>
   <style>
-    body{font-family:Georgia,serif;color:#1e2a38;max-width:720px;margin:40px auto;padding:0 24px;}
-    h1{font-size:22px;text-align:center;margin-bottom:2px;}
-    .addr{text-align:center;font-size:13px;color:#5b6472;margin-bottom:4px;}
-    .title{text-align:center;text-decoration:underline;margin:24px 0;font-size:16px;letter-spacing:.05em;}
-    .meta{display:flex;justify-content:space-between;font-size:13px;margin-bottom:20px;}
-    table{width:100%;border-collapse:collapse;font-size:14px;}
-    td{padding:8px 4px;border-bottom:1px solid #dedacb;}
-    td.k{color:#5b6472;width:55%;}
-    .sign{display:flex;justify-content:space-between;margin-top:70px;font-size:13px;}
-    .sign div{border-top:1px solid #1e2a38;padding-top:6px;width:180px;text-align:center;}
+    body{font-family:Georgia,serif;color:#1e2a38;max-width:760px;margin:30px auto;padding:0 20px;font-size:13.5px;line-height:1.6;}
+    .frame{border:2px solid #1e2a38;padding:22px 28px;}
+    .topline{display:flex;justify-content:space-between;font-size:12px;}
+    h1{font-size:21px;text-align:center;margin:2px 0 0;}
+    .addr{text-align:center;font-size:12px;margin:2px 0;}
+    .recognized{text-align:center;font-size:12px;margin:0 0 2px;}
+    .codeline{display:flex;justify-content:space-between;font-size:12px;margin-top:4px;}
+    .logo{display:block;margin:8px auto;height:56px;}
+    .titlewrap{text-align:center;margin:14px 0 16px;}
+    .titlebox{display:inline-block;border:1.5px solid #1e2a38;padding:4px 20px;font-weight:bold;letter-spacing:.03em;}
+    p{margin:0 0 12px;text-align:justify;}
+    .pen{display:flex;border:1px solid #1e2a38;width:260px;margin:16px 0;}
+    .pen div{padding:6px 10px;}
+    .pen div:first-child{font-weight:bold;border-right:1px solid #1e2a38;width:100px;}
+    .sign{display:flex;justify-content:space-between;margin-top:60px;font-size:13px;align-items:flex-end;}
     @media print{ body{margin:0 auto;} }
   </style></head><body>
-    <img src="${LOGO_DATA_URI}" alt="Bombay Kids International School" style="height:60px;display:block;margin:0 auto 6px;" />
-    <p class="addr">${escapeHtml(SCHOOL_ADDRESS)}</p>
-    <p class="title">Transfer Certificate</p>
-    <div class="meta"><span>TC No: ${escapeHtml(s.tc.tcNumber)}</span><span>Date: ${formatDate(s.tc.issueDate)}</span></div>
-    <table>
-      <tr><td class="k">Student's name</td><td>${escapeHtml(s.firstName)} ${escapeHtml(s.lastName)}</td></tr>
-      <tr><td class="k">Father's / Guardian's name</td><td>${escapeHtml(s.fatherName||'—')}</td></tr>
-      <tr><td class="k">Mother's name</td><td>${escapeHtml(s.motherName||'—')}</td></tr>
-      <tr><td class="k">Scholar no.</td><td>${escapeHtml(s.admissionNumber)}</td></tr>
-      <tr><td class="k">Date of birth</td><td>${formatDate(s.dob)}</td></tr>
-      <tr><td class="k">Date of admission</td><td>${formatDate(s.admissionDate)}</td></tr>
-      <tr><td class="k">Last class studied</td><td>${escapeHtml(s.tc.lastClassStudied||'—')}</td></tr>
-      <tr><td class="k">Promotion status</td><td>${escapeHtml(s.tc.promotionStatus||'—')}</td></tr>
-      <tr><td class="k">Working days / days present</td><td>${escapeHtml(s.tc.workingDays||'—')} / ${escapeHtml(s.tc.daysPresent||'—')}</td></tr>
-      <tr><td class="k">General conduct</td><td>${escapeHtml(s.tc.conductRemark||'—')}</td></tr>
-      <tr><td class="k">Reason for leaving</td><td>${escapeHtml(s.tc.reasonForLeaving||'—')}</td></tr>
-      <tr><td class="k">Date of leaving</td><td>${formatDate(s.tc.issueDate)}</td></tr>
-    </table>
-    <div class="sign"><div>Class Teacher</div><div>Principal</div></div>
+    <div class="frame">
+      <div class="topline"><span>Dise Code - ${escapeHtml(SCHOOL_DISE_CODE)}</span><span>Reg. No. - ${escapeHtml(SCHOOL_REG_NO)}</span></div>
+      <img class="logo" src="${LOGO_DATA_URI}" alt="${escapeHtml(SCHOOL_NAME)}" />
+      <h1>${escapeHtml(SCHOOL_NAME.toUpperCase())}</h1>
+      <p class="addr">${escapeHtml(SCHOOL_ADDRESS)}</p>
+      <p class="recognized">(Recognized by the Government)</p>
+      <div class="codeline">
+        <span>S.No. - ${escapeHtml(s.tc.tcNumber)}</span>
+        <span>(Education code Part 3 Form 4)</span>
+        <span>Scholar No. - ${escapeHtml(s.admissionNumber)}</span>
+      </div>
+      <div class="titlewrap"><span class="titlebox">TRANSFER CERTIFICATE</span></div>
+
+      <p>This is to certify that – <strong>${escapeHtml(s.firstName)} ${escapeHtml(s.lastName)}</strong> ${p.child} of – Mr. <strong>${escapeHtml(s.fatherName||'—')}</strong> and Mrs. <strong>${escapeHtml(s.motherName||'—')}</strong> having ${p.poss.toLowerCase()} mother tongue is <strong>${escapeHtml(s.motherTongue||'Hindi')}</strong> studied in the <strong>${escapeHtml(SCHOOL_NAME.toUpperCase())}</strong> district <strong>${escapeHtml(s.city||'Indore')}</strong> from <strong>${formatDate(s.admissionDate)}</strong> to <strong>${formatDate(s.tc.issueDate)}</strong> and is now leaving the school on date <strong>${formatDate(s.tc.issueDate)}</strong>.</p>
+
+      <p>According to scholar register ${p.poss.toLowerCase()} date of birth is (in figures) <strong>${formatDate(s.dob)}</strong> and (in word) <strong>${dateInWords(s.dob).toUpperCase()}</strong> and the caste is – <strong>${escapeHtml(s.category||'—')}</strong></p>
+
+      <p>${p.subj} has been vaccinated and ${p.subj.toLowerCase()} is well protected from small pox. ${p.poss} last annual exam is as follows.</p>
+
+      <p>Class – <strong>${escapeHtml(s.tc.lastClassStudied||s.cls)}</strong> medium <strong>${escapeHtml(s.medium||'English')}</strong> result <strong>${escapeHtml(s.tc.lastExamResult||'—')}</strong> Year <strong>${escapeHtml(s.session||currentAcademicYear())}</strong></p>
+
+      ${s.tc.promotionStatus ? `<p>${p.subj} is promoted in class <strong>${escapeHtml(s.tc.promotionStatus)}</strong></p>` : ''}
+
+      <p>${s.tc.duesCleared
+        ? `On date <strong>${formatDate(s.tc.issueDate)}</strong> before leaving the school <strong>${escapeHtml(s.firstName)} ${escapeHtml(s.lastName)}</strong> ${p.child} of Mr. <strong>${escapeHtml(s.fatherName||'—')}</strong> paid all the dues.`
+        : `Fee dues were outstanding at the time of leaving.`}</p>
+
+      <p>${p.poss} conduct is <strong>${escapeHtml(s.tc.conductRemark||'Good')}</strong> and attendance is <strong>${escapeHtml(s.tc.daysPresent||'—')}</strong> days out of <strong>${escapeHtml(s.tc.workingDays||'—')}</strong> working days.</p>
+
+      <div class="pen"><div>PEN NO</div><div>${escapeHtml(s.studentPEN||'—')}</div></div>
+
+      <div class="sign">
+        <span>Date:- ${formatDate(s.tc.issueDate)}</span>
+        <span>Principal</span>
+      </div>
+    </div>
     <script>window.onload = () => window.print();<\/script>
   </body></html>`);
   win.document.close();
@@ -1661,9 +1787,10 @@ function printAdmissionForm(studentId){
 function renderEnquiries(topbar, content){
   topbar.innerHTML = `
     <div><h1>Enquiries</h1><p>Every prospective admission from first contact onward.</p></div>
-    <button class="btn btn-primary" onclick="openEnquiryModal()">+ Add enquiry</button>`;
+    ${canEdit('enquiries') ? `<button class="btn btn-primary" onclick="openEnquiryModal()">+ Add enquiry</button>` : ''}`;
 
   const sorted = [...enquiries].sort((a,b)=> new Date(b.createdAt)-new Date(a.createdAt));
+  const editable = canEdit('enquiries');
 
   content.innerHTML = sorted.length===0 ? `<div class="table-wrap"><div class="empty">No enquiries yet. Log your first walk-in or call above.</div></div>` : `
     <div class="table-wrap"><table>
@@ -1676,14 +1803,18 @@ function renderEnquiries(topbar, content){
             <td style="color:var(--ink-soft);">${escapeHtml(e.parentName)}<br/><span style="font-family:'IBM Plex Mono',monospace;font-size:12px;">${escapeHtml(e.parentPhone)}</span></td>
             <td style="color:var(--ink-soft);">${formatDate(e.nextFollowUpDate)}</td>
             <td>
-              <select onchange="updateEnquiryStatus('${e.id}', this.value)" style="border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:12px;">
-                ${Object.keys(STAGE_LABELS).map(k=>`<option value="${k}" ${e.status===k?'selected':''}>${STAGE_LABELS[k]}</option>`).join('')}
-              </select>
+              ${editable ? `
+                <select onchange="updateEnquiryStatus('${e.id}', this.value)" style="border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:12px;">
+                  ${Object.keys(STAGE_LABELS).map(k=>`<option value="${k}" ${e.status===k?'selected':''}>${STAGE_LABELS[k]}</option>`).join('')}
+                </select>
+              ` : `<span class="record-tag">${STAGE_LABELS[e.status]||e.status}</span>`}
             </td>
             <td style="text-align:right;white-space:nowrap;">
-              <button class="btn btn-secondary btn-sm" onclick="openFollowUpModal('${e.id}')">Follow-up</button>
-              ${e.status!=='admitted' ? `<button class="btn btn-secondary btn-sm" onclick="openStudentModal(null); prefillFromEnquiry('${e.id}')">Convert</button>` : ''}
-              <button class="btn btn-danger btn-sm" onclick="deleteEnquiry('${e.id}')">Delete</button>
+              ${editable ? `
+                <button class="btn btn-secondary btn-sm" onclick="openFollowUpModal('${e.id}')">Follow-up</button>
+                ${e.status!=='admitted' ? `<button class="btn btn-secondary btn-sm" onclick="openStudentModal(null); prefillFromEnquiry('${e.id}')">Convert</button>` : ''}
+                <button class="btn btn-danger btn-sm" onclick="deleteEnquiry('${e.id}')">Delete</button>
+              ` : ''}
             </td>
           </tr>`).join('')}
       </tbody>
@@ -1785,7 +1916,7 @@ function renderStaff(topbar, content){
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
       <button class="btn btn-secondary" onclick="exportStaffExcel()">Download Excel</button>
       <button class="btn btn-secondary" onclick="printStaff()">Print List</button>
-      <button class="btn btn-primary" onclick="openStaffModal()">+ Add staff</button>
+      ${canEdit('staffDirectory') ? `<button class="btn btn-primary" onclick="openStaffModal()">+ Add staff</button>` : ''}
     </div>`;
 
   content.innerHTML = staffList.length===0 ? `<div class="table-wrap"><div class="empty">No staff added yet.</div></div>` : `
@@ -1808,9 +1939,9 @@ function renderStaff(topbar, content){
             })()}</div>` : ''}
           </div>
           <div style="display:flex;gap:8px;margin-top:14px;">
-            <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="openStaffModal('${m.id}')">Edit</button>
-            ${can('salary') ? `<button class="btn btn-secondary btn-sm" onclick="openSalaryModal(null,'${m.id}')">Salary</button>` : ''}
-            <button class="btn btn-danger btn-sm" onclick="deleteStaffMember('${m.id}')">Delete</button>
+            ${canEdit('staffDirectory') ? `<button class="btn btn-secondary btn-sm" style="flex:1;" onclick="openStaffModal('${m.id}')">Edit</button>` : ''}
+            ${canEdit('salary') ? `<button class="btn btn-secondary btn-sm" onclick="openSalaryModal(null,'${m.id}')">Salary</button>` : ''}
+            ${canEdit('staffDirectory') ? `<button class="btn btn-danger btn-sm" onclick="deleteStaffMember('${m.id}')">Delete</button>` : ''}
           </div>
         </div>`).join('')}
     </div>`;
@@ -1873,11 +2004,206 @@ function deleteStaffMember(id){
   renderStaff(document.getElementById('topbar'),document.getElementById('content'));
 }
 
+/* ---------------- student attendance (per class register, exceptions only) ---------------- */
+function attendancePill(status){
+  if(status==='A') return `<span class="pill pill-bad">Absent</span>`;
+  if(status==='L') return `<span class="pill pill-accent">Leave</span>`;
+  return `<span class="pill pill-good">Present</span>`;
+}
+var pendingAttendanceMarks = {};
+function renderStudentAttendance(topbar, content){
+  topbar.innerHTML = `<div><h1>Student Attendance</h1><p>Each class keeps its own register — everyone starts marked Present, so you only need to touch the exceptions.</p></div>`;
+  if(!attendanceView.date) attendanceView.date = todayIso();
+
+  content.innerHTML = `
+    <div class="toolbar">
+      <select id="attClassSelect" onchange="loadAttendanceRegister()">
+        <option value="">Select class</option>
+        ${CLASS_LEVELS.map(c=>`<option value="${c}" ${attendanceView.cls===c?'selected':''}>${classDisplayLabel(c)}</option>`).join('')}
+      </select>
+      <input type="date" id="attDateInput" value="${attendanceView.date}" onchange="loadAttendanceRegister()" />
+    </div>
+    <div id="attendanceRegisterWrap"></div>`;
+  renderAttendanceRegister();
+}
+function loadAttendanceRegister(){
+  attendanceView.cls = document.getElementById('attClassSelect').value;
+  attendanceView.date = document.getElementById('attDateInput').value;
+  renderAttendanceRegister();
+}
+function renderAttendanceRegister(){
+  const wrap = document.getElementById('attendanceRegisterWrap');
+  if(!attendanceView.cls){
+    wrap.innerHTML = `<div class="table-wrap"><div class="empty">Choose a class above to open its register.</div></div>`;
+    return;
+  }
+  const roster = students.filter(s=>s.cls===attendanceView.cls && s.status==='active').sort((a,b)=>a.firstName.localeCompare(b.firstName));
+  const existing = {};
+  studentAttendance.filter(a=>a.cls===attendanceView.cls && a.date===attendanceView.date).forEach(a => { existing[a.studentId] = a.status; });
+  pendingAttendanceMarks = Object.assign({}, existing);
+  const editable = canEdit('studentAttendance');
+
+  if(roster.length===0){
+    wrap.innerHTML = `<div class="table-wrap"><div class="empty">No active students in ${classDisplayLabel(attendanceView.cls)} yet.</div></div>`;
+    return;
+  }
+
+  wrap.innerHTML = `
+    <div id="attSummary" style="margin-bottom:12px;font-size:13px;"></div>
+    <div class="table-wrap"><table>
+      <thead><tr><th>Student</th><th>Scholar No.</th><th>Status</th></tr></thead>
+      <tbody>
+        ${roster.map(s => `
+          <tr>
+            <td style="font-weight:500;">${escapeHtml(s.firstName)} ${escapeHtml(s.lastName)}</td>
+            <td><span class="record-tag">${escapeHtml(s.admissionNumber)}</span></td>
+            <td>
+              ${editable ? `
+                <div class="att-toggle" data-student="${s.id}">
+                  <button type="button" class="att-btn att-p" onclick="setAttendanceMark('${s.id}','P')">P</button>
+                  <button type="button" class="att-btn att-a" onclick="setAttendanceMark('${s.id}','A')">A</button>
+                  <button type="button" class="att-btn att-l" onclick="setAttendanceMark('${s.id}','L')">L</button>
+                </div>
+              ` : attendancePill(existing[s.id]||'P')}
+            </td>
+          </tr>`).join('')}
+      </tbody>
+    </table></div>
+    ${editable ? `<div style="margin-top:14px;"><button class="btn btn-primary" onclick="saveAttendanceRegister()">Save register</button></div>` : ''}`;
+
+  roster.forEach(s => updateAttendanceButtonStyle(s.id));
+  updateAttendanceSummary(roster.length);
+}
+function setAttendanceMark(studentId, status){
+  pendingAttendanceMarks[studentId] = status;
+  updateAttendanceButtonStyle(studentId);
+  const total = students.filter(s=>s.cls===attendanceView.cls && s.status==='active').length;
+  updateAttendanceSummary(total);
+}
+function updateAttendanceButtonStyle(studentId){
+  const row = document.querySelector('.att-toggle[data-student="'+studentId+'"]');
+  if(!row) return;
+  const status = pendingAttendanceMarks[studentId] || 'P';
+  row.querySelectorAll('.att-btn').forEach(btn => btn.classList.remove('active'));
+  const map = {P:'att-p', A:'att-a', L:'att-l'};
+  const activeBtn = row.querySelector('.'+map[status]);
+  if(activeBtn) activeBtn.classList.add('active');
+}
+function updateAttendanceSummary(total){
+  const el = document.getElementById('attSummary');
+  if(!el) return;
+  let absent=0, leave=0;
+  Object.values(pendingAttendanceMarks).forEach(v => { if(v==='A') absent++; if(v==='L') leave++; });
+  const present = total - absent - leave;
+  el.innerHTML = `<span style="color:var(--good);font-weight:600;">${present} Present</span> · <span style="color:var(--bad);font-weight:600;">${absent} Absent</span> · <span style="color:var(--accent);font-weight:600;">${leave} Leave</span> · ${total} total`;
+}
+function saveAttendanceRegister(){
+  const cls = attendanceView.cls, date = attendanceView.date;
+  studentAttendance = studentAttendance.filter(a => !(a.cls===cls && a.date===date));
+  Object.keys(pendingAttendanceMarks).forEach(studentId => {
+    const status = pendingAttendanceMarks[studentId];
+    if(status && status !== 'P'){
+      const s = students.find(x=>x.id===studentId);
+      studentAttendance.push({id:uid('satt'), date, studentId, cls, section: s?s.section:'', status});
+    }
+  });
+  saveAll();
+  alert('Attendance saved for ' + classDisplayLabel(cls) + ' on ' + formatDate(date) + '.');
+}
+
+/* ---------------- staff attendance (per day, with entry/exit time) ---------------- */
+function renderStaffAttendance(topbar, content){
+  topbar.innerHTML = `<div><h1>Staff Attendance</h1><p>Daily presence and work hours — feeds into salary calculations later.</p></div>`;
+  if(!staffAttendanceView.date) staffAttendanceView.date = todayIso();
+  content.innerHTML = `
+    <div class="toolbar">
+      <input type="date" id="staffAttDateInput" value="${staffAttendanceView.date}" onchange="loadStaffAttendanceRegister()" />
+    </div>
+    <div id="staffAttendanceWrap"></div>`;
+  renderStaffAttendanceRegister();
+}
+function loadStaffAttendanceRegister(){
+  staffAttendanceView.date = document.getElementById('staffAttDateInput').value;
+  renderStaffAttendanceRegister();
+}
+function renderStaffAttendanceRegister(){
+  const wrap = document.getElementById('staffAttendanceWrap');
+  const date = staffAttendanceView.date;
+  const roster = staffList.filter(m=>m.employmentStatus==='active').sort((a,b)=>a.firstName.localeCompare(b.firstName));
+  const editable = canEdit('staffAttendance');
+  if(roster.length===0){ wrap.innerHTML = `<div class="table-wrap"><div class="empty">No active staff on record.</div></div>`; return; }
+
+  wrap.innerHTML = `
+    <div class="table-wrap"><table>
+      <thead><tr><th>Staff</th><th>Status</th><th>Entry time</th><th>Exit time</th></tr></thead>
+      <tbody>
+        ${roster.map(m => {
+          const rec = staffAttendance.find(a=>a.staffId===m.id && a.date===date);
+          const status = rec ? rec.status : 'P';
+          return `
+          <tr>
+            <td style="font-weight:500;">${escapeHtml(m.firstName)} ${escapeHtml(m.lastName)}</td>
+            <td>
+              ${editable ? `
+                <select onchange="updateStaffAttField('${m.id}','status',this.value)" style="border:1px solid var(--line);border-radius:6px;padding:4px 8px;font-size:12px;">
+                  <option value="P" ${status==='P'?'selected':''}>Present</option>
+                  <option value="A" ${status==='A'?'selected':''}>Absent</option>
+                  <option value="L" ${status==='L'?'selected':''}>Leave</option>
+                </select>
+              ` : attendancePill(status)}
+            </td>
+            <td>${editable ? `<input type="time" value="${rec&&rec.entryTime?rec.entryTime:''}" onchange="updateStaffAttField('${m.id}','entryTime',this.value)" style="border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:12px;" />` : escapeHtml(rec&&rec.entryTime?rec.entryTime:'—')}</td>
+            <td>${editable ? `<input type="time" value="${rec&&rec.exitTime?rec.exitTime:''}" onchange="updateStaffAttField('${m.id}','exitTime',this.value)" style="border:1px solid var(--line);border-radius:6px;padding:4px 6px;font-size:12px;" />` : escapeHtml(rec&&rec.exitTime?rec.exitTime:'—')}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table></div>`;
+}
+function updateStaffAttField(staffId, field, value){
+  const date = staffAttendanceView.date;
+  let rec = staffAttendance.find(a=>a.staffId===staffId && a.date===date);
+  if(!rec){
+    rec = {id:uid('stat'), date, staffId, status:'P', entryTime:'', exitTime:''};
+    staffAttendance.push(rec);
+  }
+  rec[field] = value;
+  saveAll();
+}
+
+/* ---------------- time table (viewable by everyone, editable by Admin only) ---------------- */
+function renderTimeTable(topbar, content){
+  const u = currentUser();
+  const isAdmin = u && u.role === 'admin';
+  topbar.innerHTML = `<div><h1>Time Table</h1><p>${escapeHtml(SCHOOL_NAME)} · Session ${currentAcademicYear()}</p></div>`;
+  const stored = localStorage.getItem(LS.timeTable);
+
+  content.innerHTML = `
+    <div class="card">
+      ${stored
+        ? `<img src="${stored}" alt="Time table" style="max-width:100%;border-radius:8px;border:1px solid var(--line);display:block;" />`
+        : `<p style="color:var(--ink-soft);font-size:13px;">No time table uploaded yet.${isAdmin?'':' Ask your admin to add one.'}</p>`}
+      ${isAdmin ? `
+        <div style="margin-top:16px;border-top:1px solid var(--line);padding-top:16px;">
+          <label style="font-size:13px;font-weight:500;display:block;margin-bottom:6px;">${stored?'Replace':'Upload'} time table image</label>
+          <input type="file" id="timeTableFileInput" accept="image/*" onchange="uploadTimeTable(event)" />
+          <p style="font-size:11px;color:var(--ink-soft);margin-top:6px;">Only you can see this upload control — everyone else just sees the image above.</p>
+        </div>
+      ` : ''}
+    </div>`;
+}
+async function uploadTimeTable(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const resized = await resizeImageFile(file, 1600, 0.85);
+  localStorage.setItem(LS.timeTable, resized);
+  renderTimeTable(document.getElementById('topbar'), document.getElementById('content'));
+}
+
 /* ---------------- fees ---------------- */
 function renderFees(topbar, content){
   topbar.innerHTML = `
     <div><h1>Fees</h1><p>${fees.length} fee record${fees.length===1?'':'s'} across all sessions</p></div>
-    <button class="btn btn-primary" onclick="openFeeModal()">+ Add fee record</button>`;
+    ${canEdit('fees') ? `<button class="btn btn-primary" onclick="openFeeModal()">+ Add fee record</button>` : ''}`;
 
   const sessions = [...new Set([currentAcademicYear(), ...fees.map(f=>f.session)])].sort().reverse();
 
@@ -1944,8 +2270,10 @@ function renderFeesTable(){
             <td>${feeStatusPill(f)}</td>
             <td style="color:var(--ink-soft);">${formatDate(f.dueDate)}</td>
             <td style="text-align:right;white-space:nowrap;">
-              <button class="btn btn-secondary btn-sm" onclick="openFeeModal('${f.id}')">Edit</button>
-              <button class="btn btn-danger btn-sm" onclick="deleteFee('${f.id}')">Delete</button>
+              ${canEdit('fees') ? `
+                <button class="btn btn-secondary btn-sm" onclick="openFeeModal('${f.id}')">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteFee('${f.id}')">Delete</button>
+              ` : ''}
             </td>
           </tr>`).join('')}
       </tbody>
@@ -2094,7 +2422,7 @@ function printStudentFeeRecord(studentId){
 function renderSalary(topbar, content){
   topbar.innerHTML = `
     <div><h1>Salary</h1><p>${salaries.length} salary record${salaries.length===1?'':'s'} on file</p></div>
-    <button class="btn btn-primary" onclick="openSalaryModal()">+ Add salary record</button>`;
+    ${canEdit('salary') ? `<button class="btn btn-primary" onclick="openSalaryModal()">+ Add salary record</button>` : ''}`;
 
   const months = [...new Set([currentMonthKey(), ...salaries.map(s=>s.month)])].sort().reverse();
 
@@ -2147,8 +2475,10 @@ function renderSalaryTable(){
             <td>${feeStatusPill(r)}</td>
             <td style="color:var(--ink-soft);">${formatDate(r.paidDate)}</td>
             <td style="text-align:right;white-space:nowrap;">
-              <button class="btn btn-secondary btn-sm" onclick="openSalaryModal('${r.id}')">Edit</button>
-              <button class="btn btn-danger btn-sm" onclick="deleteSalary('${r.id}')">Delete</button>
+              ${canEdit('salary') ? `
+                <button class="btn btn-secondary btn-sm" onclick="openSalaryModal('${r.id}')">Edit</button>
+                <button class="btn btn-danger btn-sm" onclick="deleteSalary('${r.id}')">Delete</button>
+              ` : ''}
             </td>
           </tr>`).join('')}
       </tbody>
@@ -2409,19 +2739,20 @@ function generateStaffPrint(columns){ generatePrintList('Staff Roster', columns,
 /* ---------------- user access (admin only) ---------------- */
 function renderUserManagement(topbar, content){
   topbar.innerHTML = `
-    <div><h1>User Access</h1><p>Control who can sign in and what each person can see.</p></div>
+    <div><h1>User Access</h1><p>Control who can sign in, what they can see, and what they can edit.</p></div>
     <button class="btn btn-primary" onclick="openUserModal()">+ Add user</button>`;
 
   content.innerHTML = `
     <div class="table-wrap"><table>
-      <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Access</th><th>Status</th><th></th></tr></thead>
+      <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Can view</th><th>Can edit</th><th>Status</th><th></th></tr></thead>
       <tbody>
         ${users.map(u => `
           <tr>
             <td style="font-weight:500;">${escapeHtml(u.name)}</td>
             <td><span class="record-tag">${escapeHtml(u.username)}</span></td>
             <td>${escapeHtml(ROLE_LABELS[u.role]||u.role)}</td>
-            <td style="font-size:12px;color:var(--ink-soft);max-width:260px;">${PERMISSION_KEYS.filter(k=>u.permissions[k]).map(k=>PERMISSION_LABELS[k].split(' (')[0]).join(', ') || '—'}</td>
+            <td style="font-size:12px;color:var(--ink-soft);max-width:220px;">${VIEW_PERMISSION_KEYS.filter(k=>u.permissions.view[k]).map(k=>VIEW_PERMISSION_LABELS[k].split(' (')[0]).join(', ') || '—'}</td>
+            <td style="font-size:12px;color:var(--ink-soft);max-width:220px;">${u.role==='admin' ? 'Everything' : (EDIT_PERMISSION_KEYS.filter(k=>u.permissions.edit[k]).map(k=>EDIT_PERMISSION_LABELS[k]).join(', ') || '—')}</td>
             <td>${u.status==='active' ? '<span class="pill pill-good">Active</span>' : '<span class="pill pill-neutral">Inactive</span>'}</td>
             <td style="text-align:right;white-space:nowrap;">
               <button class="btn btn-secondary btn-sm" onclick="openUserModal('${u.id}')">Edit</button>
@@ -2434,9 +2765,13 @@ function renderUserManagement(topbar, content){
 }
 function applyRolePreset(role){
   const preset = ROLE_PRESETS[role] || ROLE_PRESETS.custom;
-  PERMISSION_KEYS.forEach(key => {
-    const cb = document.querySelector('#userPermList input[value="'+key+'"]');
-    if(cb) cb.checked = !!preset[key];
+  VIEW_PERMISSION_KEYS.forEach(key => {
+    const cb = document.querySelector('#userViewPermList input[value="'+key+'"]');
+    if(cb) cb.checked = !!preset.view[key];
+  });
+  EDIT_PERMISSION_KEYS.forEach(key => {
+    const cb = document.querySelector('#userEditPermList input[value="'+key+'"]');
+    if(cb) cb.checked = !!preset.edit[key];
   });
 }
 function openUserModal(existingId){
@@ -2458,15 +2793,26 @@ function openUserModal(existingId){
         ${u ? `<div class="field"><label>Status</label><select name="status"><option value="active" ${u.status==='active'?'selected':''}>Active</option><option value="inactive" ${u.status==='inactive'?'selected':''}>Inactive</option></select></div>` : ''}
       </div>
       <div style="margin-top:14px;">
-        <p style="font-size:12px;font-weight:500;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin:0 0 8px;">Permissions</p>
-        <div id="userPermList" style="display:grid;grid-template-columns:1fr 1fr;gap:7px 12px;">
-          ${PERMISSION_KEYS.map(key => `
+        <p style="font-size:12px;font-weight:500;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin:0 0 8px;">Can view</p>
+        <div id="userViewPermList" style="display:grid;grid-template-columns:1fr 1fr;gap:7px 12px;">
+          ${VIEW_PERMISSION_KEYS.map(key => `
             <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;margin:0;">
-              <input type="checkbox" value="${key}" ${perms[key]?'checked':''} style="width:auto;" />
-              ${escapeHtml(PERMISSION_LABELS[key])}
+              <input type="checkbox" value="${key}" ${perms.view[key]?'checked':''} style="width:auto;" />
+              ${escapeHtml(VIEW_PERMISSION_LABELS[key])}
             </label>`).join('')}
         </div>
         <p style="font-size:11px;color:var(--bad);margin-top:8px;">Salary is visible only to whoever you check it for here — by default that's Admin and Board of Directors.</p>
+      </div>
+      <div style="margin-top:16px;">
+        <p style="font-size:12px;font-weight:500;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.03em;margin:0 0 8px;">Can edit (add / change / delete records)</p>
+        <div id="userEditPermList" style="display:grid;grid-template-columns:1fr 1fr;gap:7px 12px;">
+          ${EDIT_PERMISSION_KEYS.map(key => `
+            <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;margin:0;">
+              <input type="checkbox" value="${key}" ${perms.edit[key]?'checked':''} style="width:auto;" />
+              ${escapeHtml(EDIT_PERMISSION_LABELS[key])}
+            </label>`).join('')}
+        </div>
+        <p style="font-size:11px;color:var(--ink-soft);margin-top:8px;">Editing is closed for everyone but Admin by default — someone can view a section without being able to change anything in it until you tick it here.</p>
       </div>
       <div class="modal-actions">
         <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
@@ -2479,11 +2825,17 @@ function openUserModal(existingId){
     const usernameLower = fd.username.trim().toLowerCase();
     const clash = users.find(x => x.username.toLowerCase()===usernameLower && x.id !== (u?u.id:null));
     if(clash){ alert('That username is already taken.'); return; }
-    const permissions = {};
-    PERMISSION_KEYS.forEach(key => {
-      const cb = document.querySelector('#userPermList input[value="'+key+'"]');
-      permissions[key] = !!(cb && cb.checked);
+    const view = {};
+    VIEW_PERMISSION_KEYS.forEach(key => {
+      const cb = document.querySelector('#userViewPermList input[value="'+key+'"]');
+      view[key] = !!(cb && cb.checked);
     });
+    const edit = {};
+    EDIT_PERMISSION_KEYS.forEach(key => {
+      const cb = document.querySelector('#userEditPermList input[value="'+key+'"]');
+      edit[key] = !!(cb && cb.checked);
+    });
+    const permissions = { view, edit };
     if(u){
       u.name = fd.name; u.username = fd.username.trim(); u.role = fd.role; u.permissions = permissions;
       if(fd.status) u.status = fd.status;
@@ -2590,6 +2942,7 @@ seedFeesIfNeeded();
 importClass10Batch();
 importKG2To9Batch();
 seedUsersIfNeeded();
+migrateUserPermissionsIfNeeded();
 checkSession();
 </script>
 </body>
