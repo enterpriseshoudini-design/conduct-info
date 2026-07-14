@@ -372,16 +372,10 @@ function saveAll(){
   localStorage.setItem(LS.notices, JSON.stringify(notices));
 }
 function seedUsersIfNeeded(){
-  if(localStorage.getItem(LS.usersSeeded)) return;
-  localStorage.setItem(LS.usersSeeded, '1');
-  if(users.length === 0){
-    users.push({
-      id: uid('usr'), name: 'Admin', username: 'admin', password: 'admin123',
-      role: 'admin', permissions: JSON.parse(JSON.stringify(ROLE_PRESETS.admin)),
-      status: 'active', createdAt: todayIso(),
-    });
-    saveAll();
-  }
+  // No default account is ever created here. If no users exist yet, the
+  // first-run setup screen (see the setupForm handler below) creates the
+  // first Admin account with credentials the person setting it up chooses
+  // themselves — nothing secret is ever hardcoded into this file.
 }
 /** One-time, one-way clean slate: wipes Students, Enquiries, Staff, Fees,
  *  Salaries, both Attendance registers, and the Time Table — everything
@@ -828,13 +822,19 @@ function importRoster202627IfNeeded(){
 }
 
 document.getElementById('ayTag').textContent = 'AY ' + currentAcademicYear() + ' · Staff Access';
-[document.getElementById('lockLogo'), document.getElementById('sidebarLogo')].forEach(img => {
+[document.getElementById('lockLogo'), document.getElementById('sidebarLogo'), document.getElementById('setupLogo')].forEach(img => {
   if(!img) return;
   img.src = LOGO_DATA_URI;
   img.style.display = 'block';
 });
 
 function checkSession(){
+  if(users.length === 0){
+    document.getElementById('lockScreen').style.display = 'none';
+    document.getElementById('setupScreen').style.display = 'flex';
+    return;
+  }
+  document.getElementById('setupScreen').style.display = 'none';
   const u = currentUser();
   if(u){
     document.getElementById('lockScreen').style.display = 'none';
@@ -843,8 +843,38 @@ function checkSession(){
     document.getElementById('footerRole').innerHTML = `<span class="record-tag" style="padding:1px 6px;">${escapeHtml(ROLE_LABELS[u.role]||u.role)}</span>`;
     renderSidebar();
     renderApp();
+  } else {
+    document.getElementById('lockScreen').style.display = 'flex';
   }
 }
+document.getElementById('setupForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const name = document.getElementById('setupName').value.trim();
+  const username = document.getElementById('setupUsername').value.trim().toLowerCase();
+  const password = document.getElementById('setupPassword').value;
+  const confirm = document.getElementById('setupPasswordConfirm').value;
+  const msg = document.getElementById('setupMsg');
+  if(password !== confirm){
+    msg.textContent = "Passwords don't match.";
+    msg.style.display = 'block';
+    return;
+  }
+  if(password.length < 6){
+    msg.textContent = 'Password must be at least 6 characters.';
+    msg.style.display = 'block';
+    return;
+  }
+  const newAdmin = {
+    id: uid('usr'), name, username, password,
+    role: 'admin', permissions: JSON.parse(JSON.stringify(ROLE_PRESETS.admin)),
+    status: 'active', createdAt: todayIso(),
+  };
+  users.push(newAdmin);
+  saveAll();
+  localStorage.setItem(LS.session, JSON.stringify({userId: newAdmin.id, at: Date.now()}));
+  msg.style.display = 'none';
+  checkSession();
+});
 document.getElementById('lockForm').addEventListener('submit', function(e){
   e.preventDefault();
   const username = document.getElementById('loginUsername').value.trim().toLowerCase();

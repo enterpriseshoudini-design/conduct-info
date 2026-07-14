@@ -8,6 +8,25 @@
 </head>
 <body>
 
+<div id="setupScreen" style="display:none;">
+  <div class="lock-wrap">
+    <div class="wordmark"><img id="setupLogo" alt="Bombay Kids International School" style="height:64px;margin-bottom:8px;display:none;" /><span class="word">Conduct — Student &amp; Staff Records</span></div>
+    <div class="lock-card">
+      <span class="record-tag">First-time setup</span>
+      <h1 style="font-size:20px;margin:14px 0 4px;">Create your Admin account</h1>
+      <p style="font-size:13px;color:var(--ink-soft);margin:0 0 18px;">This is a one-time step. Nothing is pre-set — choose your own username and password now; only you will know them.</p>
+      <form id="setupForm">
+        <div class="field"><label>Your name</label><input type="text" id="setupName" required autofocus /></div>
+        <div class="field"><label>Choose a username</label><input type="text" id="setupUsername" required /></div>
+        <div class="field"><label>Choose a password</label><input type="password" id="setupPassword" required minlength="6" /></div>
+        <div class="field"><label>Confirm password</label><input type="password" id="setupPasswordConfirm" required minlength="6" /></div>
+        <div class="msg msg-error" id="setupMsg" style="display:none;"></div>
+        <button type="submit" class="btn btn-primary btn-block">Create Admin account &amp; sign in</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <div id="lockScreen">
   <div class="lock-wrap">
     <div class="wordmark"><img id="lockLogo" alt="Bombay Kids International School" style="height:64px;margin-bottom:8px;display:none;" /><span class="word">Conduct — Student &amp; Staff Records</span></div>
