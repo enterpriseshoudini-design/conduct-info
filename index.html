@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
   :root{
     --paper:#f2f0e6; --surface:#ffffff; --surface-alt:#ebe7da;
@@ -190,7 +191,7 @@
 
 <script>
 /* ================= configuration — edit these for your school ================= */
-const SCHOOL_NAME = "Bombay Kids International School";
+var SCHOOL_NAME = "Bombay Kids International School";
 const SCHOOL_ADDRESS = "Arihant Nagar, Indore (M.P.)";
 const SCHOOL_PHONE = "9981258867";
 var SCHOOL_DISE_CODE = "23260503114";
@@ -237,7 +238,7 @@ function computeTotalDue(studentId, particulars){
 }
 /* ================================================================================ */
 
-const LS = { students:'conduct_students', enquiries:'conduct_enquiries', staff:'conduct_staff', fees:'conduct_fees', salaries:'conduct_salaries', attendance:'conduct_attendance', studentAttendance:'conduct_student_attendance', staffAttendance:'conduct_staff_attendance', users:'conduct_users', seeded:'conduct_seeded_v1', feesSeeded:'conduct_fees_seeded_v1', class10Imported:'conduct_class10_import_v1', kg2to9Imported:'conduct_kg2to9_import_v1', usersSeeded:'conduct_users_seeded_v1', timeTable:'conduct_timetable_image', timeTableData:'conduct_timetable_data', timeTableSeeded:'conduct_timetable_seeded_v1', expenses:'conduct_expenses', distributionItems:'conduct_distribution_items', distributionRecords:'conduct_distribution_records', notices:'conduct_notices', coreDataReset:'conduct_core_data_reset_v1', roster202627Imported:'conduct_roster_2026_27_v1', session:'conduct_session' };
+const LS = { students:'conduct_students', enquiries:'conduct_enquiries', staff:'conduct_staff', fees:'conduct_fees', salaries:'conduct_salaries', attendance:'conduct_attendance', studentAttendance:'conduct_student_attendance', staffAttendance:'conduct_staff_attendance', users:'conduct_users', seeded:'conduct_seeded_v1', feesSeeded:'conduct_fees_seeded_v1', class10Imported:'conduct_class10_import_v1', kg2to9Imported:'conduct_kg2to9_import_v1', usersSeeded:'conduct_users_seeded_v1', timeTable:'conduct_timetable_image', timeTableData:'conduct_timetable_data', timeTableSeeded:'conduct_timetable_seeded_v1', expenses:'conduct_expenses', distributionItems:'conduct_distribution_items', distributionRecords:'conduct_distribution_records', notices:'conduct_notices', coreDataReset:'conduct_core_data_reset_v1', roster202627Imported:'conduct_roster_2026_27_v1', gsheetsClientId:'conduct_gsheets_client_id', gsheetsFileIds:'conduct_gsheets_file_ids', session:'conduct_session' };
 
 var students = [], enquiries = [], staffList = [], fees = [], salaries = [], attendanceRecords = [], users = [], studentAttendance = [], staffAttendance = [], expenses = [], distributionItems = [], distributionRecords = [], notices = [];
 var timeTableData = { periods: [], cells: {} };
@@ -245,8 +246,12 @@ var attendanceView = { cls: '', date: '' };
 var staffAttendanceView = { date: '' };
 var distributionView = { itemId: '', cls: '' };
 var noticesTab = 'students';
+var gsheetsClientId = '';
+var gsheetsFileIds = {};
+var gsheetsAccessToken = '';
+var gsheetsTokenClient = null;
 var view = { name: 'dashboard', studentId: null };
-var studentFilters = { q:'' };
+var studentFilters = { q:'', status:'', category:'' };
 var feeFilters = { session:'', cls:'', status:'' };
 var salaryFilters = { month:'', status:'' };
 var dashboardTimeframe = 'thisMonth';
@@ -370,7 +375,7 @@ function formatDate(iso){
 function currentAcademicYear(){
   const now = new Date();
   const startYear = now.getMonth() >= 5 ? now.getFullYear() : now.getFullYear()-1;
-  return startYear + '–' + String((startYear+1)%100).padStart(2,'0');
+  return startYear + '-' + String((startYear+1)%100).padStart(2,'0');
 }
 function currentMonthKey(){ return new Date().toISOString().slice(0,7); }
 function monthLabel(key){
@@ -508,6 +513,8 @@ function loadData(){
   distributionItems = JSON.parse(localStorage.getItem(LS.distributionItems) || '[]');
   distributionRecords = JSON.parse(localStorage.getItem(LS.distributionRecords) || '[]');
   notices = JSON.parse(localStorage.getItem(LS.notices) || '[]');
+  gsheetsClientId = localStorage.getItem(LS.gsheetsClientId) || '';
+  gsheetsFileIds = JSON.parse(localStorage.getItem(LS.gsheetsFileIds) || '{}');
 }
 function saveAll(){
   localStorage.setItem(LS.students, JSON.stringify(students));
@@ -524,6 +531,8 @@ function saveAll(){
   localStorage.setItem(LS.distributionItems, JSON.stringify(distributionItems));
   localStorage.setItem(LS.distributionRecords, JSON.stringify(distributionRecords));
   localStorage.setItem(LS.notices, JSON.stringify(notices));
+  localStorage.setItem(LS.gsheetsClientId, gsheetsClientId);
+  localStorage.setItem(LS.gsheetsFileIds, JSON.stringify(gsheetsFileIds));
 }
 function seedUsersIfNeeded(){
   if(localStorage.getItem(LS.usersSeeded)) return;
@@ -1032,6 +1041,7 @@ const NAV_ITEMS = [
   {name:'timetable', label:'Time Table', icon:'&#128197;', perm:null},
   {name:'notices', label:'Notices', icon:'&#128276;', perm:null},
   {name:'enquiries', label:'Enquiries', icon:'&#9993;', perm:'enquiries'},
+  {name:'admissions', label:'Admissions', icon:'&#127891;', perm:'students'},
   {name:'students', label:'Students', icon:'&#9787;', perm:'students'},
   {name:'staff', label:'Staff', icon:'&#9878;', perm:'staffDirectory'},
   {name:'studentAttendance', label:'Student Attendance', icon:'&#10003;', perm:'studentAttendance'},
@@ -1048,16 +1058,18 @@ function renderSidebar(){
   }).join('');
 }
 function goTo(name){
+  selectedStudentIds.clear();
   view = { name, studentId: null };
   renderSidebar();
   renderApp();
 }
 function goToStudent(id){
+  selectedStudentIds.clear();
   view = { name:'studentDetail', studentId: id };
   renderSidebar();
   renderApp();
 }
-const VIEW_PERMISSIONS = { dashboard:'dashboard', students:'students', studentDetail:'students', studentsByClass:'students', enquiries:'enquiries', staff:'staffDirectory', staffDetail:'staffDirectory', studentAttendance:'studentAttendance', distribution:'distribution', distributionClass:'distribution', fees:'fees', salary:'salary', expenses:'expenses', users:'userManagement' };
+const VIEW_PERMISSIONS = { dashboard:'dashboard', students:'students', studentDetail:'students', studentsByClass:'students', admissions:'students', enquiries:'enquiries', staff:'staffDirectory', staffDetail:'staffDirectory', studentAttendance:'studentAttendance', distribution:'distribution', distributionClass:'distribution', fees:'fees', salary:'salary', expenses:'expenses', users:'userManagement' };
 function renderApp(){
   const topbar = document.getElementById('topbar');
   const content = document.getElementById('content');
@@ -1066,6 +1078,7 @@ function renderApp(){
   if(view.name === 'dashboard'){ renderDashboard(topbar, content); }
   else if(view.name === 'timetable'){ renderTimeTable(topbar, content); }
   else if(view.name === 'notices'){ renderNotices(topbar, content); }
+  else if(view.name === 'admissions'){ renderAdmissions(topbar, content); }
   else if(view.name === 'students'){ renderStudents(topbar, content); }
   else if(view.name === 'studentsByClass'){ renderStudentsByClass(topbar, content, view.cls); }
   else if(view.name === 'studentDetail'){ renderStudentDetail(topbar, content, view.studentId); }
@@ -1195,21 +1208,105 @@ function renderDashboard(topbar, content){
 }
 
 /* ---------------- students: list ---------------- */
+/* ---------------- admissions (current-session view, shares Student data + importer) ---------------- */
+var admissionsFilters = { cls:'', status:'' };
+function renderAdmissions(topbar, content){
+  admissionsFilters = { cls:'', status:'' }; // fresh start every time this page is navigated to
+  const session = currentAcademicYear();
+  const allAdmissions = students.filter(s => s.session === session);
+
+  topbar.innerHTML = `
+    <div><h1>Admissions</h1><p>${allAdmissions.length} student${allAdmissions.length===1?'':'s'} admitted this session (${escapeHtml(session)})</p></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-secondary" onclick="exportAdmissionsExcel()">Download Excel</button>
+      ${canEdit('students') ? `<button class="btn btn-secondary" onclick="openExcelImportModal()">Import from Excel</button>` : ''}
+      ${canEdit('students') && gsheetsFileIds.students ? `<button class="btn btn-secondary" onclick="pullStudentsFromGoogleSheet()">Pull from Sheets</button><button class="btn btn-secondary" onclick="pushAdmissionsToGoogleSheet()">Push to Sheets</button>` : ''}
+      ${canEdit('students') ? `<button class="btn btn-primary" onclick="openStudentModal()">+ New Admission</button>` : ''}
+    </div>`;
+
+  content.innerHTML = `
+    <div class="toolbar">
+      <button type="button" class="btn btn-secondary" onclick="document.getElementById('admissionsFilterPanel').style.display=document.getElementById('admissionsFilterPanel').style.display==='none'?'flex':'none';">Filter</button>
+      <div id="admissionsFilterPanel" style="display:none;gap:10px;flex-wrap:wrap;width:100%;background:var(--surface-alt);border-radius:8px;padding:10px 12px;">
+        <select onchange="admissionsFilters.cls=this.value; renderAdmissionsTable();">
+          <option value="">Any class</option>
+          ${CLASS_LEVELS.map(c=>`<option value="${c}" ${admissionsFilters.cls===c?'selected':''}>${classDisplayLabel(c)}</option>`).join('')}
+        </select>
+        <select onchange="admissionsFilters.status=this.value; renderAdmissionsTable();">
+          <option value="">Any status</option>
+          <option value="active" ${admissionsFilters.status==='active'?'selected':''}>Active</option>
+          <option value="inactive" ${admissionsFilters.status==='inactive'?'selected':''}>Inactive</option>
+          <option value="tc_issued" ${admissionsFilters.status==='tc_issued'?'selected':''}>TC issued</option>
+        </select>
+      </div>
+    </div>
+    <div id="admissionsTableWrap"></div>`;
+  renderAdmissionsTable();
+}
+function renderAdmissionsTable(){
+  const session = currentAcademicYear();
+  const admissions = students.filter(s => {
+    if(s.session !== session) return false;
+    if(admissionsFilters.cls && s.cls !== admissionsFilters.cls) return false;
+    if(admissionsFilters.status && s.status !== admissionsFilters.status) return false;
+    return true;
+  }).sort((a,b)=>(b.admissionDate||'').localeCompare(a.admissionDate||''));
+  const allIds = admissions.map(s=>s.id);
+  const allSelected = allIds.length>0 && allIds.every(id=>selectedStudentIds.has(id));
+
+  document.getElementById('admissionsTableWrap').innerHTML = admissions.length===0 ? `<div class="table-wrap"><div class="empty">No admissions match these filters.</div></div>` : renderBulkActionBar() + `
+    <div class="table-wrap"><table>
+      <thead><tr><th><input type="checkbox" ${allSelected?'checked':''} onchange="toggleAllStudentSelection(${JSON.stringify(allIds)},this.checked)" style="width:auto;" /></th><th>Student</th><th>Scholar no.</th><th>Class</th><th>Admission date</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        ${admissions.map(s => `
+          <tr>
+            <td><input type="checkbox" ${selectedStudentIds.has(s.id)?'checked':''} onchange="toggleStudentSelection('${s.id}',this.checked);updateBulkActionBar();" style="width:auto;" /></td>
+            <td><div style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="goToStudent('${s.id}')">
+              ${avatarHtml(s.photo, s.firstName, s.lastName, 30)}
+              <span style="font-weight:500;">${escapeHtml(s.firstName)} ${escapeHtml(s.lastName)}</span>
+            </div></td>
+            <td><span class="record-tag">${escapeHtml(s.admissionNumber)}</span></td>
+            <td style="color:var(--ink-soft);">${classDisplayLabel(s.cls)}${escapeHtml(s.section)}</td>
+            <td style="color:var(--ink-soft);">${formatDate(s.admissionDate)}</td>
+            <td>${statusPill(s.status)}</td>
+            <td style="text-align:right;"><button class="btn btn-secondary btn-sm" onclick="goToStudent('${s.id}')">View</button></td>
+          </tr>`).join('')}
+      </tbody>
+    </table></div>`;
+  updateBulkActionBar();
+}
 function renderStudents(topbar, content){
-  studentFilters.q = ''; // fresh start every time this page is navigated to
+  studentFilters = { q:'', status:'', category:'' }; // fresh start every time this page is navigated to
   topbar.innerHTML = `
     <div><h1>Student Directory</h1><p>${students.length} student${students.length===1?'':'s'} on record</p></div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
       <button class="btn btn-secondary" onclick="exportStudentsExcel()">Download Excel</button>
       <button class="btn btn-secondary" onclick="printStudents()">Print List</button>
       ${canEdit('students') ? `<button class="btn btn-secondary" onclick="openExcelImportModal()">Import from Excel</button>` : ''}
+      ${canEdit('students') && gsheetsFileIds.students ? `<button class="btn btn-secondary" onclick="pullStudentsFromGoogleSheet()">Pull from Sheets</button><button class="btn btn-secondary" onclick="pushStudentsToGoogleSheet()">Push to Sheets</button>` : ''}
       ${canEdit('students') ? `<button class="btn btn-primary" onclick="openStudentModal()">+ Add student</button>` : ''}
     </div>`;
 
   content.innerHTML = `
-    <div class="toolbar">
+    <div class="toolbar" style="align-items:flex-start;flex-wrap:wrap;">
       <input type="text" id="studentSearchInput" placeholder="Search name or scholar no. — or pick a class below" value="${escapeHtml(studentFilters.q)}" oninput="studentFilters.q=this.value; renderStudentsMain();" style="min-width:280px;" />
-      <button type="button" id="studentSearchClearBtn" class="btn btn-secondary btn-sm" style="display:none;" onclick="document.getElementById('studentSearchInput').value='';studentFilters.q='';renderStudentsMain();">Clear</button>
+      <button type="button" class="btn btn-secondary" onclick="document.getElementById('studentFilterPanel').style.display=document.getElementById('studentFilterPanel').style.display==='none'?'flex':'none';">Filter</button>
+      <button type="button" id="studentSearchClearBtn" class="btn btn-secondary btn-sm" style="display:none;" onclick="document.getElementById('studentSearchInput').value='';studentFilters={q:'',status:'',category:''};renderStudents(document.getElementById('topbar'),document.getElementById('content'));">Clear filters</button>
+      <div id="studentFilterPanel" style="display:none;gap:10px;flex-wrap:wrap;width:100%;background:var(--surface-alt);border-radius:8px;padding:10px 12px;">
+        <select onchange="studentFilters.status=this.value; renderStudentsMain();">
+          <option value="">Any status</option>
+          <option value="active" ${studentFilters.status==='active'?'selected':''}>Active</option>
+          <option value="inactive" ${studentFilters.status==='inactive'?'selected':''}>Inactive</option>
+          <option value="tc_issued" ${studentFilters.status==='tc_issued'?'selected':''}>TC issued</option>
+        </select>
+        <select onchange="studentFilters.category=this.value; renderStudentsMain();">
+          <option value="">Any category</option>
+          <option value="General" ${studentFilters.category==='General'?'selected':''}>General</option>
+          <option value="OBC" ${studentFilters.category==='OBC'?'selected':''}>OBC</option>
+          <option value="SC" ${studentFilters.category==='SC'?'selected':''}>SC</option>
+          <option value="ST" ${studentFilters.category==='ST'?'selected':''}>ST</option>
+        </select>
+      </div>
     </div>
     <div id="studentsMainWrap"></div>`;
   renderStudentsMain();
@@ -1217,9 +1314,9 @@ function renderStudents(topbar, content){
 function renderStudentsMain(){
   const wrap = document.getElementById('studentsMainWrap');
   const clearBtn = document.getElementById('studentSearchClearBtn');
-  if(clearBtn) clearBtn.style.display = studentFilters.q.trim() ? '' : 'none';
-  if(studentFilters.q.trim()){
-    wrap.innerHTML = `<div id="studentsTableWrap"></div>`;
+  if(clearBtn) clearBtn.style.display = hasActiveStudentFilters() ? '' : 'none';
+  if(hasActiveStudentFilters()){
+    wrap.innerHTML = renderBulkActionBar() + `<div id="studentsTableWrap"></div>`;
     renderStudentsTable();
     return;
   }
@@ -1244,6 +1341,7 @@ function renderStudentsMain(){
     </div>`;
 }
 function goToStudentsByClass(cls){
+  selectedStudentIds.clear();
   view = { name: 'studentsByClass', studentId: null, cls };
   renderSidebar();
   renderApp();
@@ -1262,12 +1360,16 @@ function renderStudentsByClass(topbar, content, cls){
     <div class="card" style="margin-bottom:16px;">
       <h2 style="font-size:16px;">Students</h2>
       <div style="margin-top:10px;">
-        ${roster.length===0 ? `<p style="font-size:13px;color:var(--ink-soft);">No active students in this class yet.</p>` : `
+        ${roster.length===0 ? `<p style="font-size:13px;color:var(--ink-soft);">No active students in this class yet.</p>` : (() => {
+          const allIds = roster.map(s=>s.id);
+          const allSelected = allIds.length>0 && allIds.every(id=>selectedStudentIds.has(id));
+          return renderBulkActionBar() + `
         <div class="table-wrap"><table>
-          <thead><tr><th>Student</th><th>Scholar no.</th><th>Guardian contact</th><th>Status</th><th></th></tr></thead>
+          <thead><tr><th><input type="checkbox" ${allSelected?'checked':''} onchange="toggleAllStudentSelection(${JSON.stringify(allIds)},this.checked)" style="width:auto;" /></th><th>Student</th><th>Scholar no.</th><th>Guardian contact</th><th>Status</th><th></th></tr></thead>
           <tbody>
             ${roster.map(s => `
               <tr>
+                <td><input type="checkbox" ${selectedStudentIds.has(s.id)?'checked':''} onchange="toggleStudentSelection('${s.id}',this.checked);updateBulkActionBar();" style="width:auto;" /></td>
                 <td><div style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="goToStudent('${s.id}')">
                   ${avatarHtml(s.photo, s.firstName, s.lastName, 30)}
                   <span style="font-weight:500;">${escapeHtml(s.firstName)} ${escapeHtml(s.lastName)}</span>
@@ -1278,7 +1380,8 @@ function renderStudentsByClass(topbar, content, cls){
                 <td style="text-align:right;"><button class="btn btn-secondary btn-sm" onclick="goToStudent('${s.id}')">View</button></td>
               </tr>`).join('')}
           </tbody>
-        </table></div>`}
+        </table></div>`;
+        })()}
       </div>
     </div>
 
@@ -1323,18 +1426,26 @@ function getFilteredStudents(){
   const q = studentFilters.q.toLowerCase();
   return students.filter(s => {
     if(q && !(`${s.firstName} ${s.lastName} ${s.admissionNumber}`.toLowerCase().includes(q))) return false;
+    if(studentFilters.status && s.status !== studentFilters.status) return false;
+    if(studentFilters.category && s.category !== studentFilters.category) return false;
     return true;
   }).sort((a,b)=> a.lastName.localeCompare(b.lastName));
 }
+function hasActiveStudentFilters(){
+  return !!(studentFilters.q.trim() || studentFilters.status || studentFilters.category);
+}
 function renderStudentsTable(){
   const filtered = getFilteredStudents();
+  const allIds = filtered.map(s=>s.id);
+  const allSelected = allIds.length>0 && allIds.every(id=>selectedStudentIds.has(id));
 
-  document.getElementById('studentsTableWrap').innerHTML = filtered.length===0 ? `<div class="table-wrap"><div class="empty">No students match "${escapeHtml(studentFilters.q)}".</div></div>` : `
+  document.getElementById('studentsTableWrap').innerHTML = filtered.length===0 ? `<div class="table-wrap"><div class="empty">No students match these filters.</div></div>` : `
     <div class="table-wrap"><table>
-      <thead><tr><th>Student</th><th>Scholar no.</th><th>Class</th><th>Guardian contact</th><th>Status</th><th></th></tr></thead>
+      <thead><tr><th><input type="checkbox" ${allSelected?'checked':''} onchange="toggleAllStudentSelection(${JSON.stringify(allIds)},this.checked)" style="width:auto;" /></th><th>Student</th><th>Scholar no.</th><th>Class</th><th>Guardian contact</th><th>Status</th><th></th></tr></thead>
       <tbody>
         ${filtered.map(s => `
           <tr>
+            <td><input type="checkbox" ${selectedStudentIds.has(s.id)?'checked':''} onchange="toggleStudentSelection('${s.id}',this.checked)" style="width:auto;" /></td>
             <td>
               <div style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="goToStudent('${s.id}')">
                 ${avatarHtml(s.photo, s.firstName, s.lastName, 34)}
@@ -1349,11 +1460,54 @@ function renderStudentsTable(){
           </tr>`).join('')}
       </tbody>
     </table></div>`;
+  updateBulkActionBar();
 }
 function statusPill(status){
   if(status==='active') return `<span class="pill pill-good">Active</span>`;
   if(status==='tc_issued') return `<span class="pill pill-bad">TC issued</span>`;
   return `<span class="pill pill-neutral">Inactive</span>`;
+}
+/* ---------------- bulk select (reusable across every Students/Admissions table) ---------------- */
+var selectedStudentIds = new Set();
+function toggleStudentSelection(id, checked){
+  if(checked) selectedStudentIds.add(id); else selectedStudentIds.delete(id);
+  updateBulkActionBar();
+}
+function toggleAllStudentSelection(ids, checked){
+  ids.forEach(id => { if(checked) selectedStudentIds.add(id); else selectedStudentIds.delete(id); });
+  renderApp();
+}
+function clearStudentSelection(){
+  selectedStudentIds.clear();
+  renderApp();
+}
+function updateBulkActionBar(){
+  const bar = document.getElementById('bulkActionBar');
+  if(!bar) return;
+  bar.style.display = selectedStudentIds.size > 0 ? 'flex' : 'none';
+  const countEl = document.getElementById('bulkSelectedCount');
+  if(countEl) countEl.textContent = selectedStudentIds.size;
+}
+function renderBulkActionBar(){
+  return `
+    <div id="bulkActionBar" style="display:none;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface-alt);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:10px;">
+      <span style="font-size:13px;"><span id="bulkSelectedCount">0</span> selected</span>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="bulkExportSelectedStudents()">Export selected</button>
+      ${canEdit('students') ? `<button type="button" class="btn btn-danger btn-sm" onclick="bulkDeleteSelectedStudents()">Delete selected</button>` : ''}
+      <button type="button" class="btn btn-secondary btn-sm" onclick="clearStudentSelection()">Clear selection</button>
+    </div>`;
+}
+function bulkDeleteSelectedStudents(){
+  if(selectedStudentIds.size === 0) return;
+  if(!confirm('Delete ' + selectedStudentIds.size + ' selected student record(s)? This cannot be undone.')) return;
+  students = students.filter(s => !selectedStudentIds.has(s.id));
+  selectedStudentIds.clear();
+  saveAll();
+  renderApp();
+}
+function bulkExportSelectedStudents(){
+  if(selectedStudentIds.size === 0) return;
+  exportStudentsExcel(s => selectedStudentIds.has(s.id), 'Selected Students ' + todayIso());
 }
 
 /* ---------------- students: add/edit modal ---------------- */
@@ -1579,29 +1733,32 @@ var STUDENT_IMPORT_FIELDS = [
   {key:'schNo', label:'Scholar No.', synonyms:['sch. no','sch no','scholar no','admission no']},
   {key:'rollNumber', label:'Roll / S. No.', synonyms:['s. no','s no','sno','roll no']},
   {key:'section', label:'Section', synonyms:['sec.','sec','section']},
+  {key:'paymentReceived', label:'Payment Received (&#8377;)', synonyms:['payment received','amount paid','fees paid','payment','admission fee paid']},
   {key:'ignore', label:'— Ignore this column —', synonyms:[]},
 ];
-function autoMatchColumnHeader(headerText){
+function autoMatchColumnHeader(headerText, fieldList){
+  fieldList = fieldList || STUDENT_IMPORT_FIELDS;
   const norm = String(headerText||'').toLowerCase().replace(/[.\s]+/g,' ').trim();
   if(!norm) return 'ignore';
-  for(const field of STUDENT_IMPORT_FIELDS){
+  for(const field of fieldList){
     for(const syn of field.synonyms){
       if(norm === syn) return field.key;
     }
   }
-  for(const field of STUDENT_IMPORT_FIELDS){
+  for(const field of fieldList){
     for(const syn of field.synonyms){
       if(norm.includes(syn)) return field.key;
     }
   }
   return 'ignore';
 }
-function detectHeaderRowIndex(rows){
+function detectHeaderRowIndex(rows, fieldList, minMatches){
+  minMatches = minMatches || 3;
   for(let i=0; i<Math.min(8, rows.length); i++){
     const row = rows[i];
     if(!row) continue;
-    const matches = row.filter(cell => autoMatchColumnHeader(cell) !== 'ignore').length;
-    if(matches >= 3) return i;
+    const matches = row.filter(cell => autoMatchColumnHeader(cell, fieldList) !== 'ignore').length;
+    if(matches >= minMatches) return i;
   }
   return 0;
 }
@@ -1616,6 +1773,14 @@ function fuzzyMatchClass(sheetName){
   const numMatch = norm.match(/(\d{1,2})/);
   if(numMatch && CLASS_LEVELS.includes(numMatch[1])) return numMatch[1];
   return '';
+}
+function toDDMMYYYY(iso){
+  if(!iso) return '';
+  const d = new Date(iso + 'T00:00:00Z');
+  if(isNaN(d)) return '';
+  const dd = String(d.getUTCDate()).padStart(2,'0');
+  const mm = String(d.getUTCMonth()+1).padStart(2,'0');
+  return dd + '/' + mm + '/' + d.getUTCFullYear();
 }
 function parseDobFlexible(raw){
   if(raw === null || raw === undefined || raw === '') return '';
@@ -1643,9 +1808,9 @@ function splitFullName(full){
   if(parts.length===0) return {firstName:'', lastName:''};
   return {firstName: parts[0], lastName: parts.length>1 ? parts.slice(1).join(' ') : parts[0]};
 }
-var excelImportState = { sheets: [], columnMapping: {} };
+var excelImportState = { sheets: [], columnMapping: {}, applyEnquiryRouting: false };
 function openExcelImportModal(){
-  excelImportState = { sheets: [], columnMapping: {} };
+  excelImportState = { sheets: [], columnMapping: {}, applyEnquiryRouting: false };
   openModalWide(`
     <div class="modal-head"><h2 style="font-size:18px;">Import Students from Excel</h2><button onclick="closeModal()">&times;</button></div>
     <p style="font-size:13px;color:var(--ink-soft);margin:-8px 0 16px;">Upload an .xlsx, .xls, or .csv file. If it has multiple sheets — one per class, like your usual roster — all of them show up below to review before importing.</p>
@@ -1664,7 +1829,7 @@ async function handleExcelFileSelect(event){
       const ws = wb.Sheets[name];
       const rows = XLSX.utils.sheet_to_json(ws, {header:1, raw:true, defval:''});
       const headerRowIdx = detectHeaderRowIndex(rows);
-      return { name, rows, headerRowIdx, cls: fuzzyMatchClass(name), include: true };
+      return { name, rows, headerRowIdx, cls: fuzzyMatchClass(name), include: true, rowIncludes: {}, expanded: false };
     }).filter(s => s.rows.length > s.headerRowIdx + 1);
 
     if(excelImportState.sheets.length === 0){
@@ -1685,8 +1850,10 @@ async function handleExcelFileSelect(event){
 }
 function renderExcelImportReview(){
   const body = document.getElementById('excelImportBody');
+  if(!body) return;
   const refSheet = excelImportState.sheets[0];
   const headerRow = (refSheet.rows[refSheet.headerRowIdx] || []).filter(h => h!==undefined && h!==null && String(h).trim()!=='');
+  const paymentColumnMapped = Object.values(excelImportState.columnMapping).includes('paymentReceived');
 
   body.innerHTML = `
     <div style="margin-top:18px;">
@@ -1696,19 +1863,29 @@ function renderExcelImportReview(){
         ${headerRow.map(h => `
           <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:400;margin:0;">
             <span style="min-width:110px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(String(h))}</span>
-            <select onchange="excelImportState.columnMapping[${JSON.stringify(String(h))}]=this.value" style="flex:1;font-size:12px;padding:5px 6px;">
+            <select onchange="excelImportState.columnMapping[${JSON.stringify(String(h))}]=this.value; renderExcelImportReview();" style="flex:1;font-size:12px;padding:5px 6px;">
               ${STUDENT_IMPORT_FIELDS.map(f => `<option value="${f.key}" ${excelImportState.columnMapping[String(h)]===f.key?'selected':''}>${f.label}</option>`).join('')}
             </select>
           </label>`).join('')}
       </div>
     </div>
 
+    <div style="margin-top:16px;border-top:1px solid var(--line);padding-top:14px;">
+      <label style="display:flex;align-items:flex-start;gap:8px;font-size:13px;font-weight:400;margin:0;">
+        <input type="checkbox" ${excelImportState.applyEnquiryRouting?'checked':''} onchange="excelImportState.applyEnquiryRouting=this.checked;" style="width:auto;margin-top:2px;" />
+        <span>Apply the enquiry-routing rule — rows with no Payment Received amount become <b>Enquiries</b> instead of Students.${paymentColumnMapped?'':' <span style="color:var(--bad);">Map a "Payment Received" column above for this to do anything.</span>'}</span>
+      </label>
+      <p style="font-size:11px;color:var(--ink-soft);margin:4px 0 0 24px;">Leave this off for a full existing-roster import (the normal case) — turn it on only when the sheet is a batch of fresh admission forms.</p>
+    </div>
+
     <div style="margin-top:20px;">
       <p style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);margin:0 0 8px;">Sheets to import</p>
       <div class="table-wrap"><table>
-        <thead><tr><th></th><th>Sheet</th><th>Class</th><th>Header row</th><th>Rows found</th></tr></thead>
+        <thead><tr><th></th><th>Sheet</th><th>Class</th><th>Header row</th><th>Rows found</th><th></th></tr></thead>
         <tbody>
-          ${excelImportState.sheets.map((s,i) => `
+          ${excelImportState.sheets.map((s,i) => {
+            const counts = countNewVsUpdateRows(s);
+            return `
             <tr>
               <td><input type="checkbox" ${s.include?'checked':''} onchange="excelImportState.sheets[${i}].include=this.checked" style="width:auto;" /></td>
               <td>${escapeHtml(s.name)}</td>
@@ -1716,9 +1893,12 @@ function renderExcelImportReview(){
                 <option value="">— not a class —</option>
                 ${CLASS_LEVELS.map(c=>`<option value="${c}" ${s.cls===c?'selected':''}>${classDisplayLabel(c)}</option>`).join('')}
               </select></td>
-              <td><input type="number" min="1" value="${s.headerRowIdx+1}" style="width:56px;font-size:12px;padding:4px 6px;" onchange="excelImportState.sheets[${i}].headerRowIdx=Math.max(0,this.value-1)" /></td>
-              <td>${Math.max(0, s.rows.length - s.headerRowIdx - 1)}</td>
-            </tr>`).join('')}
+              <td><input type="number" min="1" value="${s.headerRowIdx+1}" style="width:56px;font-size:12px;padding:4px 6px;" onchange="excelImportState.sheets[${i}].headerRowIdx=Math.max(0,this.value-1);renderExcelImportReview();" /></td>
+              <td>${counts.total} <span style="color:var(--ink-soft);font-size:11px;">(${counts.newCount} new, ${counts.updateCount} update)</span></td>
+              <td><button type="button" class="btn btn-secondary btn-sm" onclick="excelImportState.sheets[${i}].expanded=!excelImportState.sheets[${i}].expanded;renderExcelImportReview();">${s.expanded?'Hide rows':'Review rows'}</button></td>
+            </tr>
+            ${s.expanded ? `<tr><td colspan="6" style="padding:0;">${renderExcelRowPicker(s, i)}</td></tr>` : ''}`;
+          }).join('')}
         </tbody>
       </table></div>
     </div>
@@ -1730,8 +1910,75 @@ function renderExcelImportReview(){
       <button type="button" class="btn btn-primary" onclick="runExcelImport()">Import</button>
     </div>`;
 }
+function isExcelRowIncluded(sheet, rowIdx){
+  return !sheet.rowIncludes || sheet.rowIncludes[rowIdx] !== false;
+}
+function countNewVsUpdateRows(sheet){
+  const headerRow = sheet.rows[sheet.headerRowIdx] || [];
+  const schNoColIdx = headerRow.findIndex(h => excelImportState.columnMapping[String(h).trim()] === 'schNo');
+  let total = 0, newCount = 0;
+  for(let r = sheet.headerRowIdx+1; r < sheet.rows.length; r++){
+    const row = sheet.rows[r];
+    if(!row || row.every(c => c===undefined||c===null||String(c).trim()==='')) continue;
+    total++;
+    const schNo = schNoColIdx>=0 ? String(row[schNoColIdx]||'').trim() : '';
+    if(!schNo || !students.some(s => s.admissionNumber === schNo)) newCount++;
+  }
+  return { total, newCount, updateCount: total-newCount };
+}
+function renderExcelRowPicker(sheet, sheetIdx){
+  const headerRow = sheet.rows[sheet.headerRowIdx] || [];
+  const nameColIdx = headerRow.findIndex(h => excelImportState.columnMapping[String(h).trim()] === 'firstLastName');
+  const schNoColIdx = headerRow.findIndex(h => excelImportState.columnMapping[String(h).trim()] === 'schNo');
+  const dataRows = [];
+  for(let r = sheet.headerRowIdx+1; r < sheet.rows.length; r++){
+    const row = sheet.rows[r];
+    if(!row || row.every(c => c===undefined||c===null||String(c).trim()==='')) continue;
+    const schNo = schNoColIdx>=0 ? String(row[schNoColIdx]||'').trim() : '';
+    const isNewRow = !schNo || !students.some(s => s.admissionNumber === schNo);
+    dataRows.push({r, row, isNewRow});
+  }
+  const newCount = dataRows.filter(d=>d.isNewRow).length;
+  return `
+    <div style="background:var(--surface-alt);padding:10px 14px;">
+      <div style="display:flex;gap:10px;margin-bottom:8px;flex-wrap:wrap;">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="setAllExcelRows(${sheetIdx}, true)">Select all</button>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="setAllExcelRows(${sheetIdx}, false)">Select none</button>
+        <button type="button" class="btn btn-secondary btn-sm" onclick="selectOnlyNewExcelRows(${sheetIdx})">Select only new (${newCount})</button>
+      </div>
+      <div style="max-height:240px;overflow-y:auto;">
+        ${dataRows.map(({r,row,isNewRow}) => `
+          <label style="display:flex;align-items:center;gap:8px;font-size:12px;padding:4px 0;border-bottom:1px solid var(--line);">
+            <input type="checkbox" ${isExcelRowIncluded(sheet,r)?'checked':''} onchange="excelImportState.sheets[${sheetIdx}].rowIncludes[${r}]=this.checked;" style="width:auto;" />
+            <span style="flex:1;">${escapeHtml(nameColIdx>=0 ? String(row[nameColIdx]||'(no name)') : '(row '+(r+1)+')')}</span>
+            ${schNoColIdx>=0 ? `<span class="record-tag">${escapeHtml(String(row[schNoColIdx]||''))}</span>` : ''}
+            ${isNewRow ? `<span class="pill pill-good">New</span>` : `<span class="pill pill-neutral">Update</span>`}
+          </label>`).join('')}
+      </div>
+    </div>`;
+}
+function setAllExcelRows(sheetIdx, value){
+  const sheet = excelImportState.sheets[sheetIdx];
+  for(let r = sheet.headerRowIdx+1; r < sheet.rows.length; r++){
+    sheet.rowIncludes[r] = value;
+  }
+  renderExcelImportReview();
+}
+function selectOnlyNewExcelRows(sheetIdx){
+  const sheet = excelImportState.sheets[sheetIdx];
+  const headerRow = sheet.rows[sheet.headerRowIdx] || [];
+  const schNoColIdx = headerRow.findIndex(h => excelImportState.columnMapping[String(h).trim()] === 'schNo');
+  for(let r = sheet.headerRowIdx+1; r < sheet.rows.length; r++){
+    const row = sheet.rows[r];
+    if(!row || row.every(c => c===undefined||c===null||String(c).trim()==='')) continue;
+    const schNo = schNoColIdx>=0 ? String(row[schNoColIdx]||'').trim() : '';
+    const isNewRow = !schNo || !students.some(s => s.admissionNumber === schNo);
+    sheet.rowIncludes[r] = isNewRow;
+  }
+  renderExcelImportReview();
+}
 function runExcelImport(){
-  let imported = 0, skipped = 0;
+  let created = 0, updated = 0, routedToEnquiry = 0, skipped = 0;
   const perClass = {};
 
   excelImportState.sheets.filter(s => s.include && s.cls).forEach(sheet => {
@@ -1746,6 +1993,7 @@ function runExcelImport(){
     });
 
     for(let r = sheet.headerRowIdx + 1; r < sheet.rows.length; r++){
+      if(!isExcelRowIncluded(sheet, r)) continue;
       const row = sheet.rows[r];
       if(!row || row.every(c => c===undefined || c===null || String(c).trim()==='')){ continue; }
 
@@ -1754,12 +2002,28 @@ function runExcelImport(){
 
       if(!rec.firstLastName || !String(rec.firstLastName).trim()){ skipped++; continue; }
 
+      const paymentAmt = rec.paymentReceived!==undefined && rec.paymentReceived!==null ? Number(rec.paymentReceived)||0 : null;
+      if(excelImportState.applyEnquiryRouting && (paymentAmt===null || paymentAmt<=0)){
+        const {firstName, lastName} = splitFullName(rec.firstLastName);
+        enquiries.push({
+          id: uid('enq'),
+          enquiryNumber: 'ENQ-' + new Date().getFullYear() + '-' + String(enquiries.length+1).padStart(3,'0'),
+          childName: (firstName+' '+lastName).trim(),
+          dob: parseDobFlexible(rec.dob),
+          classApplyingFor: sheet.cls,
+          parentName: rec.fatherName ? String(rec.fatherName).trim().toUpperCase() : '',
+          parentPhone: rec.phone!==undefined && rec.phone!==null ? String(rec.phone).trim() : '',
+          source: 'Walk-in', nextFollowUpDate: '', note: 'Imported from Excel — no payment recorded.',
+          status: 'new', followUps: [], convertedStudentId: null,
+          createdAt: new Date().toISOString(),
+        });
+        routedToEnquiry++;
+        continue;
+      }
+
       const {firstName, lastName} = splitFullName(rec.firstLastName);
       const schNo = rec.schNo!==undefined && rec.schNo!==null ? String(rec.schNo).trim() : '';
-
-      students.push({
-        id: uid('stu'),
-        admissionNumber: schNo || ('CND/' + new Date().getFullYear() + '/' + String(students.length+1).padStart(3,'0')),
+      const fields = {
         firstName, lastName,
         fatherName: rec.fatherName ? String(rec.fatherName).trim().toUpperCase() : '',
         motherName: rec.motherName ? String(rec.motherName).trim().toUpperCase() : '',
@@ -1773,10 +2037,22 @@ function runExcelImport(){
         cls: sheet.cls,
         section: rec.section ? String(rec.section).trim().toUpperCase() : 'A',
         rollNumber: rec.rollNumber!==undefined && rec.rollNumber!==null ? String(rec.rollNumber).trim() : '',
-        status: 'active', medium: 'English Medium', session: currentAcademicYear(),
-        motherTongue: 'Hindi', nationality: 'Indian', tc: {issued:false},
-      });
-      imported++;
+      };
+
+      // upsert: a Scholar No. that matches an existing student updates that record instead of creating a duplicate
+      const existing = schNo ? students.find(x => x.admissionNumber === schNo) : null;
+      if(existing){
+        Object.assign(existing, fields);
+        updated++;
+      } else {
+        students.push(Object.assign({
+          id: uid('stu'),
+          admissionNumber: schNo || ('CND/' + new Date().getFullYear() + '/' + String(students.length+1).padStart(3,'0')),
+          status: 'active', medium: 'English Medium', session: currentAcademicYear(),
+          motherTongue: 'Hindi', nationality: 'Indian', tc: {issued:false},
+        }, fields));
+        created++;
+      }
       perClass[sheet.cls] = (perClass[sheet.cls]||0) + 1;
     }
   });
@@ -1784,12 +2060,328 @@ function runExcelImport(){
   saveAll();
   const summary = Object.keys(perClass).map(c => classDisplayLabel(c)+': '+perClass[c]).join(', ');
   const resultEl = document.getElementById('excelImportResult');
+  const totalHandled = created + updated + routedToEnquiry;
+  if(resultEl){
+    resultEl.innerHTML = totalHandled === 0
+      ? `<div style="background:var(--bad-soft);color:var(--bad);padding:10px 12px;border-radius:8px;font-size:13px;">Nothing imported — check that at least one sheet (and its rows) is checked, has a class assigned, and its Name column is mapped.</div>`
+      : `<div style="background:var(--good-soft);color:var(--good);padding:10px 12px;border-radius:8px;font-size:13px;">
+          ${created?created+' new student'+(created===1?'':'s')+' added. ':''}${updated?updated+' existing record'+(updated===1?'':'s')+' updated. ':''}${routedToEnquiry?routedToEnquiry+' row'+(routedToEnquiry===1?'':'s')+' routed to Enquiries (no payment). ':''}${summary?'Classes: '+escapeHtml(summary)+'. ':''}${skipped?skipped+' row(s) skipped (no name found).':''}
+          <a href="#" onclick="closeModal();renderStudents(document.getElementById('topbar'),document.getElementById('content'));return false;" style="color:inherit;text-decoration:underline;">View directory</a>
+        </div>`;
+  }
+  return { created, updated, routedToEnquiry, skipped, perClass };
+}
+
+/* ================================================================================
+   GOOGLE SHEETS SYNC — read/write a real Google Sheet directly, reusing the exact
+   same parsing engine as the file-based Excel importer, and the exact same row
+   structure as the file-based export. Requires the school's own free Google
+   Cloud OAuth credentials (User Access -> Google Sheets Sync has the one-time
+   setup steps) and requires this file to be hosted at a real URL — Google OAuth
+   does not work from a file:// address opened directly off disk.
+   ================================================================================ */
+function extractSpreadsheetId(input){
+  if(!input) return '';
+  const match = String(input).match(/\/d\/([a-zA-Z0-9-_]+)/);
+  return match ? match[1] : String(input).trim();
+}
+function saveGoogleClientId(value){
+  gsheetsClientId = value.trim();
+  saveAll();
+  gsheetsTokenClient = null;
+}
+function saveGoogleSheetId(category, value){
+  gsheetsFileIds[category] = extractSpreadsheetId(value);
+  saveAll();
+}
+function initGoogleTokenClient(){
+  if(!gsheetsClientId){ alert('Enter and save an OAuth Client ID first.'); return null; }
+  if(typeof google === 'undefined' || !google.accounts){
+    alert("Google's sign-in library hasn't finished loading — check your internet connection and try again in a moment.");
+    return null;
+  }
+  if(!gsheetsTokenClient){
+    gsheetsTokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: gsheetsClientId,
+      scope: 'https://www.googleapis.com/auth/spreadsheets',
+      callback: (resp) => {
+        if(resp && resp.access_token){
+          gsheetsAccessToken = resp.access_token;
+          if(view.name === 'users') renderUserManagement(document.getElementById('topbar'), document.getElementById('content'));
+        }
+      },
+    });
+  }
+  return gsheetsTokenClient;
+}
+function connectGoogleSheets(){
+  const client = initGoogleTokenClient();
+  if(!client) return;
+  client.requestAccessToken();
+}
+function disconnectGoogleSheets(){
+  gsheetsAccessToken = '';
+  if(view.name === 'users') renderUserManagement(document.getElementById('topbar'), document.getElementById('content'));
+}
+async function gsheetsApiRequest(method, url, body){
+  if(!gsheetsAccessToken){
+    throw new Error('Not connected to Google — click Connect Google Account first.');
+  }
+  const res = await fetch(url, {
+    method,
+    headers: { 'Authorization': 'Bearer ' + gsheetsAccessToken, 'Content-Type': 'application/json' },
+    body: body!==undefined ? JSON.stringify(body) : undefined,
+  });
+  if(res.status === 401){
+    gsheetsAccessToken = '';
+    throw new Error('Google sign-in expired — click Connect Google Account again.');
+  }
+  if(!res.ok){
+    const errBody = await res.text();
+    throw new Error('Google Sheets API error (' + res.status + '): ' + errBody);
+  }
+  return res.json();
+}
+async function getSpreadsheetMeta(spreadsheetId){
+  return gsheetsApiRequest('GET', 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheetId);
+}
+async function getSheetRows(spreadsheetId, sheetName){
+  const data = await gsheetsApiRequest('GET', 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheetId + '/values/' + encodeURIComponent(sheetName));
+  return data.values || [];
+}
+async function ensureSheetExists(spreadsheetId, sheetName, existingNames){
+  if(existingNames.includes(sheetName)) return;
+  await gsheetsApiRequest('POST', 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheetId + ':batchUpdate', {
+    requests: [{ addSheet: { properties: { title: sheetName } } }],
+  });
+}
+async function writeSheetRows(spreadsheetId, sheetName, rows){
+  const range = encodeURIComponent(sheetName);
+  await gsheetsApiRequest('POST', 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheetId + '/values/' + range + ':clear', {});
+  await gsheetsApiRequest('PUT', 'https://sheets.googleapis.com/v4/spreadsheets/' + spreadsheetId + '/values/' + range + '?valueInputOption=USER_ENTERED', { values: rows });
+}
+function buildClassSheetsData(source){
+  const out = [];
+  CLASS_LEVELS.forEach(cls => {
+    const roster = source.filter(s => s.cls === cls).sort((a,b) => {
+      const an = Number(a.rollNumber), bn = Number(b.rollNumber);
+      if(!isNaN(an) && !isNaN(bn) && a.rollNumber!=='' && b.rollNumber!=='') return an-bn;
+      return (a.lastName||'').localeCompare(b.lastName||'');
+    });
+    if(roster.length === 0) return;
+    const header = ["S. No.","Sch. No.","Student's Name","Father's Name","Mother's Name","DOB","Caste","AADHAR NO.","SAM. ID","ADDRESS","MOB. NO.","Section","Status"];
+    const rows = roster.map((s,i) => [
+      s.rollNumber || (i+1), s.admissionNumber || '', `${s.firstName} ${s.lastName}`.trim(),
+      s.fatherName || '', s.motherName || '', toDDMMYYYY(s.dob), s.category || '',
+      s.studentAadhar || '', s.studentSSSM || '', s.address || '', s.phone || '',
+      s.section || '', s.status || '',
+    ]);
+    const sheetData = [ [SCHOOL_NAME], [SCHOOL_ADDRESS], ['CLASS ' + classDisplayLabel(cls) + ' — Session ' + currentAcademicYear()], header, ...rows ];
+    let sheetName = classDisplayLabel(cls).replace('Class ', '').trim().replace(/[\\\/\?\*\[\]:]/g, '').slice(0,31) || cls;
+    out.push({ cls, sheetName, sheetData });
+  });
+  return out;
+}
+async function pullStudentsFromGoogleSheet(){
+  const spreadsheetId = gsheetsFileIds.students;
+  if(!spreadsheetId){ alert('Save a Students Spreadsheet ID/URL in User Access first.'); return; }
+  if(!gsheetsAccessToken){ alert('Connect your Google account in User Access first.'); return; }
+  try{
+    const meta = await getSpreadsheetMeta(spreadsheetId);
+    const sheetNames = meta.sheets.map(s => s.properties.title);
+    const sheets = [];
+    for(const name of sheetNames){
+      const rows = await getSheetRows(spreadsheetId, name);
+      if(rows.length === 0) continue;
+      const headerRowIdx = detectHeaderRowIndex(rows);
+      if(rows.length <= headerRowIdx + 1) continue;
+      sheets.push({ name, rows, headerRowIdx, cls: fuzzyMatchClass(name), include: true, rowIncludes: {}, expanded: false });
+    }
+    if(sheets.length === 0){ alert('No usable data found in that spreadsheet.'); return; }
+    excelImportState = { sheets, columnMapping: {}, applyEnquiryRouting: false };
+    const refSheet = sheets[0];
+    const headerRow = refSheet.rows[refSheet.headerRowIdx] || [];
+    headerRow.forEach(h => {
+      if(h===undefined || h===null || String(h).trim()==='') return;
+      excelImportState.columnMapping[String(h).trim()] = autoMatchColumnHeader(h);
+    });
+    openModalWide(`
+      <div class="modal-head"><h2 style="font-size:18px;">Import from Google Sheets</h2><button onclick="closeModal()">&times;</button></div>
+      <p style="font-size:13px;color:var(--ink-soft);margin:-8px 0 16px;">Pulled live from your connected spreadsheet — review below just like a file upload.</p>
+      <div id="excelImportBody"></div>`);
+    renderExcelImportReview();
+  }catch(err){
+    alert('Could not pull from Google Sheets: ' + err.message);
+  }
+}
+async function pushStudentsToGoogleSheet(scopeFilterFn){
+  const spreadsheetId = gsheetsFileIds.students;
+  if(!spreadsheetId){ alert('Save a Students Spreadsheet ID/URL in User Access first.'); return; }
+  if(!gsheetsAccessToken){ alert('Connect your Google account in User Access first.'); return; }
+  const source = scopeFilterFn ? students.filter(scopeFilterFn) : students;
+  try{
+    const meta = await getSpreadsheetMeta(spreadsheetId);
+    const existingNames = meta.sheets.map(s => s.properties.title);
+    const classSheets = buildClassSheetsData(source);
+    for(const cs of classSheets){
+      await ensureSheetExists(spreadsheetId, cs.sheetName, existingNames);
+      if(!existingNames.includes(cs.sheetName)) existingNames.push(cs.sheetName);
+      await writeSheetRows(spreadsheetId, cs.sheetName, cs.sheetData);
+    }
+    alert(classSheets.length === 0 ? 'No students to push yet.' : 'Pushed ' + classSheets.length + ' class sheet' + (classSheets.length===1?'':'s') + ' to Google Sheets.');
+  }catch(err){
+    alert('Could not push to Google Sheets: ' + err.message);
+  }
+}
+function pushAdmissionsToGoogleSheet(){
+  const session = currentAcademicYear();
+  return pushStudentsToGoogleSheet(s => s.session === session);
+}
+
+/* ================================================================================
+   EXCEL IMPORTER (Enquiries) — same matching engine as the Students importer,
+   simpler flow since enquiries are a flat list rather than one-sheet-per-class.
+   ================================================================================ */
+var ENQUIRY_IMPORT_FIELDS = [
+  {key:'childName', label:"Child's Name", synonyms:["child's name","childs name",'child name',"student's name",'student name']},
+  {key:'dob', label:'Date of Birth', synonyms:['dob','date of birth']},
+  {key:'classApplyingFor', label:'Class Applying For', synonyms:['class applying for','applying for class','applying for','class']},
+  {key:'parentName', label:"Parent's Name", synonyms:["parent's name",'parents name','parent name',"father's name",'father name','guardian name']},
+  {key:'parentPhone', label:"Parent's Phone", synonyms:["parent's phone",'parents phone','parent phone','mob. no','mob no','mobile','phone','contact']},
+  {key:'source', label:'Source', synonyms:['source','how did you hear','reference']},
+  {key:'ignore', label:'— Ignore this column —', synonyms:[]},
+];
+var enquiryImportState = { sheets: [], columnMapping: {} };
+function openEnquiryExcelImportModal(){
+  enquiryImportState = { sheets: [], columnMapping: {} };
+  openModalWide(`
+    <div class="modal-head"><h2 style="font-size:18px;">Import Enquiries from Excel</h2><button onclick="closeModal()">&times;</button></div>
+    <p style="font-size:13px;color:var(--ink-soft);margin:-8px 0 16px;">Upload an .xlsx, .xls, or .csv file with a list of prospective admissions — walk-ins, calls, or an admission-fair sign-up sheet.</p>
+    ${typeof XLSX === 'undefined' ? `<p style="font-size:13px;color:var(--bad);">The Excel reader hasn't finished loading (it needs an internet connection the first time). Wait a moment and try again.</p>` : `<input type="file" id="enquiryExcelFileInput" accept=".xlsx,.xls,.csv" onchange="handleEnquiryExcelFileSelect(event)" />`}
+    <div id="enquiryImportBody"></div>`);
+}
+async function handleEnquiryExcelFileSelect(event){
+  const file = event.target.files[0];
+  if(!file) return;
+  const body = document.getElementById('enquiryImportBody');
+  body.innerHTML = '<p style="font-size:13px;color:var(--ink-soft);margin-top:12px;">Reading file…</p>';
+  try{
+    const buf = await file.arrayBuffer();
+    const wb = XLSX.read(buf, {type:'array', cellDates:true});
+    enquiryImportState.sheets = wb.SheetNames.map(name => {
+      const ws = wb.Sheets[name];
+      const rows = XLSX.utils.sheet_to_json(ws, {header:1, raw:true, defval:''});
+      const headerRowIdx = detectHeaderRowIndex(rows, ENQUIRY_IMPORT_FIELDS, 2);
+      return { name, rows, headerRowIdx, include: true };
+    }).filter(s => s.rows.length > s.headerRowIdx + 1);
+
+    if(enquiryImportState.sheets.length === 0){
+      body.innerHTML = '<p style="font-size:13px;color:var(--bad);margin-top:12px;">No usable data found in this file.</p>';
+      return;
+    }
+    const refSheet = enquiryImportState.sheets[0];
+    const headerRow = refSheet.rows[refSheet.headerRowIdx] || [];
+    enquiryImportState.columnMapping = {};
+    headerRow.forEach(h => {
+      if(h===undefined || h===null || String(h).trim()==='') return;
+      enquiryImportState.columnMapping[String(h).trim()] = autoMatchColumnHeader(h, ENQUIRY_IMPORT_FIELDS);
+    });
+    renderEnquiryImportReview();
+  }catch(err){
+    body.innerHTML = '<p style="font-size:13px;color:var(--bad);margin-top:12px;">Could not read this file: ' + escapeHtml(err.message||String(err)) + '</p>';
+  }
+}
+function renderEnquiryImportReview(){
+  const body = document.getElementById('enquiryImportBody');
+  const refSheet = enquiryImportState.sheets[0];
+  const headerRow = (refSheet.rows[refSheet.headerRowIdx] || []).filter(h => h!==undefined && h!==null && String(h).trim()!=='');
+
+  body.innerHTML = `
+    <div style="margin-top:18px;">
+      <p style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);margin:0 0 8px;">Match your columns</p>
+      <p style="font-size:12px;color:var(--ink-soft);margin:0 0 10px;">Detected from "${escapeHtml(refSheet.name)}" — matched by column header text.</p>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px 12px;">
+        ${headerRow.map(h => `
+          <label style="display:flex;align-items:center;gap:8px;font-size:13px;font-weight:400;margin:0;">
+            <span style="min-width:110px;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(String(h))}</span>
+            <select onchange="enquiryImportState.columnMapping[${JSON.stringify(String(h))}]=this.value" style="flex:1;font-size:12px;padding:5px 6px;">
+              ${ENQUIRY_IMPORT_FIELDS.map(f => `<option value="${f.key}" ${enquiryImportState.columnMapping[String(h)]===f.key?'selected':''}>${f.label}</option>`).join('')}
+            </select>
+          </label>`).join('')}
+      </div>
+    </div>
+
+    <div style="margin-top:20px;">
+      <p style="font-size:12px;font-weight:500;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);margin:0 0 8px;">Sheets to import</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th></th><th>Sheet</th><th>Header row</th><th>Rows found</th></tr></thead>
+        <tbody>
+          ${enquiryImportState.sheets.map((s,i) => `
+            <tr>
+              <td><input type="checkbox" ${s.include?'checked':''} onchange="enquiryImportState.sheets[${i}].include=this.checked" style="width:auto;" /></td>
+              <td>${escapeHtml(s.name)}</td>
+              <td><input type="number" min="1" value="${s.headerRowIdx+1}" style="width:56px;font-size:12px;padding:4px 6px;" onchange="enquiryImportState.sheets[${i}].headerRowIdx=Math.max(0,this.value-1)" /></td>
+              <td>${Math.max(0, s.rows.length - s.headerRowIdx - 1)}</td>
+            </tr>`).join('')}
+        </tbody>
+      </table></div>
+    </div>
+
+    <div id="enquiryImportResult" style="margin-top:14px;"></div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button type="button" class="btn btn-primary" onclick="runEnquiryExcelImport()">Import</button>
+    </div>`;
+}
+function runEnquiryExcelImport(){
+  let imported = 0, skipped = 0;
+
+  enquiryImportState.sheets.filter(s => s.include).forEach(sheet => {
+    const headerRow = sheet.rows[sheet.headerRowIdx] || [];
+    const indexToField = {};
+    headerRow.forEach((h, idx) => {
+      if(h===undefined || h===null) return;
+      const key = String(h).trim();
+      if(key && enquiryImportState.columnMapping[key] && enquiryImportState.columnMapping[key] !== 'ignore'){
+        indexToField[idx] = enquiryImportState.columnMapping[key];
+      }
+    });
+
+    for(let r = sheet.headerRowIdx + 1; r < sheet.rows.length; r++){
+      const row = sheet.rows[r];
+      if(!row || row.every(c => c===undefined || c===null || String(c).trim()==='')){ continue; }
+
+      const rec = {};
+      Object.keys(indexToField).forEach(idxStr => { rec[indexToField[idxStr]] = row[Number(idxStr)]; });
+
+      if(!rec.childName || !String(rec.childName).trim()){ skipped++; continue; }
+
+      enquiries.push({
+        id: uid('enq'),
+        enquiryNumber: 'ENQ-' + new Date().getFullYear() + '-' + String(enquiries.length+1).padStart(3,'0'),
+        childName: String(rec.childName).trim().toUpperCase(),
+        dob: parseDobFlexible(rec.dob),
+        classApplyingFor: rec.classApplyingFor ? String(rec.classApplyingFor).trim().toUpperCase() : '',
+        parentName: rec.parentName ? String(rec.parentName).trim().toUpperCase() : '',
+        parentPhone: rec.parentPhone!==undefined && rec.parentPhone!==null ? String(rec.parentPhone).trim() : '',
+        source: rec.source ? String(rec.source).trim() : 'Walk-in',
+        nextFollowUpDate: '', note: '',
+        status: 'new', followUps: [], convertedStudentId: null,
+        createdAt: new Date().toISOString(),
+      });
+      imported++;
+    }
+  });
+
+  saveAll();
+  const resultEl = document.getElementById('enquiryImportResult');
   if(resultEl){
     resultEl.innerHTML = imported === 0
-      ? `<div style="background:var(--bad-soft);color:var(--bad);padding:10px 12px;border-radius:8px;font-size:13px;">No students imported — check that at least one sheet is checked, has a class assigned, and its Name column is mapped.</div>`
-      : `<div style="background:var(--good-soft);color:var(--good);padding:10px 12px;border-radius:8px;font-size:13px;">Imported ${imported} student${imported===1?'':'s'}${summary?' — '+escapeHtml(summary):''}.${skipped?' '+skipped+' row(s) skipped (no name found).':''} <a href="#" onclick="closeModal();renderStudents(document.getElementById('topbar'),document.getElementById('content'));return false;" style="color:inherit;text-decoration:underline;">View directory</a></div>`;
+      ? `<div style="background:var(--bad-soft);color:var(--bad);padding:10px 12px;border-radius:8px;font-size:13px;">No enquiries imported — check that at least one sheet is checked and its Child's Name column is mapped.</div>`
+      : `<div style="background:var(--good-soft);color:var(--good);padding:10px 12px;border-radius:8px;font-size:13px;">Imported ${imported} enquir${imported===1?'y':'ies'}.${skipped?' '+skipped+' row(s) skipped (no name found).':''} <a href="#" onclick="closeModal();renderEnquiries(document.getElementById('topbar'),document.getElementById('content'));return false;" style="color:inherit;text-decoration:underline;">View enquiries</a></div>`;
   }
-  return { imported, skipped, perClass };
+  return { imported, skipped };
 }
 
 /* ---------------- student detail + TC ---------------- */
@@ -2198,7 +2790,10 @@ function printAdmissionForm(studentId){
 function renderEnquiries(topbar, content){
   topbar.innerHTML = `
     <div><h1>Enquiries</h1><p>Every prospective admission from first contact onward.</p></div>
-    ${canEdit('enquiries') ? `<button class="btn btn-primary" onclick="openEnquiryModal()">+ Add enquiry</button>` : ''}`;
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      ${canEdit('enquiries') ? `<button class="btn btn-secondary" onclick="openEnquiryExcelImportModal()">Import from Excel</button>` : ''}
+      ${canEdit('enquiries') ? `<button class="btn btn-primary" onclick="openEnquiryModal()">+ Add enquiry</button>` : ''}
+    </div>`;
 
   const sorted = [...enquiries].sort((a,b)=> new Date(b.createdAt)-new Date(a.createdAt));
   const editable = canEdit('enquiries');
@@ -3818,7 +4413,45 @@ function runColumnAction(entity, action){
 }
 
 function printStudents(){ openColumnPicker('students','print'); }
-function exportStudentsExcel(){ openColumnPicker('students','excel'); }
+function exportStudentsExcel(filterFn, filename){
+  if(typeof XLSX === 'undefined'){
+    alert('The Excel writer needs an internet connection to load the first time — please try again in a moment.');
+    return;
+  }
+  const source = filterFn ? students.filter(filterFn) : students;
+  const wb = XLSX.utils.book_new();
+  let anySheet = false;
+  CLASS_LEVELS.forEach(cls => {
+    const roster = source.filter(s => s.cls === cls).sort((a,b) => {
+      const an = Number(a.rollNumber), bn = Number(b.rollNumber);
+      if(!isNaN(an) && !isNaN(bn) && a.rollNumber!=='' && b.rollNumber!=='') return an-bn;
+      return (a.lastName||'').localeCompare(b.lastName||'');
+    });
+    if(roster.length === 0) return;
+    anySheet = true;
+    const header = ["S. No.","Sch. No.","Student's Name","Father's Name","Mother's Name","DOB","Caste","AADHAR NO.","SAM. ID","ADDRESS","MOB. NO.","Section","Status"];
+    const rows = roster.map((s,i) => [
+      s.rollNumber || (i+1), s.admissionNumber || '', `${s.firstName} ${s.lastName}`.trim(),
+      s.fatherName || '', s.motherName || '', toDDMMYYYY(s.dob), s.category || '',
+      s.studentAadhar || '', s.studentSSSM || '', s.address || '', s.phone || '',
+      s.section || '', s.status || '',
+    ]);
+    const sheetData = [
+      [SCHOOL_NAME], [SCHOOL_ADDRESS],
+      ['CLASS ' + classDisplayLabel(cls) + ' — Session ' + currentAcademicYear()],
+      header, ...rows,
+    ];
+    const ws = XLSX.utils.aoa_to_sheet(sheetData);
+    let sheetName = classDisplayLabel(cls).replace('Class ', '').trim().replace(/[\\\/\?\*\[\]:]/g, '').slice(0,31);
+    XLSX.utils.book_append_sheet(wb, ws, sheetName || cls);
+  });
+  if(!anySheet){ alert('No students to export yet.'); return; }
+  XLSX.writeFile(wb, (filename || ('Students ' + currentAcademicYear())) + '.xlsx');
+}
+function exportAdmissionsExcel(){
+  const session = currentAcademicYear();
+  exportStudentsExcel(s => s.session === session, 'Admissions ' + session);
+}
 function printStaff(){ openColumnPicker('staff','print'); }
 function exportStaffExcel(){ openColumnPicker('staff','excel'); }
 
@@ -3896,6 +4529,39 @@ function renderUserManagement(topbar, content){
           </tr>`).join('')}
       </tbody>
     </table></div>
+
+    <div class="card" style="margin-top:24px;">
+      <h2 style="font-size:16px;">Google Sheets Sync</h2>
+      <p style="font-size:13px;color:var(--ink-soft);margin:6px 0 14px;">Connect a Google account so Students and Admissions can pull from and push to a live Google Sheet instead of downloading/uploading files by hand.</p>
+
+      <details style="margin-bottom:16px;">
+        <summary style="cursor:pointer;font-size:13px;font-weight:500;">One-time setup (about 10 minutes) — click to expand</summary>
+        <ol style="font-size:13px;color:var(--ink-soft);line-height:1.7;margin:10px 0 0;padding-left:20px;">
+          <li>Go to <span style="font-family:'IBM Plex Mono',monospace;">console.cloud.google.com</span> and create a project (or use an existing one).</li>
+          <li><b>APIs &amp; Services → Library</b> — search "Google Sheets API" and click Enable.</li>
+          <li><b>APIs &amp; Services → OAuth consent screen</b> — choose External, fill in an app name and your email, and add your own email under Test users. It's fine to stay in "Testing" mode.</li>
+          <li><b>APIs &amp; Services → Credentials → Create Credentials → OAuth client ID</b> — Application type: Web application. Under "Authorized JavaScript origins," add the exact URL this app is hosted at (e.g. your Netlify address). <b>This won't work opening the file directly from your computer — it has to be hosted at a real https:// URL.</b></li>
+          <li>Copy the Client ID it gives you and paste it below.</li>
+        </ol>
+      </details>
+
+      <div class="field"><label>OAuth Client ID</label><input id="gsheetsClientIdInput" value="${escapeHtml(gsheetsClientId)}" placeholder="xxxxxxxx.apps.googleusercontent.com" /></div>
+      <button class="btn btn-secondary btn-sm" onclick="saveGoogleClientId(document.getElementById('gsheetsClientIdInput').value); renderUserManagement(document.getElementById('topbar'),document.getElementById('content'));" style="margin-top:6px;">Save Client ID</button>
+
+      <div style="margin-top:16px;display:flex;align-items:center;gap:10px;">
+        <button class="btn btn-primary btn-sm" onclick="connectGoogleSheets()">${gsheetsAccessToken?'Reconnect':'Connect Google Account'}</button>
+        ${gsheetsAccessToken ? `<span class="pill pill-good">Connected</span><button class="btn btn-secondary btn-sm" onclick="disconnectGoogleSheets()">Disconnect</button>` : `<span class="pill pill-neutral">Not connected</span>`}
+      </div>
+
+      <div style="margin-top:16px;">
+        <label style="font-size:13px;font-weight:500;display:block;margin-bottom:4px;">Students Spreadsheet (URL or ID)</label>
+        <div style="display:flex;gap:8px;">
+          <input id="gsheetsStudentsFileInput" value="${escapeHtml(gsheetsFileIds.students||'')}" placeholder="Paste the Google Sheet URL or ID" style="flex:1;" />
+          <button class="btn btn-secondary btn-sm" onclick="saveGoogleSheetId('students', document.getElementById('gsheetsStudentsFileInput').value); renderUserManagement(document.getElementById('topbar'),document.getElementById('content'));">Save</button>
+        </div>
+        <p style="font-size:11px;color:var(--ink-soft);margin-top:6px;">Once saved and connected, the Pull/Push buttons appear on the Students and Admissions pages.</p>
+      </div>
+    </div>
 
     <div class="card" style="margin-top:24px;border-color:var(--bad);">
       <h2 style="font-size:16px;color:var(--bad);">Danger Zone</h2>
