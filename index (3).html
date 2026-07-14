@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bombay Kids International School — Conduct</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div id="lockScreen">
+  <div class="lock-wrap">
+    <div class="wordmark"><img id="lockLogo" alt="Bombay Kids International School" style="height:64px;margin-bottom:8px;display:none;" /><span class="word">Conduct — Student &amp; Staff Records</span></div>
+    <div class="lock-card">
+      <span class="record-tag" id="ayTag">AY — · Staff Access</span>
+      <h1 style="font-size:20px;margin:14px 0 4px;">Sign in</h1>
+      <p style="font-size:13px;color:var(--ink-soft);margin:0 0 18px;">Use the username and password your admin set up for you.</p>
+      <form id="lockForm">
+        <div class="field"><label>Username</label><input type="text" id="loginUsername" placeholder="e.g. priya.nair" required autofocus /></div>
+        <div class="field"><label>Password</label><input type="password" id="loginPassword" required /></div>
+        <div class="msg msg-error" id="lockMsg" style="display:none;"></div>
+        <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="app" style="display:none;">
+  <aside class="sidebar">
+    <div class="brand"><img id="sidebarLogo" alt="Bombay Kids International School" style="height:38px;margin-bottom:6px;display:none;" /><span class="word">Conduct</span><p>Arihant Nagar, Indore</p></div>
+    <nav id="sidebarNav"></nav>
+    <div class="footer">
+      <div>Signed in as <span class="name" id="footerName">—</span></div>
+      <div id="footerRole" style="margin-top:2px;"></div>
+      <button onclick="exportBackup()">Export backup</button>
+      <button onclick="document.getElementById('importInput').click()">Import backup</button>
+      <button onclick="lockApp()">Sign out</button>
+      <input type="file" id="importInput" accept="application/json" style="display:none" onchange="importBackup(event)" />
+    </div>
+  </aside>
+  <div class="main">
+    <header class="topbar" id="topbar"></header>
+    <main class="content" id="content"></main>
+  </div>
+</div>
+
+<div id="modalRoot"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
