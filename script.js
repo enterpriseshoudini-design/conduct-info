@@ -58,6 +58,7 @@ var view = { name: 'dashboard', studentId: null };
 var studentFilters = { q:'', status:'', category:'' };
 var feeFilters = { session:'', cls:'', status:'' };
 var salaryFilters = { month:'', status:'' };
+var staffFilters = { role:'', status:'' };
 var dashboardTimeframe = 'thisMonth';
 
 /* ---------------- roles & permissions ----------------
@@ -173,6 +174,37 @@ function backfillPermissionKeysIfNeeded(){
 function uid(prefix){ return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 function escapeHtml(str){
   return String(str==null?'':str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+/** Renders a file <input> plus a small "chosen filename with an × to remove it"
+ *  chip beneath it. Native file inputs give no way to clear a selection once
+ *  made except re-picking — this adds that everywhere a file gets chosen. */
+function fileInputWithClear(id, name, accept, onchangeExtra){
+  const onchange = "updateFileChip('" + id + "')" + (onchangeExtra ? ';' + onchangeExtra : '');
+  return `
+    <div class="file-input-wrap">
+      <input type="file" id="${id}"${name?` name="${name}"`:''}${accept?` accept="${accept}"`:''} onchange="${onchange}" />
+      <div class="file-chip" id="${id}_chip" style="display:none;">
+        <span class="file-chip-name"></span>
+        <button type="button" class="file-chip-clear" onclick="clearFileInput('${id}')" title="Remove file">&times;</button>
+      </div>
+    </div>`;
+}
+function updateFileChip(inputId){
+  const input = document.getElementById(inputId);
+  const chip = document.getElementById(inputId + '_chip');
+  if(!input || !chip) return;
+  if(input.files && input.files.length > 0){
+    chip.querySelector('.file-chip-name').textContent = input.files[0].name;
+    chip.style.display = 'inline-flex';
+  } else {
+    chip.style.display = 'none';
+  }
+}
+function clearFileInput(inputId){
+  const input = document.getElementById(inputId);
+  const chip = document.getElementById(inputId + '_chip');
+  if(input) input.value = '';
+  if(chip) chip.style.display = 'none';
 }
 function initials(a,b){ return ((a||' ').charAt(0)+(b||' ').charAt(0)).toUpperCase().trim() || '?'; }
 function formatDate(iso){
@@ -865,6 +897,7 @@ function renderSidebar(){
 }
 function goTo(name){
   selectedStudentIds.clear();
+  Object.values(selectedRecordIds).forEach(set => set.clear());
   view = { name, studentId: null };
   renderSidebar();
   renderApp();
@@ -934,6 +967,8 @@ function renderDashboard(topbar, content){
   const enquiriesInPeriod = enquiries.filter(e => inRange(e.createdAt, range)).length;
   const feesPendingAmt = fees.filter(f => inRange(f.dueDate, range) && feeStatus(f) !== 'paid')
     .reduce((sum,f) => sum + Math.max(0,(Number(f.amountDue)||0)-(Number(f.amountPaid)||0)), 0);
+  const totalCollectionAmt = fees.filter(f => inRange(f.paidDate, range))
+    .reduce((sum,f) => sum + (Number(f.amountPaid)||0), 0);
 
   const todayKey = todayIso();
   const classCounts = CLASS_LEVELS.map(c => {
@@ -967,6 +1002,7 @@ function renderDashboard(topbar, content){
       <div class="stat-card good"><div class="label">Staff on roll</div><div class="value">${activeStaff}</div><div class="hint">Teaching and non-teaching, all time</div></div>
       <div class="stat-card"><div class="label">Admissions</div><div class="value">${admissionsInPeriod}</div><div class="hint">${timeframeLabel}</div></div>
       <div class="stat-card accent"><div class="label">Enquiries</div><div class="value">${enquiriesInPeriod}</div><div class="hint">${timeframeLabel}</div></div>
+      ${can('fees') ? `<div class="stat-card good"><div class="label">Total collection</div><div class="value" style="font-size:26px;">${money(totalCollectionAmt)}</div><div class="hint">Collected ${timeframeLabel.toLowerCase()}</div></div>` : ''}
       ${can('fees') ? `<div class="stat-card accent"><div class="label">Fees pending</div><div class="value" style="font-size:26px;">${money(feesPendingAmt)}</div><div class="hint">Due ${timeframeLabel.toLowerCase()}</div></div>` : ''}
     </div>
 
@@ -1323,6 +1359,94 @@ function bulkExportSelectedStudents(){
   a.click();
 }
 
+/* ---------------- bulk select (generic — Fees, Salary, Expenses, Staff, or any future table) ---------------- */
+var selectedRecordIds = {};
+function getSelectedSet(category){
+  if(!selectedRecordIds[category]) selectedRecordIds[category] = new Set();
+  return selectedRecordIds[category];
+}
+function toggleRecordSelection(category, id, checked){
+  const set = getSelectedSet(category);
+  if(checked) set.add(id); else set.delete(id);
+  updateRecordBulkBar(category);
+}
+function toggleAllRecordSelection(category, ids, checked){
+  const set = getSelectedSet(category);
+  ids.forEach(id => { if(checked) set.add(id); else set.delete(id); });
+  renderApp();
+}
+function clearRecordSelection(category){
+  getSelectedSet(category).clear();
+  renderApp();
+}
+function updateRecordBulkBar(category){
+  const bar = document.getElementById('bulkActionBar_' + category);
+  if(!bar) return;
+  const size = getSelectedSet(category).size;
+  bar.style.display = size > 0 ? 'flex' : 'none';
+  const countEl = document.getElementById('bulkSelectedCount_' + category);
+  if(countEl) countEl.textContent = size;
+}
+function renderRecordBulkActionBar(category, deleteHandler){
+  return `
+    <div id="bulkActionBar_${category}" style="display:none;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface-alt);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:10px;">
+      <span style="font-size:13px;"><span id="bulkSelectedCount_${category}">0</span> selected</span>
+      <button type="button" class="btn btn-secondary btn-sm" onclick="bulkExportSelectedRecords('${category}')">Export selected</button>
+      ${deleteHandler ? `<button type="button" class="btn btn-danger btn-sm" onclick="${deleteHandler}">Delete selected</button>` : ''}
+      <button type="button" class="btn btn-secondary btn-sm" onclick="clearRecordSelection('${category}')">Clear selection</button>
+    </div>`;
+}
+function bulkExportSelectedRecords(category){
+  const set = getSelectedSet(category);
+  if(set.size === 0) return;
+  const schema = DATA_SCHEMAS[category];
+  const rows = buildCategoryRows(category).filter(r => set.has(r[0]));
+  const header = schema.headers.map(csvEscape).join(',');
+  const lines = rows.map(r => r.map(csvEscape).join(','));
+  const csv = '\uFEFF' + [header, ...lines].join('\r\n');
+  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'selected_' + category + '_' + todayIso() + '.csv';
+  a.click();
+}
+function bulkDeleteSelectedFees(){
+  const set = getSelectedSet('fees');
+  if(set.size === 0) return;
+  if(!confirm('Delete ' + set.size + ' selected fee record(s)? This cannot be undone.')) return;
+  fees = fees.filter(f => !set.has(f.id));
+  set.clear();
+  saveAll();
+  renderApp();
+}
+function bulkDeleteSelectedSalary(){
+  const set = getSelectedSet('salary');
+  if(set.size === 0) return;
+  if(!confirm('Delete ' + set.size + ' selected salary record(s)? This cannot be undone.')) return;
+  salaries = salaries.filter(r => !set.has(r.id));
+  set.clear();
+  saveAll();
+  renderApp();
+}
+function bulkDeleteSelectedExpenses(){
+  const set = getSelectedSet('expenses');
+  if(set.size === 0) return;
+  if(!confirm('Delete ' + set.size + ' selected expense(s)? This cannot be undone.')) return;
+  expenses = expenses.filter(e => !set.has(e.id));
+  set.clear();
+  saveAll();
+  renderApp();
+}
+function bulkDeleteSelectedStaff(){
+  const set = getSelectedSet('staff');
+  if(set.size === 0) return;
+  if(!confirm('Delete ' + set.size + ' selected staff record(s)? This cannot be undone.')) return;
+  staffList = staffList.filter(m => !set.has(m.id));
+  set.clear();
+  saveAll();
+  renderApp();
+}
+
 /* ---------------- students: add/edit modal ---------------- */
 function openStudentModal(existingId, presetCls){
   const s = existingId ? students.find(x=>x.id===existingId) : null;
@@ -1383,11 +1507,11 @@ function openStudentModal(existingId, presetCls){
         <div class="field">
           <label>Passport size photo</label>
           ${photoPreview}
-          <input type="file" name="photoFile" accept="image/*" />
+          ${fileInputWithClear('studentPhotoFile','photoFile','image/*')}
         </div>
         <div class="field">
           <label>Upload document</label>
-          <input type="file" name="documentFile" />
+          ${fileInputWithClear('studentDocumentFile','documentFile')}
           ${docNote}
           <p style="font-size:11px;color:var(--ink-soft);margin:4px 0 0;">e.g. birth certificate, transfer certificate</p>
         </div>
@@ -1559,6 +1683,18 @@ var DATA_SCHEMAS = {
     label: 'Enquiries',
     headers: ['enquiryId','childName','dob','classApplyingFor','parentName','parentPhone','source','status','nextFollowUpDate','createdAt'],
   },
+  staff: {
+    label: 'Staff',
+    headers: ['employeeId','firstName','lastName','role','department','phone','email','dateOfJoining','employmentStatus'],
+  },
+  salary: {
+    label: 'Salary',
+    headers: ['salaryId','staffId','month','amountDue','amountPaid','paidDate','notes'],
+  },
+  expenses: {
+    label: 'Expenses',
+    headers: ['expenseId','date','category','description','amount','paymentMode','notes'],
+  },
 };
 /** Student rows are shared by both the Students and Admissions modules —
  *  Admissions is simply Students filtered to the current session. */
@@ -1578,6 +1714,9 @@ function buildCategoryRows(category){
   if(category === 'fees') return fees.map(f => [f.id, f.studentId||'', f.session||'', f.particulars||'', f.amountDue||'', f.amountPaid||'', f.paymentMode||'', f.dueDate||'', f.paidDate||'', f.notes||'']);
   if(category === 'attendance') return studentAttendance.map(a => [a.id, a.studentId||'', a.date||'', a.cls||'', a.section||'', a.status||'']);
   if(category === 'enquiries') return enquiries.map(e => [e.id, e.childName||'', e.dob||'', e.classApplyingFor||'', e.parentName||'', e.parentPhone||'', e.source||'', e.status||'', e.nextFollowUpDate||'', e.createdAt||'']);
+  if(category === 'staff') return staffList.map(m => [m.id, m.firstName||'', m.lastName||'', m.role||'', m.department||'', m.phone||'', m.email||'', m.dateOfJoining||'', m.employmentStatus||'']);
+  if(category === 'salary') return salaries.map(r => [r.id, r.staffId||'', r.month||'', r.amountDue||'', r.amountPaid||'', r.paidDate||'', r.notes||'']);
+  if(category === 'expenses') return expenses.map(e => [e.id, e.date||'', e.category||'', e.description||'', e.amount||'', e.paymentMode||'', e.notes||'']);
   return [];
 }
 /** Reads a File object as text using the browser's native FileReader — no library needed. */
@@ -1723,6 +1862,68 @@ function importCategoryRows(category, headerRow, dataRows){
       }
     });
     saveAll();
+  } else if(category === 'staff'){
+    dataRows.forEach(row => {
+      if(row.every(c=>String(c).trim()==='')) return;
+      const firstName = (row[idx.firstName]||'').trim();
+      if(!firstName){ skipped++; return; }
+      const rec = {
+        firstName, lastName: (row[idx.lastName]||'').trim(),
+        role: (row[idx.role]||'').trim() || 'Teacher',
+        department: (row[idx.department]||'').trim(),
+        phone: (row[idx.phone]||'').trim(),
+        email: (row[idx.email]||'').trim(),
+        dateOfJoining: (row[idx.dateOfJoining]||'').trim(),
+        employmentStatus: (row[idx.employmentStatus]||'').trim() || 'active',
+      };
+      const employeeId = (row[idx.employeeId]||'').trim();
+      const existing = employeeId ? staffList.find(m=>m.id===employeeId) : null;
+      if(existing){ Object.assign(existing, rec); updated++; }
+      else {
+        rec.id = uid('stf');
+        rec.employeeId = 'STF-' + String(staffList.length+1).padStart(3,'0');
+        staffList.push(rec); created++;
+      }
+    });
+    saveAll();
+  } else if(category === 'salary'){
+    dataRows.forEach(row => {
+      if(row.every(c=>String(c).trim()==='')) return;
+      const staffId = (row[idx.staffId]||'').trim();
+      const month = (row[idx.month]||'').trim();
+      if(!staffId || !month){ skipped++; return; }
+      const rec = {
+        staffId, month,
+        amountDue: (row[idx.amountDue]||'0').trim(),
+        amountPaid: (row[idx.amountPaid]||'0').trim(),
+        paidDate: (row[idx.paidDate]||'').trim(),
+        notes: (row[idx.notes]||'').trim(),
+      };
+      const salaryId = (row[idx.salaryId]||'').trim();
+      const existing = salaryId ? salaries.find(r=>r.id===salaryId) : null;
+      if(existing){ Object.assign(existing, rec); updated++; }
+      else { rec.id = uid('sal'); salaries.push(rec); created++; }
+    });
+    saveAll();
+  } else if(category === 'expenses'){
+    dataRows.forEach(row => {
+      if(row.every(c=>String(c).trim()==='')) return;
+      const description = (row[idx.description]||'').trim();
+      if(!description){ skipped++; return; }
+      const rec = {
+        date: (row[idx.date]||'').trim() || todayIso(),
+        category: (row[idx.category]||'').trim() || 'Miscellaneous',
+        description,
+        amount: (row[idx.amount]||'0').trim(),
+        paymentMode: (row[idx.paymentMode]||'').trim() || 'Cash',
+        notes: (row[idx.notes]||'').trim(),
+      };
+      const expenseId = (row[idx.expenseId]||'').trim();
+      const existing = expenseId ? expenses.find(e=>e.id===expenseId) : null;
+      if(existing){ Object.assign(existing, rec); updated++; }
+      else { rec.id = uid('exp'); expenses.push(rec); created++; }
+    });
+    saveAll();
   }
   return { created, updated, skipped };
 }
@@ -1762,7 +1963,7 @@ function renderDataCenter(topbar, content){
           ${Object.keys(DATA_SCHEMAS).map(cat => `<option value="${cat}">${DATA_SCHEMAS[cat].label}</option>`).join('')}
         </select>
       </div>
-      <input type="file" id="dataCenterImportFile" accept=".csv" style="margin-top:10px;" />
+      <div style="margin-top:10px;">${fileInputWithClear('dataCenterImportFile', null, '.csv')}</div>
       <button class="btn btn-primary" onclick="runDataCenterImport()" style="margin-top:10px;">Import</button>
       <div id="dataCenterImportResult" style="margin-top:12px;font-size:13px;"></div>
     </div>
@@ -2358,8 +2559,9 @@ function renderStaff(topbar, content){
       <button class="btn ${staffTabMode==='directory'?'btn-primary':'btn-secondary'} btn-sm" onclick="switchStaffTab('directory')">Directory</button>
       ${can('staffAttendance') ? `<button class="btn ${staffTabMode==='attendance'?'btn-primary':'btn-secondary'} btn-sm" onclick="switchStaffTab('attendance')">Today's Attendance</button>` : ''}
       ${staffTabMode==='directory' ? `
-        <button class="btn btn-secondary" onclick="exportStaffExcel()">Download Excel</button>
+        <button class="btn btn-secondary" onclick="downloadCategoryCsv('staff')">Download CSV</button>
         <button class="btn btn-secondary" onclick="printStaff()">Print List</button>
+        ${can('userManagement') ? `<button class="btn btn-secondary" onclick="goTo('dataCenter')">Data Center</button>` : ''}
         ${canEdit('staffDirectory') ? `<button class="btn btn-primary" onclick="openStaffModal()">+ Add staff</button>` : ''}
       ` : ''}
     </div>`;
@@ -2375,15 +2577,47 @@ function renderStaff(topbar, content){
     return;
   }
 
-  content.innerHTML = staffList.length===0 ? `<div class="table-wrap"><div class="empty">No staff added yet.</div></div>` : `
+  content.innerHTML = `
+    <div class="toolbar">
+      <button type="button" class="btn btn-secondary" onclick="document.getElementById('staffFilterPanel').style.display=document.getElementById('staffFilterPanel').style.display==='none'?'flex':'none';">Filter</button>
+      <div id="staffFilterPanel" style="display:none;gap:10px;flex-wrap:wrap;width:100%;background:var(--surface-alt);border-radius:8px;padding:10px 12px;">
+        <select onchange="staffFilters.role=this.value; renderStaffTable();">
+          <option value="">Any role</option>
+          ${['Teacher','Admin','Principal','Support'].map(r=>`<option value="${r}" ${staffFilters.role===r?'selected':''}>${r}</option>`).join('')}
+        </select>
+        <select onchange="staffFilters.status=this.value; renderStaffTable();">
+          <option value="">Any status</option>
+          <option value="active" ${staffFilters.status==='active'?'selected':''}>Active</option>
+          <option value="inactive" ${staffFilters.status==='inactive'?'selected':''}>Inactive</option>
+        </select>
+      </div>
+    </div>
+    <div id="staffTableWrap"></div>`;
+  renderStaffTable();
+}
+function renderStaffTable(){
+  const rows = staffList.filter(m => {
+    if(staffFilters.role && m.role !== staffFilters.role) return false;
+    if(staffFilters.status && m.employmentStatus !== staffFilters.status) return false;
+    return true;
+  });
+  const allSelected = rows.length>0 && rows.every(m=>getSelectedSet('staff').has(m.id));
+
+  document.getElementById('staffTableWrap').innerHTML = rows.length===0 ? `<div class="table-wrap"><div class="empty">No staff match these filters.</div></div>` : renderRecordBulkActionBar('staff', canEdit('staffDirectory')?'bulkDeleteSelectedStaff()':null) + `
+    <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-soft);margin-bottom:10px;">
+      <input type="checkbox" ${allSelected?'checked':''} onchange="toggleAllRecordSelection('staff',${JSON.stringify(rows.map(m=>m.id))},this.checked)" style="width:auto;" /> Select all shown
+    </label>
     <div class="staff-grid">
-      ${staffList.map(m => `
+      ${rows.map(m => `
         <div class="card">
-          <div style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="goToStaff('${m.id}')">
-            ${avatarHtml(m.photo, m.firstName, m.lastName, 40)}
-            <div style="min-width:0;">
-              <p style="margin:0;font-weight:500;">${escapeHtml(m.firstName)} ${escapeHtml(m.lastName)}</p>
-              <p style="margin:1px 0 0;font-size:12px;color:var(--ink-soft);">${escapeHtml(m.role)}${m.department?' · '+escapeHtml(m.department):''}</p>
+          <div style="display:flex;align-items:flex-start;gap:8px;">
+            <input type="checkbox" ${getSelectedSet('staff').has(m.id)?'checked':''} onchange="toggleRecordSelection('staff','${m.id}',this.checked)" style="width:auto;margin-top:4px;" />
+            <div style="display:flex;align-items:center;gap:10px;cursor:pointer;flex:1;min-width:0;" onclick="goToStaff('${m.id}')">
+              ${avatarHtml(m.photo, m.firstName, m.lastName, 40)}
+              <div style="min-width:0;">
+                <p style="margin:0;font-weight:500;">${escapeHtml(m.firstName)} ${escapeHtml(m.lastName)}</p>
+                <p style="margin:1px 0 0;font-size:12px;color:var(--ink-soft);">${escapeHtml(m.role)}${m.department?' · '+escapeHtml(m.department):''}</p>
+              </div>
             </div>
           </div>
           <div style="margin-top:14px;font-size:12px;color:var(--ink-soft);display:grid;gap:5px;">
@@ -2401,6 +2635,7 @@ function renderStaff(topbar, content){
           </div>
         </div>`).join('')}
     </div>`;
+  updateRecordBulkBar('staff');
 }
 function goToStaff(id){
   view = { name: 'staffDetail', studentId: null, staffId: id };
@@ -2517,7 +2752,7 @@ function openStaffModal(existingId){
         <div class="field span2">
           <label>Passport size photo</label>
           ${photoPreview}
-          <input type="file" name="photoFile" accept="image/*" />
+          ${fileInputWithClear('staffPhotoFile','photoFile','image/*')}
         </div>
       </div>
       <div class="modal-actions">
@@ -2859,26 +3094,33 @@ function deletePeriod(id){
 function renderFees(topbar, content){
   topbar.innerHTML = `
     <div><h1>Fees</h1><p>${fees.length} fee record${fees.length===1?'':'s'} across all sessions</p></div>
-    ${canEdit('fees') ? `<button class="btn btn-primary" onclick="openFeeModal()">+ Add fee record</button>` : ''}`;
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-secondary" onclick="downloadCategoryCsv('fees')">Download CSV</button>
+      ${can('userManagement') ? `<button class="btn btn-secondary" onclick="goTo('dataCenter')">Data Center</button>` : ''}
+      ${canEdit('fees') ? `<button class="btn btn-primary" onclick="openFeeModal()">+ Add fee record</button>` : ''}
+    </div>`;
 
   const sessions = [...new Set([currentAcademicYear(), ...fees.map(f=>f.session)])].sort().reverse();
 
   content.innerHTML = `
     <div class="toolbar">
-      <select onchange="feeFilters.session=this.value; renderFeesTable();">
-        <option value="">All sessions</option>
-        ${sessions.map(s=>`<option value="${s}" ${feeFilters.session===s?'selected':''}>${s}</option>`).join('')}
-      </select>
-      <select onchange="feeFilters.cls=this.value; renderFeesTable();">
-        <option value="">All classes</option>
-        ${CLASS_LEVELS.map(c=>`<option value="${c}" ${feeFilters.cls===c?'selected':''}>Class ${c}</option>`).join('')}
-      </select>
-      <select onchange="feeFilters.status=this.value; renderFeesTable();">
-        <option value="">Any status</option>
-        <option value="pending" ${feeFilters.status==='pending'?'selected':''}>Pending</option>
-        <option value="partial" ${feeFilters.status==='partial'?'selected':''}>Partial</option>
-        <option value="paid" ${feeFilters.status==='paid'?'selected':''}>Paid</option>
-      </select>
+      <button type="button" class="btn btn-secondary" onclick="document.getElementById('feesFilterPanel').style.display=document.getElementById('feesFilterPanel').style.display==='none'?'flex':'none';">Filter</button>
+      <div id="feesFilterPanel" style="display:none;gap:10px;flex-wrap:wrap;width:100%;background:var(--surface-alt);border-radius:8px;padding:10px 12px;">
+        <select onchange="feeFilters.session=this.value; renderFeesTable();">
+          <option value="">All sessions</option>
+          ${sessions.map(s=>`<option value="${s}" ${feeFilters.session===s?'selected':''}>${s}</option>`).join('')}
+        </select>
+        <select onchange="feeFilters.cls=this.value; renderFeesTable();">
+          <option value="">All classes</option>
+          ${CLASS_LEVELS.map(c=>`<option value="${c}" ${feeFilters.cls===c?'selected':''}>Class ${c}</option>`).join('')}
+        </select>
+        <select onchange="feeFilters.status=this.value; renderFeesTable();">
+          <option value="">Any status</option>
+          <option value="pending" ${feeFilters.status==='pending'?'selected':''}>Pending</option>
+          <option value="partial" ${feeFilters.status==='partial'?'selected':''}>Partial</option>
+          <option value="paid" ${feeFilters.status==='paid'?'selected':''}>Paid</option>
+        </select>
+      </div>
     </div>
     <div id="feesSummary"></div>
     <div id="feesTableWrap"></div>`;
@@ -2909,12 +3151,13 @@ function renderFeesTable(){
       <div class="stat-card accent"><div class="label">Pending</div><div class="value" style="font-size:24px;">${money(totalPending)}</div></div>
     </div>`;
 
-  document.getElementById('feesTableWrap').innerHTML = rows.length===0 ? `<div class="table-wrap"><div class="empty">No fee records match these filters.</div></div>` : `
+  document.getElementById('feesTableWrap').innerHTML = rows.length===0 ? `<div class="table-wrap"><div class="empty">No fee records match these filters.</div></div>` : renderRecordBulkActionBar('fees', canEdit('fees')?'bulkDeleteSelectedFees()':null) + `
     <div class="table-wrap"><table>
-      <thead><tr><th>Student</th><th>Class</th><th>Session</th><th>Particulars</th><th>Total Due</th><th>Deposited</th><th>Remaining</th><th>Mode</th><th>Status</th><th>Due date</th><th></th></tr></thead>
+      <thead><tr><th><input type="checkbox" ${rows.length>0 && rows.every(f=>getSelectedSet('fees').has(f.id))?'checked':''} onchange="toggleAllRecordSelection('fees',${JSON.stringify(rows.map(f=>f.id))},this.checked)" style="width:auto;" /></th><th>Student</th><th>Class</th><th>Session</th><th>Particulars</th><th>Total Due</th><th>Deposited</th><th>Remaining</th><th>Mode</th><th>Status</th><th>Due date</th><th></th></tr></thead>
       <tbody>
         ${rows.map(f => `
           <tr>
+            <td><input type="checkbox" ${getSelectedSet('fees').has(f.id)?'checked':''} onchange="toggleRecordSelection('fees','${f.id}',this.checked)" style="width:auto;" /></td>
             <td>${f.student ? `<span style="font-weight:500;cursor:pointer;" onclick="goToStudent('${f.student.id}')">${escapeHtml(f.student.firstName)} ${escapeHtml(f.student.lastName)}</span>` : '<span style="color:var(--ink-soft);">Unknown student</span>'}</td>
             <td style="color:var(--ink-soft);">${f.student?escapeHtml(f.student.cls)+escapeHtml(f.student.section):'—'}</td>
             <td style="color:var(--ink-soft);">${escapeHtml(f.session)}</td>
@@ -2935,6 +3178,7 @@ function renderFeesTable(){
           </tr>`).join('')}
       </tbody>
     </table></div>`;
+  updateRecordBulkBar('fees');
 }
 function feeModalOnContextChange(){
   const form = document.getElementById('feeForm');
@@ -3270,19 +3514,26 @@ const EXPENSE_CATEGORIES = ['Stationery','Maintenance & Repairs','Utilities','Ev
 function renderExpenses(topbar, content){
   topbar.innerHTML = `
     <div><h1>Expenses</h1><p>${expenses.length} expense record${expenses.length===1?'':'s'} on file</p></div>
-    ${canEdit('expenses') ? `<button class="btn btn-primary" onclick="openExpenseModal()">+ Add expense</button>` : ''}`;
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-secondary" onclick="downloadCategoryCsv('expenses')">Download CSV</button>
+      ${can('userManagement') ? `<button class="btn btn-secondary" onclick="goTo('dataCenter')">Data Center</button>` : ''}
+      ${canEdit('expenses') ? `<button class="btn btn-primary" onclick="openExpenseModal()">+ Add expense</button>` : ''}
+    </div>`;
 
   const months = [...new Set([currentMonthKey(), ...expenses.map(e=>(e.date||'').slice(0,7))])].filter(Boolean).sort().reverse();
   content.innerHTML = `
     <div class="toolbar">
-      <select id="expenseMonthFilter" onchange="renderExpensesTable()">
-        <option value="">All time</option>
-        ${months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('')}
-      </select>
-      <select id="expenseCategoryFilter" onchange="renderExpensesTable()">
-        <option value="">All categories</option>
-        ${EXPENSE_CATEGORIES.map(c=>`<option value="${c}">${c}</option>`).join('')}
-      </select>
+      <button type="button" class="btn btn-secondary" onclick="document.getElementById('expensesFilterPanel').style.display=document.getElementById('expensesFilterPanel').style.display==='none'?'flex':'none';">Filter</button>
+      <div id="expensesFilterPanel" style="display:none;gap:10px;flex-wrap:wrap;width:100%;background:var(--surface-alt);border-radius:8px;padding:10px 12px;">
+        <select id="expenseMonthFilter" onchange="renderExpensesTable()">
+          <option value="">All time</option>
+          ${months.map(m=>`<option value="${m}">${monthLabel(m)}</option>`).join('')}
+        </select>
+        <select id="expenseCategoryFilter" onchange="renderExpensesTable()">
+          <option value="">All categories</option>
+          ${EXPENSE_CATEGORIES.map(c=>`<option value="${c}">${c}</option>`).join('')}
+        </select>
+      </div>
     </div>
     <div id="expensesSummary"></div>
     <div id="expensesTableWrap"></div>`;
@@ -3304,12 +3555,13 @@ function renderExpensesTable(){
     </div>`;
 
   const editable = canEdit('expenses');
-  document.getElementById('expensesTableWrap').innerHTML = rows.length===0 ? `<div class="table-wrap"><div class="empty">No expenses recorded${monthFilter||catFilter?' for these filters':' yet'}.</div></div>` : `
+  document.getElementById('expensesTableWrap').innerHTML = rows.length===0 ? `<div class="table-wrap"><div class="empty">No expenses recorded${monthFilter||catFilter?' for these filters':' yet'}.</div></div>` : renderRecordBulkActionBar('expenses', editable?'bulkDeleteSelectedExpenses()':null) + `
     <div class="table-wrap"><table>
-      <thead><tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th><th>Payment Mode</th><th></th></tr></thead>
+      <thead><tr><th><input type="checkbox" ${rows.length>0 && rows.every(e=>getSelectedSet('expenses').has(e.id))?'checked':''} onchange="toggleAllRecordSelection('expenses',${JSON.stringify(rows.map(e=>e.id))},this.checked)" style="width:auto;" /></th><th>Date</th><th>Category</th><th>Description</th><th>Amount</th><th>Payment Mode</th><th></th></tr></thead>
       <tbody>
         ${rows.map(e => `
           <tr>
+            <td><input type="checkbox" ${getSelectedSet('expenses').has(e.id)?'checked':''} onchange="toggleRecordSelection('expenses','${e.id}',this.checked)" style="width:auto;" /></td>
             <td style="color:var(--ink-soft);">${formatDate(e.date)}</td>
             <td><span class="record-tag">${escapeHtml(e.category)}</span></td>
             <td>${escapeHtml(e.description)}</td>
@@ -3324,6 +3576,7 @@ function renderExpensesTable(){
           </tr>`).join('')}
       </tbody>
     </table></div>`;
+  updateRecordBulkBar('expenses');
 }
 function openExpenseModal(existingId){
   const e = existingId ? expenses.find(x=>x.id===existingId) : null;
@@ -3581,22 +3834,29 @@ function deleteNotice(id){
 function renderSalary(topbar, content){
   topbar.innerHTML = `
     <div><h1>Salary</h1><p>${salaries.length} salary record${salaries.length===1?'':'s'} on file</p></div>
-    ${canEdit('salary') ? `<button class="btn btn-primary" onclick="openSalaryModal()">+ Add salary record</button>` : ''}`;
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-secondary" onclick="downloadCategoryCsv('salary')">Download CSV</button>
+      ${can('userManagement') ? `<button class="btn btn-secondary" onclick="goTo('dataCenter')">Data Center</button>` : ''}
+      ${canEdit('salary') ? `<button class="btn btn-primary" onclick="openSalaryModal()">+ Add salary record</button>` : ''}
+    </div>`;
 
   const months = [...new Set([currentMonthKey(), ...salaries.map(s=>s.month)])].sort().reverse();
 
   content.innerHTML = `
     <div class="toolbar">
-      <select onchange="salaryFilters.month=this.value; renderSalaryTable();">
-        <option value="">All months</option>
-        ${months.map(m=>`<option value="${m}" ${salaryFilters.month===m?'selected':''}>${monthLabel(m)}</option>`).join('')}
-      </select>
-      <select onchange="salaryFilters.status=this.value; renderSalaryTable();">
-        <option value="">Any status</option>
-        <option value="pending" ${salaryFilters.status==='pending'?'selected':''}>Pending</option>
-        <option value="partial" ${salaryFilters.status==='partial'?'selected':''}>Partial</option>
-        <option value="paid" ${salaryFilters.status==='paid'?'selected':''}>Paid</option>
-      </select>
+      <button type="button" class="btn btn-secondary" onclick="document.getElementById('salaryFilterPanel').style.display=document.getElementById('salaryFilterPanel').style.display==='none'?'flex':'none';">Filter</button>
+      <div id="salaryFilterPanel" style="display:none;gap:10px;flex-wrap:wrap;width:100%;background:var(--surface-alt);border-radius:8px;padding:10px 12px;">
+        <select onchange="salaryFilters.month=this.value; renderSalaryTable();">
+          <option value="">All months</option>
+          ${months.map(m=>`<option value="${m}" ${salaryFilters.month===m?'selected':''}>${monthLabel(m)}</option>`).join('')}
+        </select>
+        <select onchange="salaryFilters.status=this.value; renderSalaryTable();">
+          <option value="">Any status</option>
+          <option value="pending" ${salaryFilters.status==='pending'?'selected':''}>Pending</option>
+          <option value="partial" ${salaryFilters.status==='partial'?'selected':''}>Partial</option>
+          <option value="paid" ${salaryFilters.status==='paid'?'selected':''}>Paid</option>
+        </select>
+      </div>
     </div>
     <div id="salarySummary"></div>
     <div id="salaryTableWrap"></div>`;
@@ -3620,12 +3880,13 @@ function renderSalaryTable(){
       <div class="stat-card accent"><div class="label">Pending</div><div class="value" style="font-size:24px;">${money(totalPending)}</div></div>
     </div>`;
 
-  document.getElementById('salaryTableWrap').innerHTML = rows.length===0 ? `<div class="table-wrap"><div class="empty">No salary records match these filters.</div></div>` : `
+  document.getElementById('salaryTableWrap').innerHTML = rows.length===0 ? `<div class="table-wrap"><div class="empty">No salary records match these filters.</div></div>` : renderRecordBulkActionBar('salary', canEdit('salary')?'bulkDeleteSelectedSalary()':null) + `
     <div class="table-wrap"><table>
-      <thead><tr><th>Staff</th><th>Role</th><th>Month</th><th>Due</th><th>Paid</th><th>Status</th><th>Paid date</th><th></th></tr></thead>
+      <thead><tr><th><input type="checkbox" ${rows.length>0 && rows.every(r=>getSelectedSet('salary').has(r.id))?'checked':''} onchange="toggleAllRecordSelection('salary',${JSON.stringify(rows.map(r=>r.id))},this.checked)" style="width:auto;" /></th><th>Staff</th><th>Role</th><th>Month</th><th>Due</th><th>Paid</th><th>Status</th><th>Paid date</th><th></th></tr></thead>
       <tbody>
         ${rows.map(r => `
           <tr>
+            <td><input type="checkbox" ${getSelectedSet('salary').has(r.id)?'checked':''} onchange="toggleRecordSelection('salary','${r.id}',this.checked)" style="width:auto;" /></td>
             <td style="font-weight:500;">${r.staff?escapeHtml(r.staff.firstName)+' '+escapeHtml(r.staff.lastName):'<span style="color:var(--ink-soft);">Unknown staff</span>'}</td>
             <td style="color:var(--ink-soft);">${r.staff?escapeHtml(r.staff.role):'—'}</td>
             <td style="color:var(--ink-soft);">${monthLabel(r.month)}</td>
@@ -3642,6 +3903,7 @@ function renderSalaryTable(){
           </tr>`).join('')}
       </tbody>
     </table></div>`;
+  updateRecordBulkBar('salary');
 }
 function openSalaryModal(existingId, presetStaffId){
   const r = existingId ? salaries.find(x=>x.id===existingId) : null;
@@ -3790,14 +4052,13 @@ function getSavedColumnKeys(entity){
   return getPresetsFor(entity)[0].keys.slice();
 }
 
-function openColumnPicker(entity, action){
+function openColumnPicker(entity){
   const columns = getColumnsFor(entity);
   const presets = getPresetsFor(entity);
   const selected = new Set(getSavedColumnKeys(entity));
   const groups = [...new Set(columns.map(c=>c.group))];
-  const actionLabel = action==='excel' ? 'Download Excel' : 'Print list';
   openModal(`
-    <div class="modal-head"><h2 style="font-size:18px;">${actionLabel} — choose columns</h2><button onclick="closeModal()">&times;</button></div>
+    <div class="modal-head"><h2 style="font-size:18px;">Print list — choose columns</h2><button onclick="closeModal()">&times;</button></div>
     <p style="font-size:12px;color:var(--ink-soft);margin:-6px 0 12px;">Pick a starting point, then check or uncheck anything. Your selection is remembered for next time.</p>
     <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
       ${presets.map(p => `<button type="button" class="btn btn-secondary btn-sm" onclick="applyColumnPreset('${entity}','${escapeHtml(p.name)}')">${escapeHtml(p.name)}</button>`).join('')}
@@ -3817,7 +4078,7 @@ function openColumnPicker(entity, action){
     </div>
     <div class="modal-actions">
       <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-      <button type="button" class="btn btn-primary" onclick="runColumnAction('${entity}','${action}')">${actionLabel}</button>
+      <button type="button" class="btn btn-primary" onclick="runColumnAction('${entity}')">Print list</button>
     </div>`);
 }
 function applyColumnPreset(entity, presetName){
@@ -3829,22 +4090,18 @@ function applyColumnPreset(entity, presetName){
 function setAllColumnChecks(checked){
   document.querySelectorAll('#columnPickerList input[type=checkbox]').forEach(cb => { cb.checked = checked; });
 }
-function runColumnAction(entity, action){
+function runColumnAction(entity){
   const checked = [...document.querySelectorAll('#columnPickerList input[type=checkbox]:checked')].map(cb=>cb.value);
   if(checked.length === 0){ alert('Select at least one column.'); return; }
   localStorage.setItem('conduct_columns_'+entity, JSON.stringify(checked));
   const columns = getColumnsFor(entity).filter(c => checked.includes(c.key));
   closeModal();
-  if(entity==='students'){
-    if(action==='excel') generateStudentsExcel(columns); else generateStudentsPrint(columns);
-  } else {
-    if(action==='excel') generateStaffExcel(columns); else generateStaffPrint(columns);
-  }
+  if(entity==='students') generateStudentsPrint(columns);
+  else generateStaffPrint(columns);
 }
 
-function printStudents(){ openColumnPicker('students','print'); }
-function printStaff(){ openColumnPicker('staff','print'); }
-function exportStaffExcel(){ openColumnPicker('staff','excel'); }
+function printStudents(){ openColumnPicker('students'); }
+function printStaff(){ openColumnPicker('staff'); }
 
 function csvEscape(val){
   val = val==null ? '' : String(val);
@@ -3860,13 +4117,6 @@ function downloadCSV(columns, rows, filename){
   a.download = filename;
   a.click();
 }
-function generateStudentsExcel(columns){
-  downloadCSV(columns, getFilteredStudents(), 'students-roster-' + todayIso() + '.csv');
-}
-function generateStaffExcel(columns){
-  downloadCSV(columns, staffList, 'staff-roster-' + todayIso() + '.csv');
-}
-
 function generatePrintList(title, columns, rows){
   const win = window.open('', '_blank');
   win.document.write(`<!DOCTYPE html><html><head><title>${escapeHtml(title)}</title>
