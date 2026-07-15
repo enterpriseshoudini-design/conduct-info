@@ -8,7 +8,7 @@ var SCHOOL_DISTRICT = "Indore";
 const LOGO_DATA_URI = "data:image/jpeg;base64,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";
 var CLASS_LEVELS = ['Nursery','KG-I','KG-II','1','2','3','4','5','6','7','8','9','10'];
 var BOARD_CLASSES = ['5','8','10'];
-var TERMS = ['Admission Fee','Term 1 (June-July)','Term 2 (October)','Term 3 (January)','Board Exam Fee','Other'];
+var TERMS = ['Admission Payment','Term 1 (June-July)','Term 2 (October)','Term 3 (January)','Board Exam Fee','Other'];
 // Per-class tuition installments, from the school's fee structure chart.
 // Admission fee is a flat ₹500 for every class.
 var FEE_STRUCTURE = {
@@ -178,14 +178,14 @@ function escapeHtml(str){
 /** Renders a file <input> plus a small "chosen filename with an × to remove it"
  *  chip beneath it. Native file inputs give no way to clear a selection once
  *  made except re-picking — this adds that everywhere a file gets chosen. */
-function fileInputWithClear(id, name, accept, onchangeExtra){
+function fileInputWithClear(id, name, accept, onchangeExtra, multiple){
   const onchange = "updateFileChip('" + id + "')" + (onchangeExtra ? ';' + onchangeExtra : '');
   return `
     <div class="file-input-wrap">
-      <input type="file" id="${id}"${name?` name="${name}"`:''}${accept?` accept="${accept}"`:''} onchange="${onchange}" />
+      <input type="file" id="${id}"${name?` name="${name}"`:''}${accept?` accept="${accept}"`:''}${multiple?' multiple':''} onchange="${onchange}" />
       <div class="file-chip" id="${id}_chip" style="display:none;">
         <span class="file-chip-name"></span>
-        <button type="button" class="file-chip-clear" onclick="clearFileInput('${id}')" title="Remove file">&times;</button>
+        <button type="button" class="file-chip-clear" onclick="clearFileInput('${id}')" title="Remove file(s)">&times;</button>
       </div>
     </div>`;
 }
@@ -194,7 +194,8 @@ function updateFileChip(inputId){
   const chip = document.getElementById(inputId + '_chip');
   if(!input || !chip) return;
   if(input.files && input.files.length > 0){
-    chip.querySelector('.file-chip-name').textContent = input.files[0].name;
+    const names = Array.from(input.files).map(f=>f.name);
+    chip.querySelector('.file-chip-name').textContent = names.length === 1 ? names[0] : names.length + ' files: ' + names.join(', ');
     chip.style.display = 'inline-flex';
   } else {
     chip.style.display = 'none';
@@ -292,6 +293,43 @@ function feeStatus(rec){
   if(paid <= 0) return 'pending';
   if(paid < due) return 'partial';
   return 'paid';
+}
+/** The single source of truth for a student's fee position. Deliberately
+ *  separates two different numbers that are easy to conflate:
+ *    - totalFee:  the student's actual obligation (the locked Finalized Fee
+ *                 Amount on their own record) — NOT the sum of individual
+ *                 fee-record "amountDue" values, which only reflects what's
+ *                 been billed/allocated so far and can under-state the truth
+ *                 before the full amount has been split into term records.
+ *    - totalPaid: the sum of amountPaid across every fee record for this
+ *                 student, including the auto-generated Admission Payment.
+ *  remaining = totalFee - totalPaid (floored at 0; overpaid tracks the rest). */
+function getStudentFeeSummary(studentId){
+  const s = students.find(x=>x.id===studentId);
+  const records = fees.filter(f=>f.studentId===studentId);
+  const totalFee = s ? (Number(s.yearlyFeesPaid)||0) : 0;
+  const totalPaid = records.reduce((sum,f)=>sum+(Number(f.amountPaid)||0), 0);
+  const remaining = Math.max(0, totalFee - totalPaid);
+  const overpaid = totalPaid > totalFee ? (totalPaid - totalFee) : 0;
+  return { totalFee, totalPaid, remaining, overpaid, records };
+}
+/** Auto-generates the "Admission Payment" fee transaction the moment a
+ *  student is actually created — called from exactly one place per creation
+ *  path (the manual Admission Form, and CSV/Data Center import), never on an
+ *  update, so re-importing or re-editing an existing student can never
+ *  duplicate or silently alter real payment history. */
+function createAdmissionPaymentRecord(studentId, admissionFeesPaid, admissionDate, session){
+  const amt = Number(admissionFeesPaid) || 0;
+  if(amt <= 0) return null;
+  const rec = {
+    id: uid('fee'), studentId, session: session || currentAcademicYear(),
+    particulars: 'Admission Payment',
+    amountDue: String(amt), amountPaid: String(amt), paymentMode: 'Cash',
+    negotiated: false, dueDate: admissionDate||todayIso(), paidDate: admissionDate||todayIso(),
+    notes: 'Auto-generated at admission — Amount paid at admission.',
+  };
+  fees.push(rec);
+  return rec;
 }
 function money(n){ return '₹' + (Number(n)||0).toLocaleString('en-IN'); }
 /** '5' -> 'Class 5'; non-numeric names (Pre Nursery, KG-I...) are already proper names, left as-is. */
@@ -1544,7 +1582,10 @@ function openStudentModal(existingId, presetCls){
         </select></div>
         <div class="field"><label>Section</label><input name="section" value="${v('section')}" placeholder="e.g. B" required /></div>
         <div class="field"><label>Admission date</label><input type="date" name="admissionDate" value="${s?.admissionDate||todayIso()}" required /></div>
-        <div class="field"><label>Amount paid at admission (&#8377;)</label><input name="admissionFeesPaid" value="${v('admissionFeesPaid')}" placeholder="0 if none yet" /></div>
+        <div class="field"><label>Amount paid at admission (&#8377;)</label>
+          <input name="admissionFeesPaid" value="${v('admissionFeesPaid')}" placeholder="0 if none yet" ${(s && s.admissionFeesPaid && !(currentUser()&&currentUser().role==='admin')) ? 'readonly' : ''} />
+          ${(s && s.admissionFeesPaid) ? `<p style="font-size:11px;color:var(--ink-soft);margin:4px 0 0;">Locked — this seeded the auto-generated Admission Payment fee record.${currentUser()&&currentUser().role==='admin' ? ' You can still edit this as Admin, but it will NOT retroactively change the actual fee record — correct that directly on the Fees page if needed.' : ' Only Admin can change this now.'}</p>` : ''}
+        </div>
         <div class="field"><label>Finalized Fee Amount (&#8377;)</label>
           <input name="yearlyFeesPaid" value="${v('yearlyFeesPaid')}" ${(s && s.yearlyFeesPaid && !(currentUser()&&currentUser().role==='admin')) ? 'readonly' : ''} />
           ${(s && s.yearlyFeesPaid) ? `<p style="font-size:11px;color:var(--ink-soft);margin:4px 0 0;">${s.feeAllocated ? 'Already allocated to terms.' : 'Locked at admission.'}${currentUser()&&currentUser().role==='admin' ? ' You can still edit this as Admin.' : ' Only Admin can change this now.'} Use "Allocate to Terms" in the student's Fees section to break it into term-wise records.</p>` : ''}
@@ -1669,11 +1710,7 @@ function openStudentModal(existingId, presetCls){
       fd.tc = {issued:false};
       students.push(fd);
       newStudentId = fd.id;
-      fees.push({
-        id: uid('fee'), studentId: fd.id, session: currentAcademicYear(), particulars: 'Admission Fee',
-        amountDue: fd.admissionFeesPaid, amountPaid: fd.admissionFeesPaid, paymentMode: 'Cash',
-        negotiated: false, dueDate: fd.admissionDate||todayIso(), paidDate: fd.admissionDate||todayIso(), notes: 'Recorded automatically from the Admission Form.',
-      });
+      createAdmissionPaymentRecord(fd.id, fd.admissionFeesPaid, fd.admissionDate, fd.session);
     }
     if(newStudentId && pendingConversion){
       const enq = enquiries.find(x=>x.id===pendingConversion);
@@ -1916,9 +1953,10 @@ function parseCsvText(text){
 function importCategoryRows(category, headerRow, dataRows){
   const idx = {};
   headerRow.forEach((h,i) => { idx[h] = i; });
-  let created = 0, updated = 0, skipped = 0;
+  let created = 0, updated = 0, skipped = 0, importSummaryExtra = '';
 
   if(category === 'students' || category === 'admissions'){
+    let admissionPaymentsCreated = 0;
     dataRows.forEach(row => {
       if(row.every(c=>String(c).trim()==='')) return;
       const rec = {};
@@ -1932,10 +1970,29 @@ function importCategoryRows(category, headerRow, dataRows){
       if(!rec.status) rec.status = 'active';
       if(!rec.firstName){ skipped++; return; }
       const studentId = (row[idx.studentId]||'').trim();
-      const existing = studentId ? students.find(s=>s.id===studentId) : null;
+      let existing = studentId ? students.find(s=>s.id===studentId) : null;
+      if(!existing){
+        // No studentId given — the normal case for a freshly-authored admission
+        // sheet that never came out of this app. Fall back to matching by
+        // name + class, so importing the same sheet twice (or a "new
+        // admissions" sheet that overlaps an existing class roster) updates
+        // the same student instead of creating a duplicate entry.
+        existing = students.find(s => s.firstName===rec.firstName && s.lastName===rec.lastName && s.cls===rec.cls);
+      }
       if(existing){
+        // Upsert path: the new data wins for the student's own fields —
+        // if they're already on file and also show up in a "new admission"
+        // sheet, that sheet is treated as the latest, authoritative version.
         Object.assign(existing, rec);
         updated++;
+        // Fee records are a different matter: only auto-create the Admission
+        // Payment here if this student has NO fee history at all yet — i.e.
+        // this import is genuinely completing their financial setup for the
+        // first time. If any fee record already exists, it's left exactly
+        // as it was; a re-import must never duplicate or silently overwrite
+        // real payment activity.
+        const hasAnyFeeRecord = fees.some(f=>f.studentId===existing.id);
+        if(!hasAnyFeeRecord && createAdmissionPaymentRecord(existing.id, rec.admissionFeesPaid, rec.admissionDate, rec.session)) admissionPaymentsCreated++;
       } else {
         rec.id = uid('stu');
         if(!rec.whatsapp) rec.whatsapp = rec.phone;
@@ -1946,9 +2003,11 @@ function importCategoryRows(category, headerRow, dataRows){
         rec.tc = {issued:false};
         students.push(rec);
         created++;
+        if(createAdmissionPaymentRecord(rec.id, rec.admissionFeesPaid, rec.admissionDate, rec.session)) admissionPaymentsCreated++;
       }
     });
     saveAll();
+    if(admissionPaymentsCreated > 0) importSummaryExtra = admissionPaymentsCreated + ' Admission Payment fee record' + (admissionPaymentsCreated===1?'':'s') + ' auto-created.';
   } else if(category === 'fees'){
     dataRows.forEach(row => {
       if(row.every(c=>String(c).trim()==='')) return;
@@ -2036,7 +2095,10 @@ function importCategoryRows(category, headerRow, dataRows){
         employmentStatus: normalizeToLabeledValue((row[idx.employmentStatus]||'').trim(), {active:'Active', on_leave:'On leave', inactive:'Inactive'}) || 'active',
       };
       const employeeId = (row[idx.employeeId]||'').trim();
-      const existing = employeeId ? staffList.find(m=>m.id===employeeId) : null;
+      let existing = employeeId ? staffList.find(m=>m.id===employeeId) : null;
+      if(!existing){
+        existing = staffList.find(m => m.firstName===rec.firstName && m.lastName===rec.lastName);
+      }
       if(existing){ Object.assign(existing, rec); updated++; }
       else {
         rec.id = uid('stf');
@@ -2128,7 +2190,7 @@ function importCategoryRows(category, headerRow, dataRows){
     });
     saveAll();
   }
-  return { created, updated, skipped };
+  return { created, updated, skipped, importSummaryExtra };
 }
 function downloadCategoryCsv(category){
   const schema = DATA_SCHEMAS[category];
@@ -2173,7 +2235,8 @@ function renderDataCenter(topbar, content){
       </div>
 
       <div id="importTabFile" style="margin-top:10px;">
-        ${fileInputWithClear('dataCenterImportFile', null, '.csv')}
+        ${fileInputWithClear('dataCenterImportFile', null, '.csv', null, true)}
+        <p style="font-size:11px;color:var(--ink-soft);margin:6px 0 0;">You can select several files at once — e.g. export each class tab from your spreadsheet as its own CSV, then pick them all here in one go.</p>
       </div>
       <div id="importTabSheet" style="margin-top:10px;display:none;">
         <input type="text" id="dataCenterSheetUrl" placeholder="Paste the Google Sheet URL" style="width:100%;" />
@@ -2214,10 +2277,35 @@ function switchDataCenterImportTab(mode){
   document.getElementById('importTabFileBtn').className = 'btn btn-sm ' + (mode==='file'?'btn-primary':'btn-secondary');
   document.getElementById('importTabSheetBtn').className = 'btn btn-sm ' + (mode==='sheet'?'btn-primary':'btn-secondary');
 }
+/** Validates and imports one CSV's text against a category's schema. Returns
+ *  a result object rather than touching the DOM directly, so it can be
+ *  reused for a single file, multiple files, or a Google Sheet fetch alike. */
+function processImportText(category, text, sourceLabel){
+  if(/^PK\x03\x04/.test(text) || /[\x00-\x08\x0E-\x1F]/.test(text.slice(0,2000))){
+    return { ok:false, message: sourceLabel + ": doesn't look like a plain CSV — it may be a renamed Excel file or another binary format." };
+  }
+  const cleanText = text.charCodeAt(0)===0xFEFF ? text.slice(1) : text;
+  const rows = parseCsvText(cleanText);
+  if(rows.length === 0){
+    return { ok:false, message: sourceLabel + ': that file is empty.' };
+  }
+  const headerRow = rows[0].map(h => h.trim());
+  const expected = DATA_SCHEMAS[category].headers;
+  const missing = expected.filter(h => !headerRow.includes(h));
+  const extra = headerRow.filter(h => !expected.includes(h));
+  if(missing.length > 0 || extra.length > 0){
+    let msg = sourceLabel + ": columns don't match the " + DATA_SCHEMAS[category].label + ' schema.';
+    if(missing.length) msg += ' Missing: ' + missing.join(', ') + '.';
+    if(extra.length) msg += ' Unexpected: ' + extra.join(', ') + '.';
+    return { ok:false, message: msg };
+  }
+  const result = importCategoryRows(category, headerRow, rows.slice(1));
+  let msg = sourceLabel + ': ' + result.created + ' created, ' + result.updated + ' updated' + (result.skipped ? ', ' + result.skipped + ' skipped' : '') + '.' + (result.importSummaryExtra ? ' ' + result.importSummaryExtra : '');
+  return { ok:true, message: msg, created: result.created, updated: result.updated, skipped: result.skipped };
+}
 async function runDataCenterImport(){
   const category = document.getElementById('dataCenterImportCategory').value;
   const resultEl = document.getElementById('dataCenterImportResult');
-  let text;
 
   if(dataCenterImportSource === 'sheet'){
     const url = document.getElementById('dataCenterSheetUrl').value.trim();
@@ -2225,6 +2313,7 @@ async function runDataCenterImport(){
     const sheetId = extractSpreadsheetId(url);
     if(!sheetId){ resultEl.innerHTML = '<span style="color:var(--bad);">Could not find a Sheet ID in that link.</span>'; return; }
     resultEl.innerHTML = '<span style="color:var(--ink-soft);">Fetching from Google Sheets…</span>';
+    let text;
     try{
       const res = await fetch('https://docs.google.com/spreadsheets/d/' + sheetId + '/export?format=csv');
       if(!res.ok){
@@ -2236,40 +2325,30 @@ async function runDataCenterImport(){
       resultEl.innerHTML = '<span style="color:var(--bad);">Could not fetch that sheet — often a cross-origin restriction on Google\'s side that this app can\'t control. Try File &rarr; Download &rarr; CSV from the sheet instead, then use the CSV file option above.</span>';
       return;
     }
-  } else {
-    const file = document.getElementById('dataCenterImportFile').files[0];
-    if(!file){ resultEl.innerHTML = '<span style="color:var(--bad);">Choose a CSV file first.</span>'; return; }
+    const r = processImportText(category, text, 'Google Sheet');
+    resultEl.innerHTML = '<span style="color:' + (r.ok?'var(--good)':'var(--bad)') + ';">' + escapeHtml(r.message) + '</span>';
+    return;
+  }
+
+  const files = Array.from(document.getElementById('dataCenterImportFile').files || []);
+  if(files.length === 0){ resultEl.innerHTML = '<span style="color:var(--bad);">Choose one or more CSV files first.</span>'; return; }
+
+  const results = [];
+  for(const file of files){
     if(/\.(xlsx|xls|xlsm)$/i.test(file.name)){
-      resultEl.innerHTML = '<span style="color:var(--bad);">This is an Excel file (' + escapeHtml(file.name) + '), not a CSV — this importer only reads plain CSV text. Open it in Excel, Google Sheets, or LibreOffice and use "Save As" / "Download" &rarr; <b>CSV</b>, then upload that .csv file instead.</span>';
-      return;
+      results.push({ ok:false, message: file.name + ': this is an Excel file, not a CSV. Open it and use "Save As" / "Download" &rarr; CSV, then upload that instead.' });
+      continue;
     }
+    let text;
     try{ text = await readFileAsText(file); }
-    catch(err){ resultEl.innerHTML = '<span style="color:var(--bad);">Could not read that file.</span>'; return; }
+    catch(err){ results.push({ ok:false, message: file.name + ': could not read this file.' }); continue; }
+    results.push(processImportText(category, text, file.name));
   }
 
-  if(/^PK\x03\x04/.test(text) || /[\x00-\x08\x0E-\x1F]/.test(text.slice(0,2000))){
-    resultEl.innerHTML = '<span style="color:var(--bad);">This doesn\'t look like a plain CSV file — it may be a renamed Excel file or another binary format. Please export it as CSV (plain text) and try again.</span>';
-    return;
-  }
-
-  const cleanText = text.charCodeAt(0)===0xFEFF ? text.slice(1) : text;
-  const rows = parseCsvText(cleanText);
-  if(rows.length === 0){ resultEl.innerHTML = '<span style="color:var(--bad);">That file is empty.</span>'; return; }
-
-  const headerRow = rows[0].map(h => h.trim());
-  const expected = DATA_SCHEMAS[category].headers;
-  const missing = expected.filter(h => !headerRow.includes(h));
-  const extra = headerRow.filter(h => !expected.includes(h));
-  if(missing.length > 0 || extra.length > 0){
-    let msg = "These column headers don't match the " + DATA_SCHEMAS[category].label + ' schema.';
-    if(missing.length) msg += ' Missing: ' + missing.join(', ') + '.';
-    if(extra.length) msg += ' Unexpected: ' + extra.join(', ') + '.';
-    resultEl.innerHTML = '<span style="color:var(--bad);">' + escapeHtml(msg) + '</span>';
-    return;
-  }
-
-  const result = importCategoryRows(category, headerRow, rows.slice(1));
-  resultEl.innerHTML = '<span style="color:var(--good);">' + result.created + ' created, ' + result.updated + ' updated' + (result.skipped ? ', ' + result.skipped + ' row(s) skipped (missing a required field)' : '') + '.</span>';
+  const okCount = results.filter(r=>r.ok).length;
+  const summaryColor = results.every(r=>r.ok) ? 'var(--good)' : (okCount>0 ? 'var(--accent)' : 'var(--bad)');
+  const headline = files.length > 1 ? `<div style="margin-bottom:6px;">${okCount}/${files.length} file(s) imported successfully.</div>` : '';
+  resultEl.innerHTML = `<div style="color:${summaryColor};">${headline}${results.map(r => `<div style="color:${r.ok?'var(--good)':'var(--bad)'};margin-top:2px;">${r.ok?'✓':'✗'} ${escapeHtml(r.message)}</div>`).join('')}</div>`;
 }
 
 /* ---------------- student detail + TC ---------------- */
@@ -2325,24 +2404,24 @@ function renderStudentDetail(topbar, content, id){
           </div>
           ${(() => {
             const rows = fees.filter(f=>f.studentId===s.id).sort((a,b)=>(a.dueDate||'').localeCompare(b.dueDate||''));
-            const totalDue = rows.reduce((sum,f)=>sum+(Number(f.amountDue)||0),0);
-            const totalPaid = rows.reduce((sum,f)=>sum+(Number(f.amountPaid)||0),0);
-            const totalRemaining = Math.max(0, totalDue-totalPaid);
+            const feeSummary = getStudentFeeSummary(s.id);
             const summary = `
               <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0 6px;">
                 <div style="text-align:center;background:var(--surface-alt);border-radius:8px;padding:10px;">
-                  <div style="font-size:10px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);">Total</div>
-                  <div style="font-family:Georgia,'Times New Roman',serif;font-size:20px;">${money(totalDue)}</div>
+                  <div style="font-size:10px;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);">Finalized Fee</div>
+                  <div style="font-family:Georgia,'Times New Roman',serif;font-size:20px;">${s.yearlyFeesPaid ? money(feeSummary.totalFee) : '—'}</div>
                 </div>
                 <div style="text-align:center;background:var(--good-soft);border-radius:8px;padding:10px;">
                   <div style="font-size:10px;text-transform:uppercase;letter-spacing:.03em;color:var(--good);">Paid</div>
-                  <div style="font-family:Georgia,'Times New Roman',serif;font-size:20px;color:var(--good);">${money(totalPaid)}</div>
+                  <div style="font-family:Georgia,'Times New Roman',serif;font-size:20px;color:var(--good);">${money(feeSummary.totalPaid)}</div>
                 </div>
                 <div style="text-align:center;background:var(--bad-soft);border-radius:8px;padding:10px;">
                   <div style="font-size:10px;text-transform:uppercase;letter-spacing:.03em;color:var(--bad);">Remaining</div>
-                  <div style="font-family:Georgia,'Times New Roman',serif;font-size:20px;color:var(--bad);">${money(totalRemaining)}</div>
+                  <div style="font-family:Georgia,'Times New Roman',serif;font-size:20px;color:var(--bad);">${s.yearlyFeesPaid ? money(feeSummary.remaining) : '—'}</div>
                 </div>
-              </div>`;
+              </div>
+              ${!s.yearlyFeesPaid ? `<p style="font-size:11px;color:var(--ink-soft);margin:0 0 6px;">Set a Finalized Fee Amount on this student to see the Remaining balance.</p>` : ''}
+              ${feeSummary.overpaid>0 ? `<p style="font-size:11px;color:var(--good);margin:0 0 6px;">Paid ${money(feeSummary.overpaid)} more than the Finalized Fee Amount.</p>` : ''}`;
             if(rows.length===0) return summary + `<p style="font-size:13px;color:var(--ink-soft);margin-top:6px;">No fee records yet.</p>`;
             return summary + `<div style="margin-top:6px;font-size:13px;">${rows.map(f => `
               <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--line);">
