@@ -1421,8 +1421,11 @@ function renderBulkActionBar(){
 }
 function bulkDeleteSelectedStudents(){
   if(selectedStudentIds.size === 0) return;
-  if(!confirm('Delete ' + selectedStudentIds.size + ' selected student record(s)? This cannot be undone.')) return;
+  if(!confirm('Delete ' + selectedStudentIds.size + ' selected student record(s)? This cannot be undone, and will also remove their fee, attendance, and exam records.')) return;
   students = students.filter(s => !selectedStudentIds.has(s.id));
+  fees = fees.filter(f => !selectedStudentIds.has(f.studentId));
+  studentAttendance = studentAttendance.filter(a => !selectedStudentIds.has(a.studentId));
+  examMarks = examMarks.filter(m => !selectedStudentIds.has(m.studentId));
   selectedStudentIds.clear();
   saveAll();
   renderApp();
@@ -1729,12 +1732,14 @@ function openStudentModal(existingId, presetCls){
   });
 }
 function deleteStudent(id){
-  if(!confirm('Delete this student record? This cannot be undone.')) return;
+  if(!confirm('Delete this student record? This cannot be undone, and will also remove their fee, attendance, and exam records.')) return;
   students = students.filter(s=>s.id!==id);
+  fees = fees.filter(f=>f.studentId!==id);
+  studentAttendance = studentAttendance.filter(a=>a.studentId!==id);
+  examMarks = examMarks.filter(m=>m.studentId!==id);
   saveAll();
   goTo('students');
 }
-
 /* ================================================================================
    UNIFIED DATA SCHEMA — the single source of truth for every category's column
    list. Export writes exactly these headers, in this order. Import checks the
@@ -1780,6 +1785,11 @@ function parseFlexibleDate(raw){
  *  it instead of showing blank. Falls back to the original text (rather than
  *  silently discarding it) if nothing recognizable is found, so it's still
  *  visible and fixable by hand. */
+/** Collapses a first+last name pair into one comparable string — used as a
+ *  fallback duplicate check when two sources split a name differently. */
+function normalizeFullNameForMatch(firstName, lastName){
+  return ((firstName||'') + ' ' + (lastName||'')).trim().replace(/\s+/g,' ').toUpperCase();
+}
 function normalizeClassValue(raw){
   if(!raw) return '';
   const s = String(raw).trim();
@@ -1968,6 +1978,14 @@ function importCategoryRows(category, headerRow, dataRows){
         rec[f] = val;
       });
       if(!rec.status) rec.status = 'active';
+      if(rec.firstName && !rec.lastName && rec.firstName.includes(' ')){
+        // A full name was put entirely in one column (e.g. "AAKANSHA UNTWAL"
+        // with lastName left blank) — split on the first space so both
+        // display and duplicate-matching work the way they're supposed to.
+        const parts = rec.firstName.split(' ');
+        rec.firstName = parts[0];
+        rec.lastName = parts.slice(1).join(' ');
+      }
       if(!rec.firstName){ skipped++; return; }
       const studentId = (row[idx.studentId]||'').trim();
       let existing = studentId ? students.find(s=>s.id===studentId) : null;
@@ -1978,6 +1996,14 @@ function importCategoryRows(category, headerRow, dataRows){
         // admissions" sheet that overlaps an existing class roster) updates
         // the same student instead of creating a duplicate entry.
         existing = students.find(s => s.firstName===rec.firstName && s.lastName===rec.lastName && s.cls===rec.cls);
+      }
+      if(!existing){
+        // Extra safety net: two different sources can split the same name
+        // differently (one file's "AAKANSHA UNTWAL" all in firstName vs.
+        // another's proper "AAKANSHA" / "UNTWAL" split). Compare the full
+        // name as one normalized string so this still catches the match.
+        const recFullName = normalizeFullNameForMatch(rec.firstName, rec.lastName);
+        existing = students.find(s => s.cls===rec.cls && normalizeFullNameForMatch(s.firstName, s.lastName)===recFullName);
       }
       if(existing){
         // Upsert path: the new data wins for the student's own fields —
@@ -2247,6 +2273,8 @@ function renderDataCenter(topbar, content){
       <div id="dataCenterImportResult" style="margin-top:12px;font-size:13px;"></div>
     </div>
 
+    <div id="duplicateStudentsSection"></div>
+
     <div class="card" style="margin-top:20px;">
       <h2 style="font-size:16px;">Expected columns</h2>
       <div style="display:grid;gap:10px;margin-top:10px;">
@@ -2257,6 +2285,66 @@ function renderDataCenter(topbar, content){
           </div>`).join('')}
       </div>
     </div>`;
+  renderDuplicateStudentsSection();
+}
+/** Groups students by class + normalized full name, and returns only the
+ *  groups with more than one member — the same pairing logic import uses
+ *  to prevent NEW duplicates, applied here to surface ones that already
+ *  exist (e.g. from before this protection existed, or from two files that
+ *  split names differently). */
+function findDuplicateStudentGroups(){
+  const groups = {};
+  students.forEach(s => {
+    const key = s.cls + '|' + normalizeFullNameForMatch(s.firstName, s.lastName);
+    if(!groups[key]) groups[key] = [];
+    groups[key].push(s);
+  });
+  return Object.values(groups).filter(g => g.length > 1);
+}
+function renderDuplicateStudentsSection(){
+  const el = document.getElementById('duplicateStudentsSection');
+  if(!el) return;
+  const groups = findDuplicateStudentGroups();
+  if(groups.length === 0){
+    el.innerHTML = `<div class="card" style="margin-top:20px;"><h2 style="font-size:16px;">Possible Duplicate Students</h2><p style="font-size:13px;color:var(--ink-soft);margin-top:8px;">None found — every student's name and class combination is unique.</p></div>`;
+    return;
+  }
+  el.innerHTML = `
+    <div class="card" style="margin-top:20px;border-color:var(--bad);">
+      <h2 style="font-size:16px;color:var(--bad);">Possible Duplicate Students</h2>
+      <p style="font-size:13px;color:var(--ink-soft);margin:6px 0 14px;">${groups.length} name + class combination${groups.length===1?'':'s'} appear more than once. Review each group below and delete the record(s) you don't need — this can't be undone. The record with more fee history attached is usually the one to keep.</p>
+      <div style="display:grid;gap:14px;">
+        ${groups.map(g => `
+          <div style="border:1px solid var(--line);border-radius:8px;padding:10px 12px;">
+            <p style="font-size:13px;font-weight:600;margin:0 0 8px;">${escapeHtml(g[0].firstName)} ${escapeHtml(g[0].lastName)} — ${classDisplayLabel(g[0].cls)}</p>
+            <div class="table-wrap"><table>
+              <thead><tr><th>Scholar No.</th><th>Guardian contact</th><th>Admission date</th><th>Fee records</th><th></th></tr></thead>
+              <tbody>
+                ${g.map(s => `
+                  <tr>
+                    <td><span class="record-tag">${escapeHtml(s.admissionNumber||'—')}</span></td>
+                    <td style="color:var(--ink-soft);">${escapeHtml(s.fatherPhone||s.phone||'—')}</td>
+                    <td style="color:var(--ink-soft);">${formatDate(s.admissionDate)}</td>
+                    <td>${fees.filter(f=>f.studentId===s.id).length}</td>
+                    <td style="text-align:right;white-space:nowrap;">
+                      <button class="btn btn-secondary btn-sm" onclick="goToStudent('${s.id}')">View</button>
+                      <button class="btn btn-danger btn-sm" onclick="deleteDuplicateStudent('${s.id}')">Delete</button>
+                    </td>
+                  </tr>`).join('')}
+              </tbody>
+            </table></div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+function deleteDuplicateStudent(id){
+  if(!confirm('Delete this student record? This cannot be undone, and will also remove their fee, attendance, and exam records.')) return;
+  students = students.filter(s=>s.id!==id);
+  fees = fees.filter(f=>f.studentId!==id);
+  studentAttendance = studentAttendance.filter(a=>a.studentId!==id);
+  examMarks = examMarks.filter(m=>m.studentId!==id);
+  saveAll();
+  renderDuplicateStudentsSection();
 }
 function runDataCenterExport(){
   const checked = Array.from(document.querySelectorAll('.data-center-export-cb:checked')).map(cb=>cb.value);
