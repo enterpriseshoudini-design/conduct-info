@@ -55,7 +55,7 @@ var staffAttendanceView = { date: '' };
 var distributionView = { itemId: '', cls: '' };
 var noticesTab = 'students';
 var view = { name: 'dashboard', studentId: null };
-var studentFilters = { q:'', status:'', category:'' };
+var studentFilters = { q:'', status:'', category:'', admission:'' };
 var feeFilters = { session:'', cls:'', status:'' };
 var salaryFilters = { month:'', status:'' };
 var staffFilters = { role:'', status:'' };
@@ -971,7 +971,7 @@ function renderSidebar(){
 function goTo(name){
   selectedStudentIds.clear();
   Object.values(selectedRecordIds).forEach(set => set.clear());
-  if(name === 'students') studentFilters = { q:'', status:'', category:'' };
+  if(name === 'students') studentFilters = { q:'', status:'', category:'', admission:'' };
   if(name === 'admissions') admissionsFilters = { cls:'', status:'' };
   view = { name, studentId: null };
   renderSidebar();
@@ -1133,7 +1133,8 @@ function renderDashboard(topbar, content){
 var admissionsFilters = { cls:'', status:'' };
 function renderAdmissions(topbar, content){
   const session = currentAcademicYear();
-  const allAdmissions = students.filter(s => s.session === session);
+  const sessionRange = getTimeframeRange('thisSession');
+  const allAdmissions = students.filter(s => inRange(s.admissionDate, sessionRange));
 
   topbar.innerHTML = `
     <div><h1>Admissions</h1><p>${allAdmissions.length} student${allAdmissions.length===1?'':'s'} admitted this session (${escapeHtml(session)})</p></div>
@@ -1163,9 +1164,9 @@ function renderAdmissions(topbar, content){
   renderAdmissionsTable();
 }
 function renderAdmissionsTable(){
-  const session = currentAcademicYear();
+  const sessionRange = getTimeframeRange('thisSession');
   const admissions = students.filter(s => {
-    if(s.session !== session) return false;
+    if(!inRange(s.admissionDate, sessionRange)) return false;
     if(admissionsFilters.cls && s.cls !== admissionsFilters.cls) return false;
     if(admissionsFilters.status && s.status !== admissionsFilters.status) return false;
     return true;
@@ -1208,7 +1209,7 @@ function renderStudents(topbar, content){
     <div class="toolbar" style="align-items:flex-start;flex-wrap:wrap;">
       <input type="text" id="studentSearchInput" placeholder="Search name or scholar no. — or pick a class below" value="${escapeHtml(studentFilters.q)}" oninput="studentFilters.q=this.value; renderStudentsMain();" style="min-width:280px;" />
       <button type="button" class="btn btn-secondary" onclick="document.getElementById('studentFilterPanel').style.display=document.getElementById('studentFilterPanel').style.display==='none'?'flex':'none';">Filter</button>
-      <button type="button" id="studentSearchClearBtn" class="btn btn-secondary btn-sm" style="display:none;" onclick="document.getElementById('studentSearchInput').value='';studentFilters={q:'',status:'',category:''};renderStudents(document.getElementById('topbar'),document.getElementById('content'));">Clear filters</button>
+      <button type="button" id="studentSearchClearBtn" class="btn btn-secondary btn-sm" style="display:none;" onclick="document.getElementById('studentSearchInput').value='';studentFilters={q:'',status:'',category:'',admission:''};renderStudents(document.getElementById('topbar'),document.getElementById('content'));">Clear filters</button>
       <div id="studentFilterPanel" style="display:none;gap:10px;flex-wrap:wrap;width:100%;background:var(--surface-alt);border-radius:8px;padding:10px 12px;">
         <select onchange="studentFilters.status=this.value; renderStudentsMain();">
           <option value="">Any status</option>
@@ -1222,6 +1223,11 @@ function renderStudents(topbar, content){
           <option value="OBC" ${studentFilters.category==='OBC'?'selected':''}>OBC</option>
           <option value="SC" ${studentFilters.category==='SC'?'selected':''}>SC</option>
           <option value="ST" ${studentFilters.category==='ST'?'selected':''}>ST</option>
+        </select>
+        <select onchange="studentFilters.admission=this.value; renderStudentsMain();">
+          <option value="">New or old (any)</option>
+          <option value="new" ${studentFilters.admission==='new'?'selected':''}>New admission (this session)</option>
+          <option value="old" ${studentFilters.admission==='old'?'selected':''}>Old student</option>
         </select>
       </div>
     </div>
@@ -1237,9 +1243,11 @@ function renderStudentsMain(){
     renderStudentsTable();
     return;
   }
+  const sessionRange = getTimeframeRange('thisSession');
   const classCounts = CLASS_LEVELS.map(c => ({
     label: c, board: BOARD_CLASSES.includes(c),
     count: students.filter(s=>s.cls===c && s.status==='active').length,
+    newCount: students.filter(s=>s.cls===c && s.status==='active' && inRange(s.admissionDate, sessionRange)).length,
   }));
   const classMax = Math.max(1, ...classCounts.map(c=>c.count));
   wrap.innerHTML = `
@@ -1253,7 +1261,7 @@ function renderStudentsMain(){
           <div style="margin-top:10px;height:6px;background:var(--surface-alt);border-radius:99px;overflow:hidden;">
             <span style="display:block;height:100%;background:${c.board?'var(--accent)':'var(--brand)'};width:${(c.count/classMax)*100}%;"></span>
           </div>
-          <div style="margin-top:8px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:14px;">${c.count} student${c.count===1?'':'s'}</div>
+          <div style="margin-top:8px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:14px;">${c.count} student${c.count===1?'':'s'}${c.newCount>0?` <span style="color:var(--good);font-size:12px;">· ${c.newCount} new</span>`:''}</div>
         </button>`).join('')}
     </div>`;
 }
@@ -1341,15 +1349,18 @@ function renderStudentsByClass(topbar, content, cls){
 }
 function getFilteredStudents(){
   const q = studentFilters.q.toLowerCase();
+  const sessionRange = getTimeframeRange('thisSession');
   return students.filter(s => {
     if(q && !(`${s.firstName} ${s.lastName} ${s.admissionNumber}`.toLowerCase().includes(q))) return false;
     if(studentFilters.status && s.status !== studentFilters.status) return false;
     if(studentFilters.category && s.category !== studentFilters.category) return false;
+    if(studentFilters.admission === 'new' && !inRange(s.admissionDate, sessionRange)) return false;
+    if(studentFilters.admission === 'old' && inRange(s.admissionDate, sessionRange)) return false;
     return true;
   }).sort((a,b)=> a.lastName.localeCompare(b.lastName));
 }
 function hasActiveStudentFilters(){
-  return !!(studentFilters.q.trim() || studentFilters.status || studentFilters.category);
+  return !!(studentFilters.q.trim() || studentFilters.status || studentFilters.category || studentFilters.admission);
 }
 function renderStudentsTable(){
   const filtered = getFilteredStudents();
@@ -1414,10 +1425,36 @@ function renderBulkActionBar(){
   return `
     <div id="bulkActionBar" style="display:none;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface-alt);border:1px solid var(--line);border-radius:8px;padding:8px 12px;margin-bottom:10px;">
       <span style="font-size:13px;"><span id="bulkSelectedCount">0</span> selected</span>
+      ${canEdit('students') ? `<button type="button" class="btn btn-secondary btn-sm" onclick="bulkMarkAsNewAdmission()">Mark as New Admission</button>` : ''}
+      ${canEdit('students') ? `<button type="button" class="btn btn-secondary btn-sm" onclick="bulkMarkAsOldStudent()">Mark as Old Student</button>` : ''}
       <button type="button" class="btn btn-secondary btn-sm" onclick="bulkExportSelectedStudents()">Export selected</button>
       ${canEdit('students') ? `<button type="button" class="btn btn-danger btn-sm" onclick="bulkDeleteSelectedStudents()">Delete selected</button>` : ''}
       <button type="button" class="btn btn-secondary btn-sm" onclick="clearStudentSelection()">Clear selection</button>
     </div>`;
+}
+function bulkMarkAsNewAdmission(){
+  if(selectedStudentIds.size === 0) return;
+  const dateInput = prompt('Set admission date for ' + selectedStudentIds.size + ' selected student(s) — they will then count toward this session\'s Admissions (YYYY-MM-DD):', todayIso());
+  if(dateInput === null) return;
+  const parsed = parseFlexibleDate(dateInput.trim());
+  if(!parsed){ alert("Could not understand that date. Please use YYYY-MM-DD."); return; }
+  selectedStudentIds.forEach(id => {
+    const s = students.find(x=>x.id===id);
+    if(s) s.admissionDate = parsed;
+  });
+  saveAll();
+  alert(selectedStudentIds.size + ' student(s) marked as new admissions, dated ' + formatDate(parsed) + '.');
+  renderApp();
+}
+function bulkMarkAsOldStudent(){
+  if(selectedStudentIds.size === 0) return;
+  if(!confirm('Clear the admission date for ' + selectedStudentIds.size + ' selected student(s)? They\'ll be treated as existing students and won\'t count toward this session\'s Admissions.')) return;
+  selectedStudentIds.forEach(id => {
+    const s = students.find(x=>x.id===id);
+    if(s) s.admissionDate = '';
+  });
+  saveAll();
+  renderApp();
 }
 function bulkDeleteSelectedStudents(){
   if(selectedStudentIds.size === 0) return;
@@ -1584,7 +1621,7 @@ function openStudentModal(existingId, presetCls){
           ${CLASS_LEVELS.map(c=>`<option value="${c}" ${(s?s.cls===c:presetCls===c)?'selected':''}>${c}${BOARD_CLASSES.includes(c)?' (Board class)':''}</option>`).join('')}
         </select></div>
         <div class="field"><label>Section</label><input name="section" value="${v('section')}" placeholder="e.g. B" required /></div>
-        <div class="field"><label>Admission date</label><input type="date" name="admissionDate" value="${s?.admissionDate||todayIso()}" required /></div>
+        <div class="field"><label>Admission date</label><input type="date" name="admissionDate" value="${s?.admissionDate||(isNew?todayIso():'')}" /><p style="font-size:11px;color:var(--ink-soft);margin:4px 0 0;">Leave blank for an existing/old student rather than a new admission — it won't count toward this session's Admissions.</p></div>
         <div class="field"><label>Amount paid at admission (&#8377;)</label>
           <input name="admissionFeesPaid" value="${v('admissionFeesPaid')}" placeholder="0 if none yet" ${(s && s.admissionFeesPaid && !(currentUser()&&currentUser().role==='admin')) ? 'readonly' : ''} />
           ${(s && s.admissionFeesPaid) ? `<p style="font-size:11px;color:var(--ink-soft);margin:4px 0 0;">Locked — this seeded the auto-generated Admission Payment fee record.${currentUser()&&currentUser().role==='admin' ? ' You can still edit this as Admin, but it will NOT retroactively change the actual fee record — correct that directly on the Fees page if needed.' : ' Only Admin can change this now.'}</p>` : ''}
@@ -1898,15 +1935,17 @@ var DATA_SCHEMAS = {
   },
 };
 /** Student rows are shared by both the Students and Admissions modules —
- *  Admissions is simply Students filtered to the current session. */
+ *  Admissions is simply Students admitted within the current session's date
+ *  range. A blank admissionDate means "old student, not a new admission" —
+ *  it is deliberately NOT defaulted to today or assumed to be this session. */
 function buildStudentRow(s){
   return [s.id].concat(STUDENT_CSV_FIELDS.map(f => s[f]!=null ? s[f] : ''));
 }
 function buildCategoryRows(category){
   if(category === 'students') return students.map(buildStudentRow);
   if(category === 'admissions'){
-    const session = currentAcademicYear();
-    return students.filter(s=>s.session===session).map(buildStudentRow);
+    const sessionRange = getTimeframeRange('thisSession');
+    return students.filter(s=>inRange(s.admissionDate, sessionRange)).map(buildStudentRow);
   }
   if(category === 'fees') return fees.map(f => [f.id, f.studentId||'', f.session||'', f.particulars||'', f.amountDue||'', f.amountPaid||'', f.paymentMode||'', f.negotiated?'true':'false', f.dueDate||'', f.paidDate||'', f.notes||'']);
   if(category === 'attendance') return studentAttendance.map(a => [a.id, a.studentId||'', a.date||'', a.cls||'', a.section||'', a.status||'']);
